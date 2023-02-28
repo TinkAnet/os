@@ -19,7 +19,8 @@ int retrieve_my_appointment(){
         retrieve_ap_list[i].date = appointment_list[i].p.start_time.d.str;
         retrieve_ap_list[i].start_time = appointment_list[i].p.start_time.str;
         retrieve_ap_list[i].end_time = appointment_list[i].p.end_time.str;
-        retrieve_ap_list[i].type = get_level_name(appointment_list[i].level);
+        retrieve_ap_list[i].type = {0};
+        strcpy(retrieve_ap_list[i].type, get_level_name(appointment_list[i].level));
 
         retrieve_ap_list[i].people = {0};
 
