@@ -13,11 +13,11 @@
 
 /**
  * Pipe List
- * 
+ *
  * For each pair in this list
  *  - 0: parent -> user
  *  - 1: user   -> parent
- * 
+ *
 */
 static int num_user;
 static int *pipe_list;
@@ -25,16 +25,16 @@ static char *user_name_list[];
 
 /**
  * Request Payload & Response Code
- * 
+ *
  * Function id table
  * - 1: private time
  * - 2: retrieve user information
  * - 3: shutdown the child process
- * 
+ *
  * Response Code
  * - 1: success
  * - 2: failed
- * 
+ *
 */
 static struct __request {
     int req_id; // request function id
@@ -42,10 +42,10 @@ static struct __request {
 
 /**
  * Private Time Payload
- * 
+ *
 */
 static struct __private_time_payload {
-    int event_date; // event time 
+    int event_date; // event time
     int event_time; // event time
     double event_duration; // event duration
 }_private_time_req;
@@ -53,13 +53,13 @@ static struct __private_time_payload {
 
 /**
  * Private Time Callback
- * 
+ *
 */
 static void private_time_callback(int user_id) {
     // load
     int fd_in = pipe_list[(user_id<<1)];
     read(fd_in, &_private_time_req, sizeof(struct __private_time_payload));
-    
+
     // execute
     _req.req_id = !add_private_time(_private_time_req.event_date, _private_time_req.event_time, _private_time_req.event_duration);
 
@@ -70,12 +70,12 @@ static void private_time_callback(int user_id) {
 
 /**
  * retrieve_user Callback
- * 
+ *
 */
 static void retrieve_user_callback(int user_id) {
     // prepare
     retrieve_my_appointment();
-    
+
     // send
     int fd_out = pipe_list[(user_id<<1)^1];
 
@@ -98,21 +98,23 @@ static void process_shutdown_callback(int user_id) {
     // close pipe
     for (int i = 0; i < (user_id << 1); ++i)
         close(pipe_list[i]);
-    
+
     // exit the system;
     exit(0);
 }
 
 /**
  * User Call Back Function
- * 
+ *
  * @param user_id the current user_id for pipes
+ * @param username the current username
 */
-static int user_callback(int user_id) {
+static int user_callback(int user_id, char* username) {
+    set_current_user(username);
     while (1) {
         // load the request
         read(pipe_list[user_id<<1], &_req, sizeof(struct __request));
-        
+
         switch (_req.req_id)
         {
         case 1:
@@ -144,11 +146,11 @@ int init_child_process(int start_date, int end_date, int number, char *user_name
         // init
         pipe(&pipe_list[i<<1]);
         int c_pid = fork();
-        
+
         // child
         if (c_pid == 0) {
             // start the process
-            user_callback(i);
+            user_callback(i, user_name_list[i]);
         }
 
         // failed
@@ -160,10 +162,10 @@ int init_child_process(int start_date, int end_date, int number, char *user_name
 
 /**
  * Find User Id in the system
- * 
+ *
  * @param user_name user name
  * @return user id
- * 
+ *
 */
 static int find_user_id(char* user_name) {
     for (int i = 0; i < num_user; ++i) {
@@ -176,7 +178,7 @@ static int find_user_id(char* user_name) {
 int private_time(char* user_name, int event_date, int event_time, double event_duration) {
     // get user id
     int user_id = find_user_id(user_name);
-    
+
     // send request
     int fd_out = pipe_list[user_id<<1];
     _req.req_id = 1;
@@ -195,7 +197,7 @@ int private_time(char* user_name, int event_date, int event_time, double event_d
 
 int retrieve_user_appointment(char* user_name, user_meta_data *meta, user_appointment_data **list) {
     int user_id = find_user_id(user_name);
-    
+
     // prepare
     int fd_out = pipe_list[user_id<<1];
     _req.req_id = 2;
@@ -204,7 +206,7 @@ int retrieve_user_appointment(char* user_name, user_meta_data *meta, user_appoin
     // receive
     int fd_in = pipe_list[(user_id<<1)^1];
     read(fd_in, &_req, sizeof(struct __request));
-    
+
     // if the request failed
     if (_req.req_id != 1) {
         return 1;
