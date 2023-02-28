@@ -3,11 +3,27 @@
 #define callee_max_num 10
 #define level_max 5
 #define level_name_length 20
+#define name_length 15
+#define user_max_num 11
 #include "G_time.h"
 #include "G_user.h"
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
+#include <stdbool.h>
+
+typedef struct USER{
+    int uid;
+}User;
+
+void init_user(int number, char s[][name_length]);
+void user_print(User a);
+char* get_user_name(User a);
+User load_user(char *s);
+bool same(User a, User b);
+
+
 
 typedef struct APPOINTMENT{
 	Period p;
@@ -22,6 +38,7 @@ bool ap_conflict(Appointment a, Appointment b);
 Appointment set_if_confirmed(Appointment a, bool flags);
 bool contains(Appointment a, User b);
 void ap_print(Appointment a);
+char* get_level_name(Appointment a);
 
 #else
 

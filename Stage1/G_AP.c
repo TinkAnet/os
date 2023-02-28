@@ -1,5 +1,53 @@
 #include "G_AP.h"
 
+int num_of_user = 0;
+char user_name[user_max_num][name_length] = {0};
+
+void init_user(int number, char s[][name_length]){
+    num_of_user = number;
+    for(int i = 0; i < number; i++){
+        for(int j = 0; s[i][j]; j++)
+            user_name[i][j] = s[i][j];
+        if(user_name[i][0] > 'Z') user_name[i][0] = user_name[i][0] - 'a' + 'A';
+        if(DEBUG_ALL) printf("user_name: %s \n", user_name[i]);
+    }
+}
+
+User load_user(char *s){
+    if(DEBUG_ALL) printf("Load User: %s", s);
+    if(s[0] > 'Z') s[0] = s[0] - 'a' + 'A';
+    User ret;
+    ret.uid = -1;
+    for(int i = 0; i < num_of_user; i++){
+        bool ifsame = true;
+        for(int j = 0; s[j] || user_name[i][j]; j++){
+            if(s[j] != user_name[i][j]){
+                ifsame = false;
+                break;
+            }
+        }
+        if(ifsame){
+            ret.uid = i;
+            break;
+        }
+    }
+    if(DEBUG_ALL){ printf("User: "); user_print(ret); printf("\n");}
+    return ret;
+}
+
+bool same(User a, User b){
+    return a.uid == b.uid;
+}
+
+void user_print(User a){
+    printf("%s(%d)", user_name[a.uid], a.uid);
+}
+
+char* get_user_name(User a){
+    return user_name[a.uid];
+}
+
+
 char level_str[level_max][level_name_length] = {"None", "gathering", "groupStudy", "projectMeeting", "privateTime"};
 
 void init_all(long long start_date, long long end_date, int number_of_users, char users_name[][name_length]){
@@ -62,6 +110,10 @@ bool contains(Appointment a, User b){
         if(same(a.callee[i], b)) return true;
     }
     return false;
+}
+
+char* get_level_name(Appointment a){
+    return level_str[a.level];
 }
 
 void ap_print(Appointment a){

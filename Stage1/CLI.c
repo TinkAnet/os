@@ -13,5 +13,5 @@ int main(int argc, char *argv[]) {
     for (int i = 0; i < num_of_users; i++) {
         name_list[i] = argv[i+3];
     }
-    
+
 }
