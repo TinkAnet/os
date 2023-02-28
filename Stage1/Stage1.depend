@@ -1,0 +1,49 @@
+# depslib dependency file v1.0
+1677499987 source:c:\users\dell\desktop\os\stage1\g_fcfs.c
+
+1677596900 source:c:\users\dell\desktop\os\stage1\g_user.c
+	"G_user.h"
+
+1677588713 c:\users\dell\desktop\os\stage1\g_user.h
+	<stdint.h>
+	<stdlib.h>
+	<stdio.h>
+	<stdbool.h>
+	"G_Debug.h"
+
+1677587700 source:c:\users\dell\desktop\os\stage1\g_main.c
+	<stdio.h>
+	<stdlib.h>
+	<math.h>
+	"G_AP.h"
+
+1677586604 c:\users\dell\desktop\os\stage1\g_ap.h
+	"G_time.h"
+	"G_user.h"
+	<math.h>
+	<stdio.h>
+	<stdlib.h>
+
+1677588716 c:\users\dell\desktop\os\stage1\g_time.h
+	<stdint.h>
+	<stdlib.h>
+	<stdio.h>
+	<stdbool.h>
+	"G_Debug.h"
+
+1677588662 source:c:\users\dell\desktop\os\stage1\main.c
+	<stdio.h>
+	<stdlib.h>
+	<math.h>
+	"G_AP.h"
+
+1677596769 source:c:\users\dell\desktop\os\stage1\g_ap.c
+	"G_AP.h"
+
+1677596891 source:c:\users\dell\desktop\os\stage1\g_time.c
+	"G_time.h"
+
+1677588654 c:\users\dell\desktop\os\stage1\g_debug.h
+
+1677588681 source:c:\users\dell\desktop\os\stage1\g_debug.c
+

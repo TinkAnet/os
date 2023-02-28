@@ -3,7 +3,7 @@
 #include <math.h>
 #include "G_AP.h"
 
-int main(){
+int test(){
     char OPTION;
     scanf("%c", &OPTION);
     if(OPTION == 'd'){

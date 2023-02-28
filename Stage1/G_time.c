@@ -5,16 +5,18 @@ const int N = 100;
 //const int apo_start_hour = 18, apo_end_hour = 23, slot_per_hour =1;
 int mth[] = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 const int days_of_holidays = 6;
-Time holidays[] = {setDate(2023, 3, 5), setDate(2023, 3, 12), setDate(2023, 3, 19), setDate(2023, 3, 26), setDate(2023, 3, 29), setDate(3, 30)};
+Time holidays[] = {{20230305, 2023, 3, 5}, {20230312, 2023, 3, 12}, {20230319, 2023, 3, 19}, {20230326, 2023, 3, 26}, {20230329, 2023, 3, 29}, {20230329, 2023, 3, 30}};
 Date start_day, end_day;
 
 
 Date str2Date(long long a) {
+    if(DEBUG_ALL) printf("str2Date: %lld\n", a);
     Date ret;
     ret.str = a;
     ret.year = a / 10000;
     ret.month = (a / 100) % 100;
     ret.day = a % 100;
+    if(DEBUG_ALL){ printf("Date: "); date_print(ret);printf("\n");}
     return ret;
 }
 
@@ -61,6 +63,7 @@ Time str2Time(long long a){
     ret.d = str2Date(a/10000);
     ret.hour = (a / 100) % 100;
     ret.minute = a % 100;
+    return ret;
 }
 
 long long time2Str(Time a){ return date2Str(a.d) * 10000 + a.hour * 100 + a.minute; }
@@ -79,9 +82,9 @@ Time add_time(Time a, int hours, int minutes){
 
 void time_print(Time a){ date_print(a.d); printf(" %02d:%02d", a.hour, a.minute); }
 
-Time setDate(int year, int month, int date){
-    Time ret;
-    ret.year = year; ret.month = month; ret.date = date;
+Date setDate(int year, int month, int date){
+    Date ret;
+    ret.year = year; ret.month = month; ret.day = date;
     return ret;
 }
 
@@ -95,24 +98,26 @@ bool period_conflict(Period a, Period b){
 }
 
 Period str2Period(long long l, long long r){
+    if(DEBUG_ALL) printf("str2Period: %lld %lld\n", l, r);
     Period ret;
     ret.start_time = str2Time(l);
     ret.end_time = str2Time(r);
     ret.st = time2Slot(ret.start_time);
     ret.ed = time2Slot(ret.end_time);
+    if(DEBUG_ALL){ printf("Period: "); period_print(ret);printf("\n");}
     return ret;
 }
 
 int time2Slot(Time a){
-    for(int j = 0; j < days_of_holidays; j++){
-        if(eq(i, holidays[j])){
+    for(int i = 0; i < days_of_holidays; i++){
+        if(eq(a, holidays[i])){
             return -1;
         }
     }
     int base = days(a.d);
-    return (base * (apo_end_hour - apo_start_hour) + (a.hour - freetime_start+1)) * slot_per_hour;
+    return (base * (apo_end_hour - apo_start_hour) + (a.hour - apo_start_hour+1)) * slot_per_hour;
 }
 
 void period_print(Period a){
-    time_print(a.start_time); printf("(%d) -> ",a.st); time_print(a.end_time); printf("(%d)", a.ed)
+    time_print(a.start_time); printf("(%d) -> ",a.st); time_print(a.end_time); printf("(%d)", a.ed);
 }

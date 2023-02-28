@@ -9,11 +9,12 @@ void init_all(long long start_date, long long end_date, int number_of_users, cha
 
 Appointment load_ap(char *levels, char *caller_name, long long date_str, long long time_str, double period_length, int number_of_callees, char callee_name[][name_length])
 {
+    if(DEBUG_ALL) printf("load_ap\n");
     Appointment ret;
     ret.level = 0;
     for(int i = 0; i < level_max; i++){
         bool ifsame = true;
-        for(int j = 0; levels[j] || level_str[i][j]; j++){
+        for(int j = 0; levels[j] != 0 || level_str[i][j] != 0; j++){
             if(levels[j] != level_str[i][j]){
                 ifsame = false;
                 break;
@@ -36,6 +37,7 @@ Appointment load_ap(char *levels, char *caller_name, long long date_str, long lo
     ret.p.ed = ret.p.st + ret.len;
 
     ret.caller = load_user(caller_name);
+    ret.number = number_of_callees;
     for(int i = 0; i < number_of_callees; i++){
         ret.callee[i] = load_user(callee_name[i]);
     }
@@ -57,7 +59,7 @@ bool ap_conflict(Appointment a, Appointment b){
 bool contains(Appointment a, User b){
     if(same(a.caller, b)) return true;
     for(int i = 0; i < a.number; i++){
-        if(same(a.callee[i], b) return true;
+        if(same(a.callee[i], b)) return true;
     }
     return false;
 }

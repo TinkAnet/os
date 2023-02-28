@@ -35,6 +35,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="G_AP.h" />
+		<Unit filename="G_Debug.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="G_Debug.h" />
 		<Unit filename="G_FCFS.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -47,6 +51,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="G_time.h" />
+		<Unit filename="G_user.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="G_user.h" />
 		<Unit filename="Stage1.cbp" />
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />

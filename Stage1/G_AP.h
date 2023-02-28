@@ -6,13 +6,15 @@
 #include "G_time.h"
 #include "G_user.h"
 #include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
 
-struct Appointment{
+typedef struct APPOINTMENT{
 	Period p;
 	int len, level, number;
 	User caller, callee[callee_max_num];
 	bool ifconfirmed;
-};
+}Appointment;
 
 void init_all(long long start_date, long long end_date, int number_of_users, char users_name[][name_length]);
 Appointment load_ap(char *levels, char *caller_name, long long date_str, long long time_str, double period_length, int number_of_callees, char callee[][name_length]);

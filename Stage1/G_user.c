@@ -7,12 +7,14 @@ void init_user(int number, char s[][name_length]){
     num_of_user = number;
     for(int i = 0; i < number; i++){
         for(int j = 0; s[i][j]; j++)
-            user[i][j] = s[i][j];
-        if(user[i][0] < 'a') user[i][0] = user[i][0] - 'a' + 'A';
+            user_name[i][j] = s[i][j];
+        if(user_name[i][0] < 'a') user_name[i][0] = user_name[i][0] - 'a' + 'A';
+        if(DEBUG_ALL) printf("user_name: %s \n", user_name[i]);
     }
 }
 
 User load_user(char *s){
+    if(DEBUG_ALL) printf("Load User: %s", s);
     if(s[0] < 'a') s[0] = s[0] - 'a' + 'A';
     User ret;
     ret.uid = -1;
@@ -29,11 +31,12 @@ User load_user(char *s){
             break;
         }
     }
+    if(DEBUG_ALL){ printf("User: "); user_print(ret); printf("\n");}
     return ret;
 }
 
 bool same(User a, User b){
-    return a.uid == b.yid;
+    return a.uid == b.uid;
 }
 
 void user_print(User a){
