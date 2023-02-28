@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="Stage1" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/Stage1" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/Stage1" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+		</Compiler>
+		<Unit filename="G_AP.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="G_AP.h" />
+		<Unit filename="G_FCFS.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="G_FCFS.h" />
+		<Unit filename="G_main.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="G_proj.h" />
+		<Unit filename="G_time.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="G_time.h" />
+		<Unit filename="Stage1.cbp" />
+		<Unit filename="main.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Extensions />
+	</Project>
+</CodeBlocks_project_file>
