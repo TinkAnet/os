@@ -1,6 +1,7 @@
 #include<stdint.h>
 #include<stdlib.h>
 #include<rinput.h>
+#include<ipc.h>
 
 int main(int argc, char *argv[]) {
     // argc = 7
@@ -13,5 +14,6 @@ int main(int argc, char *argv[]) {
     for (int i = 0; i < num_of_users; i++) {
         name_list[i] = argv[i+3];
     }
+    init_child_process(start_date, end_date, num_of_users, name_list);
 
 }
