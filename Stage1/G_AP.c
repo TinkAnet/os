@@ -32,10 +32,10 @@ Appointment load_ap(char *levels, char *caller_name, long long date_str, long lo
     int _hour = _tmp / 100;
     int _minute = ceil((_tmp % 100) / 100.0 * 60);
     ret.p.end_time = add_time(ret.p.start_time, _hour, _minute);
-
+    if(DEBUG_ALL) printf("???\n");
     ret.p.st = time2Slot(ret.p.start_time);
     ret.p.ed = ret.p.st + ret.len;
-
+    if(DEBUG_ALL) printf("???\n");
     ret.caller = load_user(caller_name);
     ret.number = number_of_callees;
     for(int i = 0; i < number_of_callees; i++){
