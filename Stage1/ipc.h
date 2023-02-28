@@ -2,6 +2,28 @@
 #define IPC_H
 
 /**
+ * User meta data struct
+*/
+typedef struct user_meta_data
+{
+    int num; // number of appintment
+};
+
+/**
+ * User appointment data
+*/
+typedef struct user_appointment_data
+{
+    long long date; // appointment date
+    int start_time; // appointment start time
+    int end_time;   // end time
+    char type[32];  // type description
+    int people_len; // people description length
+    char *people;   // people description length
+};
+
+
+/**
  * Init children processes
  * 
  * @param start_date the start date
@@ -27,21 +49,6 @@ int init_child_process(int start_date, int end_date, int number, char *user_name
 */
 int private_time(char* user_name, int event_date, int event_time, double event_duration);
 
-typedef struct user_meta_data
-{
-    int num;
-};
-
-typedef struct user_appointment_data
-{
-    char date[16];
-    char start_time[16];
-    char end_time[16];
-    char type[32];
-    int people_len;
-    char *people;
-};
-
 /**
  * Retrieve User All Appointment
  * 
@@ -52,15 +59,5 @@ typedef struct user_appointment_data
  * 
 */
 int retrieve_user_appointment(char* user_name, user_meta_data *meta, user_appointment_data **list);
-
-/**
- * Response User All Appointment
- * 
- * @param meta the user meta info
- * @param list the appointment list
- * 
-*/
-void response_user_appointment(user_meta_data *meta, user_appointment_data list[]);
-
 
 #endif
