@@ -8,7 +8,7 @@
 typedef struct user_meta_data
 {
     int num; // number of appintment
-};
+}user_meta_data;
 
 typedef struct user_appointment_data
 {
@@ -18,7 +18,7 @@ typedef struct user_appointment_data
     char type[32];  // type description
     int people_len; // people description length
     char *people;   // people description length
-};
+}user_appointment_data;
 
 extern user_meta_data retrieve_num;
 extern user_appointment_data retrieve_ap_list[max_appointment_num];
