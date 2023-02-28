@@ -3,6 +3,9 @@
 
 
 #define MAX_OPEARTOR_CHAR 14 // which is the len of projectMeeting
+#define DATE_LEN 8
+#define START_TIME_LEN 4
+#define DURATION_LEN 3
 
 typedef enum OPEARTOR_TYPE {
     PRIVATE_TIME,   // 0
