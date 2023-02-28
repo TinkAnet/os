@@ -80,15 +80,38 @@ Appointment load_ap(char *levels, char *caller_name, long long date_str, long lo
     int _hour = _tmp / 100;
     int _minute = ceil((_tmp % 100) / 100.0 * 60);
     ret.p.end_time = add_time(ret.p.start_time, _hour, _minute);
-    if(DEBUG_ALL) printf("???\n");
     ret.p.st = time2Slot(ret.p.start_time);
     ret.p.ed = ret.p.st + ret.len;
-    if(DEBUG_ALL) printf("???\n");
+
     ret.caller = load_user(caller_name);
+
     ret.number = number_of_callees;
     for(int i = 0; i < number_of_callees; i++){
         ret.callee[i] = load_user(callee_name[i]);
     }
+
+    ret.ifconfirmed = false;
+
+    return ret;
+}
+
+Appointment load_private_ap(int user_id, long long date_str, long long time_str, double period_length){
+    if(DEBUG_ALL) printf("load_private_ap\n");
+    Appointment ret;
+    ret.level = private_level;
+
+    ret.len = ceil(slot_per_hour * period_length);
+
+    ret.p.start_time = str2Time(date_str * 10000 + time_str);
+    int _tmp = ceil(period_length * 100);
+    int _hour = _tmp / 100;
+    int _minute = ceil((_tmp % 100) / 100.0 * 60);
+    ret.p.end_time = add_time(ret.p.start_time, _hour, _minute);
+    ret.p.st = time2Slot(ret.p.start_time);
+    ret.p.ed = ret.p.st + ret.len;
+
+    ret.caller = user_id;
+    ret.number = 0;
 
     ret.ifconfirmed = false;
 

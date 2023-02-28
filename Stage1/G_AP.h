@@ -2,6 +2,10 @@
 #define _AP_H
 #define callee_max_num 10
 #define level_max 5
+#define private_level 4
+#define project_metting_level 3
+#define group_study 2
+#define gathering 1
 #define level_name_length 20
 #define name_length 15
 #define user_max_num 11
@@ -34,11 +38,14 @@ typedef struct APPOINTMENT{
 
 void init_all(long long start_date, long long end_date, int number_of_users, char users_name[][name_length]);
 Appointment load_ap(char *levels, char *caller_name, long long date_str, long long time_str, double period_length, int number_of_callees, char callee[][name_length]);
+Appointment load_private_ap(int user_id, long long date_str, long long time_str, double period_length);
 bool ap_conflict(Appointment a, Appointment b);
 Appointment set_if_confirmed(Appointment a, bool flags);
 bool contains(Appointment a, User b);
 void ap_print(Appointment a);
 char* get_level_name(Appointment a);
+
+
 
 #else
 
