@@ -7,11 +7,14 @@ int main(){
     char OPTION;
     scanf("%c", &OPTION);
     if(OPTION == 'd'){
-        printf("DEBUG MOD: ");
+        DEBUG_ALL = true;
+        printf("DEBUG MOD: \n");
+        printf("Input start_date, end_date, number_of_users: ");
         long long start_date, end_date;
         int number_of_users;
         char user_name[20][name_length];
         scanf("%lld %lld %d", &start_date, &end_date, &number_of_users);
+        printf("user_names: ");
         for(int i = 0; i < number_of_users; i++){
             scanf("%s", user_name[i]);
         }

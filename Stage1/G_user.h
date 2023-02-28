@@ -15,6 +15,7 @@ typedef struct USER{
 
 void init_user(int number, char s[][name_length]);
 void user_print(User a);
+char* get_user_name();
 User load_user(char *s);
 bool same(User a, User b);
 

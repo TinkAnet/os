@@ -38,12 +38,14 @@ Date add_day (Date a) {
             a.year++;
         }
     }
+    a.str = date2Str(a);
     return a;
 }
 
 int days(Date a){
     int cnt = 0;
     for(Date i = start_day; !eq(i, a); i = add_day(i)){
+        //if(DEBUG_ALL){ date_print(i); date_print("a");printf("\n");}
         cnt++;
         for(int j = 0; j < days_of_holidays; j++){
             if(eq(i, holidays[j])){
@@ -94,7 +96,7 @@ void init_time_slot(long long Start, long long End){
 }
 
 bool period_conflict(Period a, Period b){
-    return !(a.ed < b.st || a.st > b.ed);
+    return !(a.ed <= b.st || a.st >= b.ed);
 }
 
 Period str2Period(long long l, long long r){
@@ -109,6 +111,7 @@ Period str2Period(long long l, long long r){
 }
 
 int time2Slot(Time a){
+    //if(DEBUG_ALL) printf("holidays: %d\n", days_of_holidays);
     for(int i = 0; i < days_of_holidays; i++){
         if(eq(a, holidays[i])){
             return -1;
