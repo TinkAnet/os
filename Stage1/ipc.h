@@ -2,28 +2,6 @@
 #define IPC_H
 
 /**
- * User meta data struct
-*/
-typedef struct user_meta_data
-{
-    int num; // number of appintment
-};
-
-/**
- * User appointment data
-*/
-typedef struct user_appointment_data
-{
-    long long date; // appointment date
-    int start_time; // appointment start time
-    int end_time;   // end time
-    char type[32];  // type description
-    int people_len; // people description length
-    char *people;   // people description length
-};
-
-
-/**
  * Init children processes
  * 
  * @param start_date the start date
@@ -59,5 +37,12 @@ int private_time(char* user_name, int event_date, int event_time, double event_d
  * 
 */
 int retrieve_user_appointment(char* user_name, user_meta_data *meta, user_appointment_data **list);
+
+/**
+ * Shutdown child process
+ * 
+ * @return the instruction execution result. 0 -> success; !0 -> failed
+*/
+int shutdown_child_process();
 
 #endif
