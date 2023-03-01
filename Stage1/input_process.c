@@ -1,9 +1,12 @@
 #include<rinput.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
 #include <G_AP.h>
-
-void read_app(const char *input) {
+/**
+ * Use to parse private time string. 
+*/
+void private_time_handler (const char *input, pt_t *res) {
     int n = strlen(input);
     char c;
     
@@ -79,10 +82,18 @@ void read_app(const char *input) {
             continue;
         }
         else if (state == 9) {
-            duration_str[duration_len++] = c; // TODO: append '\0'
+            duration_str[duration_len++] = c;
             continue;
         }
     }
+    duration_str[duration_len++] = '\0';
+    
+    res->op = PRIVATE_TIME;
+    res->caller_name = user_str;
+    res->date = atoi(date_str);
+    res->starting_time = atio(start_str);
+    res->even_d = atof(duration_str);
+    
     printf("op_str -> %s\n", op_str);
     printf("user_str -> %s\n", user_str);
     printf("date_str -> %s\n", date_str);

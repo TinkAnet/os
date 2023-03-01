@@ -2,10 +2,10 @@
 #define READ_GUARD
 
 
-#define MAX_OPEARTOR_CHAR 14 // which is the len of projectMeeting
-#define DATE_LEN 8
-#define START_TIME_LEN 4
-#define DURATION_LEN 3
+#define MAX_OPEARTOR_CHAR 15 // which is the len of projectMeeting
+#define DATE_LEN 9
+#define START_TIME_LEN 5
+#define DURATION_LEN 4
 
 typedef enum OPEARTOR_TYPE {
     PRIVATE_TIME,   // 0
@@ -14,14 +14,15 @@ typedef enum OPEARTOR_TYPE {
     GATHERING,      // 3
 } op_t;
 
-typedef struct APPOINTMENT_ENTRY {
-    char* name;
+typedef struct PRIVATE_TIME_OP {
     op_t op;
-    int name_len;
-    int even_time; // read by atoi
-    double even_d; // 
-} app_t;
+    char* caller_name;
+    int date; // read by atoi
+    int starting_time; // 
+    double duration; // 
+} pt_t;
 
-app_t read_app(const char *input);
+pt_t priv_t_entry;
+pt_t private_time_handler(const char *input, pt_t *res);
 
 #endif
