@@ -5,7 +5,7 @@
 #include<string.h>
 #include "G_AP.h"
 
-// #define DEBUG
+#define DEBUG
 /**
  * Use to parse private time string. 
 */
@@ -113,6 +113,7 @@ void private_time_handler (const char *input, pt_t *res) {
     res->date = atoi(date_str);
     res->duration = atof(duration_str);
 #ifdef DEBUG
+    printf("in private_time_handler: \n");
     printf("op_str -> %s\n", op_str);
     printf("user_str -> %s\n", user_str);
     printf("date_str -> %s\n", date_str);
