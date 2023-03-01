@@ -167,21 +167,21 @@ int init_child_process(int start_date, int end_date, int number, char *list[]) {
  * @return user id
  *
 */
-static int find_user_id(char* user_name) {
-	printf("%s\n", user_name);
-	printf("%s\n", user_name_list[0]);
+static int find_user_id(const char* username) {
+	printf("%s\n", username);
     for (int i = 0; i < num_user; ++i) {
-        if (strcmp(user_name, user_name_list[i]) == 0) {
+        if (strcmp(username, user_name_list[i]) == 0) {
             return i;
         }
     }
     return -1;
 }
 
-int private_time(char* user_name, int event_date, int event_time, double event_duration) {
+int private_time(const char* username, int event_date, int event_time, double event_duration) {
     // get user id
-    int user_id = find_user_id(user_name);
-
+    printf("%s\n", username);
+    int user_id = find_user_id(username);
+    printf("%s\n", username);
     // send request
     int fd_out = pipe_list[user_id<<1];
     _req.req_id = 1;

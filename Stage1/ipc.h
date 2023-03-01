@@ -28,7 +28,7 @@ int init_child_process(int start_date, int end_date, int number, char *user_name
  * More details are in the project materials
  * 
 */
-int private_time(char* user_name, int event_date, int event_time, double event_duration);
+int private_time(const char* user_name, int event_date, int event_time, double event_duration);
 
 /**
  * Retrieve User All Appointment
