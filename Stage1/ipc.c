@@ -135,9 +135,9 @@ static int user_callback(int user_id, char* username) {
 
 
 /* For Exteral Usage */
-int init_child_process(int start_date, int end_date, int number, char *user_name_list[]) {
+int init_child_process(int start_date, int end_date, int number, char *list[]) {
     num_user = number;
-    user_name_list = user_name_list;
+    user_name_list = list;
     pipe_list = malloc(sizeof(int*) * number * 2);
 
     init_all(start_date, end_date, number, (char (*)[15])user_name_list);
@@ -168,6 +168,8 @@ int init_child_process(int start_date, int end_date, int number, char *user_name
  *
 */
 static int find_user_id(char* user_name) {
+	printf("%s\n", user_name);
+	printf("%s\n", user_name_list[0]);
     for (int i = 0; i < num_user; ++i) {
         if (strcmp(user_name, user_name_list[i]) == 0) {
             return i;
