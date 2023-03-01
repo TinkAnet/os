@@ -17,8 +17,8 @@ int retrieve_my_appointment(){
     retrieve_num.num = number_of_appointment;
     for(int i = 0; i < retrieve_num.num; i++){
         retrieve_ap_list[i].date = appointment_list[i].p.start_time.d.str;
-        retrieve_ap_list[i].start_time = appointment_list[i].p.start_time.str;
-        retrieve_ap_list[i].end_time = appointment_list[i].p.end_time.str;
+        retrieve_ap_list[i].start_time = appointment_list[i].p.start_time.str%10000;
+        retrieve_ap_list[i].end_time = appointment_list[i].p.end_time.str%10000;
         retrieve_ap_list[i].type[0] = 0;
         strcpy(retrieve_ap_list[i].type, get_level_name(appointment_list[i].level));
 
