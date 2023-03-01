@@ -157,6 +157,7 @@ int init_child_process(int start_date, int end_date, int number, char *user_name
             exit(-1);
         }
     }
+    return 0;
 }
 
 /**
@@ -172,6 +173,7 @@ static int find_user_id(char* user_name) {
             return i;
         }
     }
+    return -1;
 }
 
 int private_time(char* user_name, int event_date, int event_time, double event_duration) {
@@ -238,5 +240,7 @@ int shutdown_child_process() {
     // close pipe on parent side
     for (int i = 0; i < (num_user << 1); ++i)
         close(pipe_list[i]);
+    
+    return 0;
 }
 /* For Exteral Usage Ends */
