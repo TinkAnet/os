@@ -42,8 +42,10 @@ int main(int argc, char *argv[]) {
                 break;
             }
         }
+        if (op[len_op] != '\0') op[len_op++] = '\0';
 #ifdef DEBUG
         printf("reach here!\n");
+        printf("op : %s with len %lu\n", op, strlen(op));
 #endif
         if (strcmp(op, "privateTime") == 0) {
             pt_t * tmp = (pt_t *)&priv_t_entry;
@@ -105,6 +107,11 @@ int main(int argc, char *argv[]) {
             }
             
             // printf("-> [Exported file: Ggg_01_FCFS.txt]\n");
+        }
+        else { // TODO: (strcmp(op, "endProgram") == 0)
+            shutdown_child_process();
+            printf("-> Bye!\n");
+            break;
         }
         /**
          * 如何调用int retrieve_user_appointment(char* user_name, user_meta_data *meta, user_appointment_data **list);
