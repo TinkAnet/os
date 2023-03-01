@@ -1,6 +1,9 @@
 #ifndef IPC_H
 #define IPC_H
 
+#include "G_user.h"
+
+
 /**
  * Init children processes
  * 
