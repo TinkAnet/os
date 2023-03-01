@@ -1,6 +1,7 @@
 #include<stdint.h>
 #include<stdlib.h>
-#include"rinput.h"
+#include "rinput.h"
+#include "ipc.h"
 #include<stdio.h>
 // #include<rinput.h>
 // #include<ipc.h>

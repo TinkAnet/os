@@ -20,7 +20,7 @@
 */
 static int num_user;
 static int *pipe_list;
-static char *user_name_list[];
+static char **user_name_list;
 
 /**
  * Request Payload & Response Code

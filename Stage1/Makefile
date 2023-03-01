@@ -1,7 +1,7 @@
 # CC = /usr/bin/llvm-gcc
 CC = gcc
 # CC is the path of compiler
-CFLAGS = -g
+CFLAGS = -g -lm
 # -Werror: Make all warnings into errors.
 # -Wall: enables all the warnings about constructions that some users consider questionable
 # -g: tells the compiler to embed debugging information for the debugger to use.
@@ -18,9 +18,15 @@ INTER_PROCESS = ./ipc.c
 # main
 MAIN_HARDWARE = ./CLI.c
 
+
+SRC = $(wildcard *.c)
+
 .PHONY:cli
+
 cli:
-	$(CC) $(CFLAGS) $(INTER_PROCESS) $(SERVICE) $(INPUT_HANDLER) $(MAIN_HARDWARE) -lm -o $(EXECUTABLE)
+	$(CC) -o $(EXECUTABLE) $(CFLAGS) $(SERVICE) -lm
+# cli: 
+#	$(CC) $(CFLAGS) $(INTER_PROCESS) $(SERVICE) $(INPUT_HANDLER) $(MAIN_HARDWARE) -lm -o $(EXECUTABLE)
 # -I means set path of #include to the path of specified (SRC) working directory so that we could use relative path when writing #include
 # -o means generate an executable named EXE. 
 
