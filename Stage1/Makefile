@@ -12,7 +12,7 @@ EXECUTABLE = ./bin/Stage1
 # SRC_DIR = ./src
 
 INPUT_HANDLER = ./input_process.c
-SERVICE = ./G_ap.c ./G_user.c ./G_time.c
+SERVICE = ./*.c
 INTER_PROCESS = ./ipc.c
 
 # main
@@ -20,7 +20,7 @@ MAIN_HARDWARE = ./CLI.c
 
 .PHONY:cli
 cli:
-	$(CC) $(CFLAGS) $(INTER_PROCESS) $(SERVICE) $(INPUT_HANDLER) $(MAIN_HARDWARE) -o $(EXECUTABLE)
+	$(CC) $(CFLAGS) $(INTER_PROCESS) $(SERVICE) $(INPUT_HANDLER) $(MAIN_HARDWARE) -lm -o $(EXECUTABLE)
 # -I means set path of #include to the path of specified (SRC) working directory so that we could use relative path when writing #include
 # -o means generate an executable named EXE. 
 

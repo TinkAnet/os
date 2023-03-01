@@ -41,6 +41,7 @@ typedef struct TIME
 
 Time str2Time (long long a);
 long long time2Str (Time a);
+int time2Slot(Time a);
 Time add_time(Time a, int hours, int minutes);
 void time_print (Time a);
 
