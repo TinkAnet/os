@@ -1,4 +1,5 @@
-CC = /usr/bin/llvm-gcc
+# CC = /usr/bin/llvm-gcc
+CC = gcc
 # CC is the path of compiler
 CFLAGS = -g
 # -Werror: Make all warnings into errors.
