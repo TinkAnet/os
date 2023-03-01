@@ -81,23 +81,25 @@ int main(int argc, char *argv[]) {
                 for (int j = 0; j < num_of_users; j++) {
                     user_meta_data meta;
                     user_appointment_data *list;
-                    int code = retrieve_user_appointment(name_list[j], &meta, &list); //
-                    printf("code : %d\n", code);
+                    retrieve_user_appointment(name_list[j], &meta, &list);
                     printf("  %s, you have %d appointments.\n", name_list[j], meta.num);
                     printf("Date           Start   End      Type               People\n");
+                    
                     printf("============================================================================\n");
                     for (int i = 0; i < meta.num; i++) {
                         if (list[i].people_len == 0) {
-                            printf("%lld   %d   %d   %s   %c\n", list[i].date, list[i].start_time, list[i].end_time, list[i].type, '-');
+                            printf("%lld       %d    %d     %s      %c\n", list[i].date, list[i].start_time, list[i].end_time, list[i].type, '-');
                         }
                         else {
-                            printf("%lld   %d   %d   %s   ", list[i].date, list[i].start_time, list[i].end_time, list[i].type);
+                            printf("%lld       %d    %d     %s      ", list[i].date, list[i].start_time, list[i].end_time, list[i].type);
                             for (int k = 0; k < list[i].people_len; k++) {   
                                 printf("%s ", name_list[list[i].people[k]]);
                             }
                             printf("\n");
                         }
                     }
+                    printf("                              - End of %s's Schedual -                      \n", name_list[j]);
+                    printf("============================================================================\n");
                     free (list);
                 }
             }
