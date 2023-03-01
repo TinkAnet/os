@@ -13,7 +13,7 @@
 /**
  * Pipe List
  *
- * For each pair in this list
+ * For each four pair in this list
  *  - 0: parent -> user
  *  - 1: user   -> parent
  *
@@ -56,14 +56,15 @@ static struct __private_time_payload {
 */
 static void private_time_callback(int user_id) {
     // load
-    int fd_in = pipe_list[(user_id<<1)];
+    int fd_in = pipe_list[user_id*4];
     read(fd_in, &_private_time_req, sizeof(struct __private_time_payload));
 
+    printf("child %d private time %d\n", user_id, _private_time_req.event_date);
     // execute
     _req.req_id = !add_private_time(_private_time_req.event_date, _private_time_req.event_time, _private_time_req.event_duration);
 
     // return
-    int fd_out = pipe_list[(user_id<<1)^1];
+    int fd_out = pipe_list[user_id*4 + 3];
     write(fd_out, &_req, sizeof(struct __request));
 }
 
@@ -75,9 +76,9 @@ static void retrieve_user_callback(int user_id) {
     
     // prepare
     retrieve_my_appointment();
-    printf("child : %d\n", retrieve_num.num);
+    
     // send
-    int fd_out = pipe_list[(user_id<<1)^1];
+    int fd_out = pipe_list[user_id*4 + 3];
 
     // send first erq
     _req.req_id = 1;
@@ -96,7 +97,7 @@ static void retrieve_user_callback(int user_id) {
 */
 static void process_shutdown_callback(int user_id) {
     // close pipe
-    for (int i = 0; i < (user_id << 1); ++i)
+    for (int i = 0; i < (user_id << 2); ++i)
         close(pipe_list[i]);
 
     // exit the system;
@@ -110,17 +111,12 @@ static void process_shutdown_callback(int user_id) {
  * @param username the current username
 */
 static int user_callback(int user_id, char* username) {
-    printf("!!!!!! child %d start\n", user_id);
     set_current_user(username);
-    printf("child %d init\n", user_id);
+    
     while (1) {
-        // load the request
-        // while (read(pipe_list[user_id<<1], &_req, sizeof(struct __request)) == -1) {
-        //     printf("child %d waiting for input\n", user_id);
-        // }
-        int n = read(pipe_list[user_id<<1], &_req, sizeof(struct __request));
-        printf("reqq = %d, childId = %d, n = %d\n", _req.req_id, user_id, n);
-        if (n == -1) continue;
+        int n = read(pipe_list[user_id*4], &_req, sizeof(struct __request));
+        if (n == -1) process_shutdown_callback(user_id);
+
         switch (_req.req_id)
         {
         case 1:
@@ -145,16 +141,27 @@ static int user_callback(int user_id, char* username) {
 int init_child_process(int start_date, int end_date, int number, char *list[]) {
     num_user = number;
     user_name_list = list;
-    pipe_list = malloc(sizeof(int*) * number * 2);
+    pipe_list = malloc(sizeof(int) * number * 4);
 
     init_all(start_date, end_date, number, (char (*)[15])user_name_list);
     for (int i = 0; i < number; ++i) {
         // init
-        pipe(&pipe_list[i<<1]);
+        // from parent to user
+        pipe(&pipe_list[i*4]);
+        // from user to parent
+        pipe(&pipe_list[i*4+2]);
         int c_pid = fork();
 
         // child
         if (c_pid == 0) {
+            // from parent to user
+            close(pipe_list[i*4+1]);
+            // from user to parent
+            close(pipe_list[i*4+2]);
+            // close other pipe
+            for(int j = 0; j < i * 4; ++j)
+                close(pipe_list[i]);
+
             // start the process
             user_callback(i, user_name_list[i]);
         }
@@ -163,6 +170,11 @@ int init_child_process(int start_date, int end_date, int number, char *list[]) {
         if (c_pid < 1) {
             exit(-1);
         }
+
+        // from parent to user
+        close(pipe_list[i*4]);
+        // from user to parent
+        close(pipe_list[i*4+3]);
     }
     return 0;
 }
@@ -190,7 +202,7 @@ int private_time(const char* username, int event_date, int event_time, double ev
     int user_id = find_user_id(username);
     // printf("%s\n", username);
     // send request
-    int fd_out = pipe_list[(user_id<<1)^1];
+    int fd_out = pipe_list[user_id*4 + 1];
     _req.req_id = 1;
     _private_time_req.event_date = event_date;
     _private_time_req.event_time = event_time;
@@ -199,7 +211,7 @@ int private_time(const char* username, int event_date, int event_time, double ev
     write(fd_out, &_private_time_req, sizeof(struct __private_time_payload));
 
     // wait for result
-    int fd_in = pipe_list[(user_id<<1)];
+    int fd_in = pipe_list[user_id*4 + 2];
     read(fd_in, &_req, sizeof(struct __request));
 
     return !(_req.req_id == 1);
@@ -207,30 +219,27 @@ int private_time(const char* username, int event_date, int event_time, double ev
 
 int retrieve_user_appointment(char* user_name, user_meta_data *meta, user_appointment_data **list) {
     int user_id = find_user_id(user_name);
-    printf("user_id = %d, user_namae = %s\n", user_id, user_name);
+    
     // prepare
-    int fd_out = pipe_list[(user_id<<1)^1];
+    int fd_out = pipe_list[user_id*4 + 1];
     
     _req.req_id = 2;
     write(fd_out, &_req, sizeof(struct __request));
 
     // receive
-    int fd_in = pipe_list[(user_id<<1)];
+    int fd_in = pipe_list[user_id*4 + 2];
     // while (read(fd_in, &_req, sizeof(struct __request)) == -1);
-    int n = read(fd_in, &_req, sizeof(struct __request));
-    printf("n === %d\n", n);
+    read(fd_in, &_req, sizeof(struct __request));
+
     // if the request failed
     if (_req.req_id != 1) {
         return 1;
     }
 
-    // parse
-    // read(fd_out, &_req, sizeof(struct __request));
-
     // receive meta
     read(fd_in, &retrieve_num, sizeof(user_meta_data));
     meta->num = retrieve_num.num;
-    printf("parent : %d\n", retrieve_num.num);
+    
     // receive appointment
     user_appointment_data *receive_list = malloc(sizeof(user_appointment_data) * meta->num);
     *list = receive_list;
@@ -243,12 +252,12 @@ int retrieve_user_appointment(char* user_name, user_meta_data *meta, user_appoin
 int shutdown_child_process() {
     _req.req_id = 3;
     for (int i = 0; i < num_user; ++i) {
-        int fd_out = pipe_list[(i<<1)^1];
+        int fd_out = pipe_list[i*4 + 1];
         // send close payload
         write(fd_out, &_req, sizeof(struct __request));
     }
     // close pipe on parent side
-    for (int i = 0; i < (num_user << 1); ++i)
+    for (int i = 0; i < (num_user << 2); ++i)
         close(pipe_list[i]);
     
     return 0;
