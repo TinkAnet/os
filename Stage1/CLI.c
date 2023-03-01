@@ -9,6 +9,8 @@
 #include<string.h>
 // #define DEBUG
 
+pt_t priv_t_entry;
+
 int main(int argc, char *argv[]) {
     // argc = 7
     // end of argv is argc-1

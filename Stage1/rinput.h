@@ -22,7 +22,7 @@ typedef struct PRIVATE_TIME_OP {
     double duration; // 
 } pt_t;
 
-pt_t priv_t_entry;
+extern pt_t priv_t_entry;
 void private_time_handler(const char *input, pt_t *res);
 
 #endif
