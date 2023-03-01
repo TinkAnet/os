@@ -8,7 +8,7 @@
 #include "ipc.h"
 
 
-/* For Interal Usage */
+/* =========================== For Interal Usage ===========================*/
 
 /**
  * Pipe List
@@ -59,7 +59,6 @@ static void private_time_callback(int user_id) {
     int fd_in = pipe_list[user_id*4];
     read(fd_in, &_private_time_req, sizeof(struct __private_time_payload));
 
-    printf("child %d private time %d\n", user_id, _private_time_req.event_date);
     // execute
     _req.req_id = !add_private_time(_private_time_req.event_date, _private_time_req.event_time, _private_time_req.event_duration);
 
@@ -134,15 +133,18 @@ static int user_callback(int user_id, char* username) {
     }
 }
 
-/* For Interal Usage Ends */
+/* =========================== For Interal Usage Ends ===========================*/
 
 
-/* For Exteral Usage */
+/* =========================== For External Usage ===========================*/
+
 int init_child_process(int start_date, int end_date, int number, char *list[]) {
+    // init global variable
     num_user = number;
     user_name_list = list;
     pipe_list = malloc(sizeof(int) * number * 4);
 
+    // init system
     init_all(start_date, end_date, number, (char (*)[15])user_name_list);
     for (int i = 0; i < number; ++i) {
         // init
@@ -187,7 +189,6 @@ int init_child_process(int start_date, int end_date, int number, char *list[]) {
  *
 */
 static int find_user_id(const char* username) {
-	// printf("%s\n", username);
     for (int i = 0; i < num_user; ++i) {
         if (strcmp(username, user_name_list[i]) == 0) {
             return i;
@@ -196,11 +197,10 @@ static int find_user_id(const char* username) {
     return -1;
 }
 
+
 int private_time(const char* username, int event_date, int event_time, double event_duration) {
     // get user id
-    // printf("%s\n", username);
     int user_id = find_user_id(username);
-    // printf("%s\n", username);
     // send request
     int fd_out = pipe_list[user_id*4 + 1];
     _req.req_id = 1;
