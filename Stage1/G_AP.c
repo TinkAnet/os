@@ -3,6 +3,10 @@
 int num_of_user = 0;
 char user_name[user_max_num][name_length] = {0};
 
+/**
+ * Init all the users
+ * 
+ */
 void init_user(int number, char s[][name_length]){
     num_of_user = number;
     for(int i = 0; i < number; i++){
@@ -13,6 +17,9 @@ void init_user(int number, char s[][name_length]){
     }
 }
 
+/**
+ * load a user(obtain all the information of a specific user)
+ */
 User load_user(char *s){
     if(DEBUG_ALL) printf("Load User: %s", s);
     if(s[0] > 'Z') s[0] = s[0] - 'a' + 'A';
@@ -35,26 +42,45 @@ User load_user(char *s){
     return ret;
 }
 
+/**
+ * Judge whether 2 users are the same person by user_id
+ * -true: the same person
+ * -flase: not the same person
+ */
 bool same(User a, User b){
     return a.uid == b.uid;
 }
 
+/**
+ * print user_name and user_id
+ */
 void user_print(User a){
     printf("%s(%d)", user_name[a.uid], a.uid);
 }
 
+/**
+ * obtain user_name through user_id
+ */
 char* get_user_name(User a){
     return user_name[a.uid];
 }
 
-
+/**
+ * by increasing priority order
+ */
 char level_str[level_max][level_name_length] = {"None", "gathering", "groupStudy", "projectMeeting", "privateTime"};
 
+/**
+ * Init all
+ */
 void init_all(long long start_date, long long end_date, int number_of_users, char users_name[][name_length]){
     init_time_slot(start_date, end_date);
     init_user(number_of_users, users_name);
 }
 
+/**
+ * Set an appointment
+ */
 Appointment load_ap(char *levels, char *caller_name, long long date_str, long long time_str, double period_length, int number_of_callees, char callee_name[][name_length])
 {
     if(DEBUG_ALL) printf("load_ap\n");
@@ -95,6 +121,9 @@ Appointment load_ap(char *levels, char *caller_name, long long date_str, long lo
     return ret;
 }
 
+/**
+ * Set a private_time appointment
+ */
 Appointment load_private_ap(int user_id, long long date_str, long long time_str, double period_length){
     if(DEBUG_ALL) printf("load_private_ap\n");
     Appointment ret;
@@ -118,15 +147,24 @@ Appointment load_private_ap(int user_id, long long date_str, long long time_str,
     return ret;
 }
 
+/**
+ * Set the status of the appointment 
+ */
 Appointment set_if_confirmed(Appointment a, bool flags){
     a.ifconfirmed = flags;
     return a;
 }
 
+/**
+ * Judge whether there exists a conflict by calling "period_conflict()"
+ */
 bool ap_conflict(Appointment a, Appointment b){
     return period_conflict(a.p, b.p);
 }
 
+/**
+ * Judge whether a user is a participant of an appointment
+ */
 bool contains(Appointment a, User b){
     if(same(a.caller, b)) return true;
     for(int i = 0; i < a.number; i++){
@@ -135,10 +173,12 @@ bool contains(Appointment a, User b){
     return false;
 }
 
+//Get level Name
 char* get_level_name(int a){
     return level_str[a];
 }
 
+//Print an appointment
 void ap_print(Appointment a){
     printf("< %s || Period: ", level_str[a.level]);
     period_print(a.p);
