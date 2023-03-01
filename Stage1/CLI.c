@@ -7,7 +7,7 @@
 // #include<ipc.h>
 #include<stdbool.h>
 #include<string.h>
-#define DEBUG
+// #define DEBUG
 
 pt_t priv_t_entry;
 
@@ -63,8 +63,46 @@ int main(int argc, char *argv[]) {
         }
         else if (strcmp(op, "gathering") == 0) {
             printf("-> [Recorded]\n");
-        } else if (strcmp(op, "printSchd") == 0){
-            printf("-> [Exported file: Ggg_01_FCFS.txt]\n");
+        } else if (strcmp(op, "printSchd") == 0) {
+            bool reach = false;
+            bool is_all = false;
+            for (int i = 0; i < n; i++) {
+                if (buffer[i] == ' ') {
+                    reach = true;
+                }
+                else if (buffer[i] != ' ' && reach) {
+                    if (buffer[i] == 'A') is_all = true;
+                }
+            }
+            if (is_all) {
+                printf("Period: 2023-04-01 to 2023-04-30\n");
+                printf("Algorithm used: FCFS\n");
+                printf("***Appointment Schedule***\n\n");
+                for (int j = 0; j < num_of_users; j++) {
+                    user_meta_data meta;
+                    user_appointment_data *list;
+                    int code = retrieve_user_appointment(name_list[j], &meta, &list); //
+                    printf("code : %d\n", code);
+                    printf("  %s, you have %d appointments.\n", name_list[j], meta.num);
+                    printf("Date           Start   End      Type               People\n");
+                    printf("============================================================================\n");
+                    for (int i = 0; i < meta.num; i++) {
+                        if (list[i].people_len == 0) {
+                            // printf("%lld   %d   %d   %s   %c\n", list[i].date, list[i].start_time, list[i].end_time, list[i].type, '-');
+                        }
+                        else {
+                            // printf("%lld   %d   %d   %s   ", list[i].date, list[i].start_time, list[i].end_time, list[i].type);
+                            for (int k = 0; k < list[i].people_len; k++) {
+                                // printf("%d ", list[i].people[k]);
+                            }
+                            // printf("\n");
+                        }
+                    }
+                    free (list);
+                }
+            }
+            
+            // printf("-> [Exported file: Ggg_01_FCFS.txt]\n");
         }
         /**
          * 如何调用int retrieve_user_appointment(char* user_name, user_meta_data *meta, user_appointment_data **list);

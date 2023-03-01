@@ -5,7 +5,7 @@
 #include<string.h>
 #include "G_AP.h"
 
-#define DEBUG
+// #define DEBUG
 /**
  * Use to parse private time string. 
 */
