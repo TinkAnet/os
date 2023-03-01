@@ -47,10 +47,10 @@
 
 1677588681 source:c:\users\dell\desktop\os\stage1\g_debug.c
 
-1677600555 source:c:\users\dell\documents\github\os\stage1\g_ap.c
+1677649366 source:c:\users\dell\documents\github\os\stage1\g_ap.c
 	"G_AP.h"
 
-1677603685 c:\users\dell\documents\github\os\stage1\g_ap.h
+1677649323 c:\users\dell\documents\github\os\stage1\g_ap.h
 	"G_time.h"
 	"G_user.h"
 	<math.h>
@@ -68,7 +68,9 @@
 
 1677588654 c:\users\dell\documents\github\os\stage1\g_debug.h
 
-1677603534 c:\users\dell\documents\github\os\stage1\g_user.h
+1677608406 c:\users\dell\documents\github\os\stage1\g_user.h
+	"G_AP.h"
+	<string.h>
 
 1677601094 source:c:\users\dell\documents\github\os\stage1\g_debug.c
 
@@ -85,15 +87,27 @@
 
 1677603535 source:c:\users\dell\documents\github\os\stage1\g_user.c
 
-1677601110 source:c:\users\dell\documents\github\os\stage1\main.c
-	<stdio.h>
+1677649122 source:c:\users\dell\documents\github\os\stage1\main.c
 	<stdlib.h>
 	<math.h>
 	"G_AP.h"
 
-1677603637 source:c:\users\dell\documents\github\os\stage1\cli.c
+1677647559 source:c:\users\dell\documents\github\os\stage1\cli.c
+	<stdint.h>
 	<stdlib.h>
-	<rinput.h>
+	"rinput.h"
+	<stdio.h>
+	<stdbool.h>
+	<string.h>
 
-1677603650 source:c:\users\dell\documents\github\os\stage1\input_process.c
+1677647559 source:c:\users\dell\documents\github\os\stage1\input_process.c
+	"rinput.h"
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	"G_AP.h"
+
+1677647559 c:\users\dell\documents\github\os\stage1\rinput.h
+
+1677647559 source:c:\users\dell\documents\github\os\stage1\local_test.c
 

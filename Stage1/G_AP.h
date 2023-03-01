@@ -43,7 +43,7 @@ bool ap_conflict(Appointment a, Appointment b);
 Appointment set_if_confirmed(Appointment a, bool flags);
 bool contains(Appointment a, User b);
 void ap_print(Appointment a);
-char* get_level_name(Appointment a);
+char* get_level_name(int a);
 
 
 

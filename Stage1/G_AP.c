@@ -110,7 +110,7 @@ Appointment load_private_ap(int user_id, long long date_str, long long time_str,
     ret.p.st = time2Slot(ret.p.start_time);
     ret.p.ed = ret.p.st + ret.len;
 
-    ret.caller = user_id;
+    ret.caller.uid = user_id;
     ret.number = 0;
 
     ret.ifconfirmed = false;
@@ -135,8 +135,8 @@ bool contains(Appointment a, User b){
     return false;
 }
 
-char* get_level_name(Appointment a){
-    return level_str[a.level];
+char* get_level_name(int a){
+    return level_str[a];
 }
 
 void ap_print(Appointment a){

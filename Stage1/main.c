@@ -1,4 +1,4 @@
-#include <stdio.h>
+/*#include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include "G_AP.h"
@@ -52,4 +52,4 @@ int main(){
             }
         }
     }
-}
+}*/
