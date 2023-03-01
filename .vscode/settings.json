@@ -1,6 +1,8 @@
 {
     "files.associations": {
         "stdlib.h": "c",
-        "g_ap.h": "c"
+        "g_ap.h": "c",
+        "rinput.h": "c",
+        "stdio.h": "c"
     }
 }

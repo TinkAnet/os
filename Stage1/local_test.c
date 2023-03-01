@@ -1,6 +1,16 @@
+// #include<stdlib.h>
 // #include <stdio.h>
 // #include <string.h>
 
+// int main() {
+//     int size = 255;
+//     char buff[size];
+//     while (NULL != fgets(buff, size, stdin)) {
+//         printf("len : %lu\n", strlen(buff));
+//         printf("%s", buff);
+//     }
+    
+// }
 // #define MAX_OPEARTOR_CHAR 14 // which is the len of projectMeeting
 // #define DATE_LEN 9 // len is 8
 // #define START_TIME_LEN 5 // len is 4 

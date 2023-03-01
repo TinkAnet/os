@@ -1,7 +1,7 @@
 #ifndef READ_GUARD
 #define READ_GUARD
 
-
+#define BUFFER_SIZE 255
 #define MAX_OPEARTOR_CHAR 15 // which is the len of projectMeeting
 #define DATE_LEN 9
 #define START_TIME_LEN 5
@@ -23,6 +23,6 @@ typedef struct PRIVATE_TIME_OP {
 } pt_t;
 
 pt_t priv_t_entry;
-pt_t private_time_handler(const char *input, pt_t *res);
+void private_time_handler(const char *input, pt_t *res);
 
 #endif

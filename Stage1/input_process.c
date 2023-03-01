@@ -1,8 +1,11 @@
-#include<rinput.h>
+// #include<rinput.h>
+#include"rinput.h"
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
-#include <G_AP.h>
+#include "G_AP.h"
+
+// #define DEBUG
 /**
  * Use to parse private time string. 
 */
@@ -65,6 +68,24 @@ void private_time_handler (const char *input, pt_t *res) {
         else if (state == 8 && c != ' ' && reach_space == 4) {
             state = 9; // read duration
         }
+        else if (state == 9) {
+            int isnotend = 0;
+            isnotend = isnotend || c == '0';
+            isnotend = isnotend || c == '1';
+            isnotend = isnotend || c == '2';
+            isnotend = isnotend || c == '3';
+            isnotend = isnotend || c == '4';
+            isnotend = isnotend || c == '5';
+            isnotend = isnotend || c == '6';
+            isnotend = isnotend || c == '7';
+            isnotend = isnotend || c == '8';
+            isnotend = isnotend || c == '9';
+            isnotend = isnotend || c == '.';
+            if (!isnotend) {
+                duration_str[duration_len++] = '\0';
+                break;
+            }
+        }
 
         if (state == 1) {
             op_str[op_len++] = c;
@@ -86,17 +107,16 @@ void private_time_handler (const char *input, pt_t *res) {
             continue;
         }
     }
-    duration_str[duration_len++] = '\0';
-    
     res->op = PRIVATE_TIME;
     res->caller_name = user_str;
+    res->starting_time = atoi(start_str);
     res->date = atoi(date_str);
-    res->starting_time = atio(start_str);
-    res->even_d = atof(duration_str);
-    
+    res->duration = atof(duration_str);
+#ifdef DEBUG
     printf("op_str -> %s\n", op_str);
     printf("user_str -> %s\n", user_str);
     printf("date_str -> %s\n", date_str);
     printf("start_str -> %s\n", start_str);
     printf("duration_str -> %s\n", duration_str);
+#endif
 }
