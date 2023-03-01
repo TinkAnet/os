@@ -168,7 +168,7 @@ int init_child_process(int start_date, int end_date, int number, char *user_name
 */
 static int find_user_id(char* user_name) {
     for (int i = 0; i < num_user; ++i) {
-        if (strcmp(user_name, user_name_list[i] == 0)) {
+        if (strcmp(user_name, user_name_list[i]) == 0) {
             return i;
         }
     }
