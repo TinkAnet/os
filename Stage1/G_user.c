@@ -22,13 +22,11 @@ int retrieve_my_appointment(){
         retrieve_ap_list[i].type[0] = 0;
         strcpy(retrieve_ap_list[i].type, get_level_name(appointment_list[i].level));
 
-        retrieve_ap_list[i].people[0] = 0;
+        retrieve_ap_list[i].people_len = appointment_list[i].number;
+        for(int j = 0; j < retrieve_ap_list[i].people_len; j++){
+            retrieve_ap_list[i].people[j] = appointment_list[i].callee[j].uid;
+        }
 
-        sprintf(retrieve_ap_list[i].people, "%s", get_user_name(appointment_list[i].caller));
-
-        for(int j = 0; j < appointment_list[i].number; j++)
-            sprintf(retrieve_ap_list[i].people, "%s %s", retrieve_ap_list[i].people, get_user_name(appointment_list[i].callee[j]));
-        retrieve_ap_list[i].people_len = strlen(retrieve_ap_list[i].people);
     }
     return 0;
 }

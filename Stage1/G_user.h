@@ -17,7 +17,7 @@ typedef struct user_appointment_data
     int end_time;   // end time
     char type[32];  // type description
     int people_len; // people description length
-    char *people;   // people description length
+    int people[callee_max_num];   // people description length
 }user_appointment_data;
 
 extern user_meta_data retrieve_num;
