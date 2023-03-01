@@ -25,8 +25,8 @@ extern user_appointment_data retrieve_ap_list[max_appointment_num];
 
 int set_current_user(char* name);
 
-int private_time(int event_date, int event_time, double event_duration);
+int add_private_time(int event_date, int event_time, double event_duration);
 
-int retrieve_user_appointment();
+int retrieve_my_appointment();
 
 #endif
