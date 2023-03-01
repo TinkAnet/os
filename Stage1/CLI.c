@@ -7,7 +7,7 @@
 // #include<ipc.h>
 #include<stdbool.h>
 #include<string.h>
-// #define DEBUG
+#define DEBUG
 
 pt_t priv_t_entry;
 
@@ -42,13 +42,18 @@ int main(int argc, char *argv[]) {
                 break;
             }
         }
+#ifdef DEBUG
+        printf("reach here!\n");
+#endif
         if (strcmp(op, "privateTime") == 0) {
             pt_t * tmp = (pt_t *)&priv_t_entry;
             private_time_handler(buffer, tmp);
-            
+#ifdef DEBUG
+            printf("after private time handler\n");
+#endif
             private_time(tmp->caller_name, tmp->date, tmp->starting_time, tmp->duration);
             printf("-> [Recorded]\n");
-            return 0;
+            // return 0;
         }
         else if (strcmp(op, "projectMeeting") == 0) {
             printf("-> [Recorded]\n");
