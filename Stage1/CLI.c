@@ -88,14 +88,14 @@ int main(int argc, char *argv[]) {
                     printf("============================================================================\n");
                     for (int i = 0; i < meta.num; i++) {
                         if (list[i].people_len == 0) {
-                            // printf("%lld   %d   %d   %s   %c\n", list[i].date, list[i].start_time, list[i].end_time, list[i].type, '-');
+                            printf("%lld   %d   %d   %s   %c\n", list[i].date, list[i].start_time, list[i].end_time, list[i].type, '-');
                         }
                         else {
-                            // printf("%lld   %d   %d   %s   ", list[i].date, list[i].start_time, list[i].end_time, list[i].type);
-                            for (int k = 0; k < list[i].people_len; k++) {
-                                // printf("%d ", list[i].people[k]);
+                            printf("%lld   %d   %d   %s   ", list[i].date, list[i].start_time, list[i].end_time, list[i].type);
+                            for (int k = 0; k < list[i].people_len; k++) {   
+                                printf("%s ", name_list[list[i].people[k]]);
                             }
-                            // printf("\n");
+                            printf("\n");
                         }
                     }
                     free (list);
