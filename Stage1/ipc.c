@@ -141,7 +141,7 @@ int init_child_process(int start_date, int end_date, int number, char *user_name
     user_name_list = user_name_list;
     pipe_list = malloc(sizeof(int*) * number * 2);
 
-    user_storage_init(start_date, end_date, number, user_name_list);
+    init_all(start_date, end_date, number, user_name_list);
     for (int i = 0; i < number; ++i) {
         // init
         pipe(&pipe_list[i<<1]);
