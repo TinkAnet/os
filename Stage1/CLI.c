@@ -19,7 +19,7 @@ int main(int argc, char *argv[]) {
     for (int i = 0; i < num_of_users; i++) {
         name_list[i] = argv[i+3];
     }
-    // init_child_process(start_date, end_date, num_of_users, name_list);
+    init_child_process(start_date, end_date, num_of_users, name_list);
     char buffer[BUFFER_SIZE];
     while (true) {
         printf("Please enter appointment:\n");
@@ -43,22 +43,21 @@ int main(int argc, char *argv[]) {
             pt_t * tmp = (pt_t *)&priv_t_entry;
             private_time_handler(buffer, tmp);
             
-            // private_time(tmp->caller_name, tmp->date, tmp->starting_time, tmp->duration);
+            private_time(tmp->caller_name, tmp->date, tmp->starting_time, tmp->duration);
             printf("-> [Recorded]\n");
             return 0;
         }
         else if (strcmp(op, "projectMeeting") == 0) {
-            
+            printf("-> [Recorded]\n");
         }
         else if (strcmp(op, "groupStudy") == 0) {
-            
+            printf("-> [Recorded]\n");
         }
         else if (strcmp(op, "gathering") == 0) {
-            
-        } else {
-            
+            printf("-> [Recorded]\n");
+        } else if (strcmp(op, "printSchd") == 0){
+            printf("-> [Exported file: Ggg_01_FCFS.txt]\n");
         }
-        printf("-> [Recorded]\n");
         /**
          * 如何调用int retrieve_user_appointment(char* user_name, user_meta_data *meta, user_appointment_data **list);
 {
