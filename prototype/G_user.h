@@ -1,7 +1,7 @@
 #ifndef _USER_H
 #define _USER_H
 #define max_appointment_num 10000
-#include "G_AP.h"
+#include "G_ap.h"
 #include <string.h>
 
 

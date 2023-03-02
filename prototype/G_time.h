@@ -10,7 +10,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-#include "G_Debug.h"
+#include "G_common.h"
 /**
  * Init start&end time & how many slots per hour
  * 
@@ -19,10 +19,6 @@
 #define apo_start_hour 18
 #define apo_end_hour 23
 #define slot_per_hour 1
-
-#define dosth(x) do{ \
-    x.a ++; \
-} while(0);
 
 /**
  * Date information

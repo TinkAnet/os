@@ -7,7 +7,7 @@ CFLAGS = -g -lm
 # -g: tells the compiler to embed debugging information for the debugger to use.
 # -O2: O2 optimisation
 # -Wno-unused-function: turns off gcc warnings about unused function.
-EXECUTABLE = ./bin/prototype
+EXECUTABLE = ./prototype
 
 # SRC_DIR = ./src
 

@@ -1,4 +1,4 @@
-#include "G_AP.h"
+#include "G_ap.h"
 
 int num_of_user = 0;
 char user_name[user_max_num][name_length] = {0};
