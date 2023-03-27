@@ -2,52 +2,17 @@
 <CodeBlocks_layout_file>
 	<FileVersion major="1" minor="0" />
 	<ActiveTarget name="Debug" />
-	<File name="main.c" open="1" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="9" zoom_2="0">
+	<File name="G_user.c" open="1" top="0" tabpos="9" split="0" active="1" splitpos="0" zoom_1="9" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="585" topLine="11" />
+			<Cursor1 position="982" topLine="16" />
 		</Cursor>
 	</File>
-	<File name="G_user.h" open="1" top="0" tabpos="8" split="0" active="1" splitpos="0" zoom_1="9" zoom_2="0">
+	<File name="G_Debug.h" open="1" top="0" tabpos="12" split="0" active="1" splitpos="0" zoom_1="4" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="166" topLine="4" />
+			<Cursor1 position="59" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="G_time.c" open="1" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="6" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="3399" topLine="102" />
-		</Cursor>
-	</File>
-	<File name="G_user.c" open="1" top="1" tabpos="9" split="0" active="1" splitpos="0" zoom_1="9" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="164" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="G_FCFS.h" open="1" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="4" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="0" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="G_AP.c" open="1" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="7" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="2359" topLine="39" />
-		</Cursor>
-	</File>
-	<File name="G_time.h" open="1" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="8" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="223" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="G_AP.h" open="1" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="10" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="206" topLine="11" />
-		</Cursor>
-	</File>
-	<File name="G_main.c" open="1" top="0" tabpos="10" split="0" active="1" splitpos="0" zoom_1="8" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="39" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="G_proj.h" open="0" top="0" tabpos="9" split="0" active="1" splitpos="0" zoom_1="7" zoom_2="0">
+	<File name="CLI.c" open="1" top="1" tabpos="15" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="0" topLine="0" />
 		</Cursor>
@@ -57,9 +22,59 @@
 			<Cursor1 position="17" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="G_Debug.h" open="1" top="0" tabpos="12" split="0" active="1" splitpos="0" zoom_1="4" zoom_2="0">
+	<File name="G_AP.c" open="1" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="7" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="59" topLine="0" />
+			<Cursor1 position="3461" topLine="111" />
+		</Cursor>
+	</File>
+	<File name="G_main.c" open="1" top="0" tabpos="10" split="0" active="1" splitpos="0" zoom_1="8" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1374" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="G_time.c" open="1" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="6" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="2026" topLine="50" />
+		</Cursor>
+	</File>
+	<File name="G_FCFS.h" open="1" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="4" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="0" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="ipc.c" open="1" top="0" tabpos="13" split="0" active="1" splitpos="0" zoom_1="4" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="435" topLine="1" />
+		</Cursor>
+	</File>
+	<File name="G_user.h" open="1" top="0" tabpos="8" split="0" active="1" splitpos="0" zoom_1="9" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="804" topLine="22" />
+		</Cursor>
+	</File>
+	<File name="G_time.h" open="1" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="8" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1159" topLine="47" />
+		</Cursor>
+	</File>
+	<File name="input_process.c" open="1" top="0" tabpos="14" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="0" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="G_proj.h" open="0" top="0" tabpos="9" split="0" active="1" splitpos="0" zoom_1="7" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="0" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="main.c" open="1" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="9" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1902" topLine="38" />
+		</Cursor>
+	</File>
+	<File name="G_AP.h" open="1" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="10" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1322" topLine="59" />
 		</Cursor>
 	</File>
 	<File name="G_FCFS.c" open="1" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
