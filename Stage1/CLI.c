@@ -7,16 +7,20 @@
 // #include<ipc.h>
 #include<stdbool.h>
 #include<string.h>
+#include <unistd.h>
+#include <string.h>
 // #define DEBUG
 
 pt_t priv_t_entry;
 
-int main(int argc, char *argv[]) {
-    // argc = 7
+int run(int argc, char *argv[]) {
     // end of argv is argc-1
     int start_date = atoi(argv[1]);
     int end_date = atoi(argv[2]);
     int num_of_users = argc - 3;
+    if (num_of_users < 3 || num_of_users > 10) {
+        /** TODO: error message. */
+    }
     int dif = 3;
     char* name_list[num_of_users];
     for (int i = 0; i < num_of_users; i++) {
@@ -26,14 +30,16 @@ int main(int argc, char *argv[]) {
     char buffer[BUFFER_SIZE];
     while (true) {
         printf("Please enter appointment:\n");
-        fgets(buffer, BUFFER_SIZE, stdin);
-        int n = strlen(buffer);
+        int apm_len = read(STDIN_FILENO, buffer, BUFFER_SIZE);
+        
+        // fgets(buffer, BUFFER_SIZE, stdin); // read from stdin
+        // int n = strlen(buffer); 
 #ifdef DEBUG
         printf("buffer : %s", buffer);
 #endif
         char op[MAX_OPEARTOR_CHAR];
         int len_op = 0;
-        for (int i = 0; i < n; i++) {
+        for (int i = 0; i < apm_len; i++) {
             if (buffer[i] != ' ') {
                 op[len_op++] = buffer[i];
             }
@@ -68,7 +74,7 @@ int main(int argc, char *argv[]) {
         } else if (strcmp(op, "printSchd") == 0) {
             bool reach = false;
             bool is_all = false;
-            for (int i = 0; i < n; i++) {
+            for (int i = 0; i < apm_len; i++) {
                 if (buffer[i] == ' ') {
                     reach = true;
                 }
@@ -128,4 +134,5 @@ int main(int argc, char *argv[]) {
 }
         */
     }
+    return 0;
 }
