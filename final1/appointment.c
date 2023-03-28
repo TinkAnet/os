@@ -31,18 +31,19 @@ void user_insert_schd(schd_t a){
     schd_list[cnt++] = a;
 }
 
-void user_delete_query(schd_t a, schd_t *out){
-    int cnt = 0;
+int user_delete_query(schd_t a, schd_t *out){
+    int p = 0;
     for(int i = 0; i < cnt; i++){
         if(if_schd_conflict(&schd_list[i], &a)){
-            out[cnt++] = schd_list[i];
+            out[p++] = schd_list[i];
         }
     }
+    return p;
 }
 
-void user_delete_schd(schd_t a){
+void user_delete_schd(int id){
     for(int i = cnt-1; i >= 0; i--){
-        if(schd_list[i].id == a.id){
+        if(schd_list[i].id == id){
             cnt--;
             for(int j = i; j < cnt; j++){
                 schd_list[j] = schd_list[j+1];
@@ -51,10 +52,11 @@ void user_delete_schd(schd_t a){
     }
 }
 
-void user_print_schd(schd_t *out){
+int user_print_schd(schd_t *out){
     for(int i = 0; i < cnt; i++){
         out[i] = schd_list[i];
     }
+    return cnt;
 }
 
 static long long date_to_str(date_t d){
@@ -71,17 +73,17 @@ static date_t str_to_date(long long s){
 }
 
 static int days(date_t a){
-    int cnt = 0;
+    int p = 0;
     for(date_t i = st_day; !eq(i, a); i = date_add_day(i)){
-        cnt++;
+        p++;
         for(int j = 0; j < days_of_holidays; j++){
             if(eq(i, holidays[j])){
-                cnt--;// exclude holiday
+                p--;// exclude holiday
                 break;
             }
         }
     }
-    return cnt;
+    return p;
 }
 
 static date_t date_add_day(date_t a){
@@ -155,13 +157,13 @@ static tm_t slot_to_time(int s){
     tm_t ret;
     int d = s / (SLOT_PER_HOUR * (END_HOUR - START_HOUR));
     int r = s % (SLOT_PER_HOUR * (END_HOUR - START_HOUR));
-    int cnt = d;
+    int p = d;
 
-    for(ret.date = st_day; cnt > 0; ret.date = date_add_day(ret.date)){
-        cnt--;
+    for(ret.date = st_day; p > 0; ret.date = date_add_day(ret.date)){
+        p--;
         for(int j = 0; j < days_of_holidays; j++){
             if(eq(ret.date, holidays[j])){
-                cnt++;// exclude holiday
+                p++;// exclude holiday
                 break;
             }
         }

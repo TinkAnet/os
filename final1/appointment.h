@@ -51,7 +51,7 @@ static bool if_schd_conflict(const schd_t *a, const schd_t *b);
 
 void init_appointment(long long start_day, long long end_day, int people_num);
 
-schd_t load_schd(int caller, int num_of_callee, int *callee, int type, long long start_time, double len);
+schd_t load_schd(int id, int caller, int num_of_callee, int *callee, int type, long long start_time, double len);
 
 // For user to operator
 
@@ -59,11 +59,11 @@ bool user_query_schd(schd_t a);
 
 void user_insert_schd(schd_t a);
 
-void user_delete_query(schd_t a, schd_t *out);
+int user_delete_query(schd_t a, schd_t *out);
 
-void user_delete_schd(schd_t a);
+void user_delete_schd(int id);
 
-void user_print_schd(schd_t *out);
+int user_print_schd(schd_t *out);
 
 // void user_start();
 
