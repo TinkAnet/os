@@ -4,9 +4,9 @@
 int days_of_holidays = 6;
 date_t holidays[] = {{20230305, 2023, 3, 5}, {20230312, 2023, 3, 12}, {20230319, 2023, 3, 19}, {20230326, 2023, 3, 26}, {20230329, 2023, 3, 29}, {20230329, 2023, 3, 30}};
 
-int cnt = 0;
-schd_t schd_list[MAX_APPOINTMENT_NUM];
-bool if_rejected[MAX_APPOINTMENT_NUM];
+extern int cnt = 0;
+extern schd_t schd_list[MAX_APPOINTMENT_NUM];
+extern bool if_rejected[MAX_APPOINTMENT_NUM];
 int day_num;
 int user_num;
 date_t st_day, ed_day;

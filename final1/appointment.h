@@ -9,6 +9,8 @@
 #include "common.h"
 #include "math.h"
 
+extern bool if_rejected[MAX_APPOINTMENT_NUM];
+
 typedef struct DATE{
     long long str;
     int year, month, day;
