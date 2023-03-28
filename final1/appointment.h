@@ -55,15 +55,15 @@ schd_t load_schd(int caller, int num_of_callee, int *callee, int type, long long
 
 // For user to operator
 
-// bool user_query_schd(schd_t a);
+bool user_query_schd(schd_t a);
 
-// void user_insert_schd(schd_t a);
+void user_insert_schd(schd_t a);
 
-// void user_delete_query(schd_t a, schd_t *out);
+void user_delete_query(schd_t a, schd_t *out);
 
-// void user_delete_schd(schd_t a);
+void user_delete_schd(schd_t a);
 
-// void user_print_schd(schd_t *out);
+void user_print_schd(schd_t *out);
 
 // void user_start();
 
@@ -79,7 +79,7 @@ schd_t load_schd(int caller, int num_of_callee, int *callee, int type, long long
 
 // For scheduler to operating
 
-bool schder_schd(schd_t s);
+// bool schder_schd(schd_t s);
 
 // For Main Process
 
