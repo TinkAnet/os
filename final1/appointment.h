@@ -84,9 +84,9 @@ bool schder_insert_query(schd_t s);
 
 void schder_insert(schd_t s);
 
-int schder_delete_query(schd_t s);
+static int schder_delete_query(schd_t s);
 
-void schder_delete();
+static void schder_delete();
 
 int schder_print();
 

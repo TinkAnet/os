@@ -6,6 +6,7 @@ date_t holidays[] = {{20230305, 2023, 3, 5}, {20230312, 2023, 3, 12}, {20230319,
 
 int cnt = 0;
 schd_t schd_list[MAX_APPOINTMENT_NUM];
+bool if_rejected[MAX_APPOINTMENT_NUM];
 int day_num;
 int user_num;
 date_t st_day, ed_day;
@@ -230,53 +231,63 @@ schd_t re_schd(schd_t s){
     return t;
 }
 
+// For scheduler operating
 
 bool schder_insert_query(schd_t s){
     bool ok = true;
-    ok &= user_query(s.caller, s);
+    ok &= ipc_user_insert_query(s.caller, &s);
     for(int i = 0; i < s.callee_num & ok; i++)
-        ok &= user_query(s.callee[i], s);
+        ok &= ipc_user_insert_query(s.callee[i], &s);
     return ok;
 }
 
 void schder_insert(schd_t s){
-    user_insert(s.caller, s);
+    schder_delete_query(s);
+    for(int i = 0; i < cnt; i++)
+        ipc_user_insert(0, &schd_list[i]);
+    schder_delete();
+    ipc_user_insert(s.caller, &s);
     for(int i = 0; i < s.callee_num; i++)
-        user_insert(s.callee[i], s);
+        ipc_user_insert(s.callee[i], &s);
 }
 
-int schder_delete_query(schd_t s){
+static int schder_delete_query(schd_t s){
     cnt = 0;
-    int m = user_delete_query(s, schd_buffer);
+    int m = ipc_user_delete_query(&s, schd_buffer);
     for(int i = 0; i < m; i++){
         schd_list[i] = schd_buffer[i];
     }
     cnt = m;
     for(int i = 0; i < s.callee_num; i++){
-        m = user_delete_query(s, schd_buffer);
+        m = ipc_user_delete_query(&s, schd_buffer);
         for(int j = 0; j < m; j++){
             schd_list[cnt+j] = schd_buffer[j];
         }
         cnt += m;
     }
 }
-void schder_delete() {
+
+static void schder_delete() {
     for(int i = 0; i < cnt; i++){
-        user_delete(schd_list[i].id);
+        ipc_user_delete(schd_list[i].caller, schd_list[i].id);
+        for(int i = 0; i < schd_list[i].callee_num; i++){
+            ipc_user_delete(schd_list[i].callee[i], schd_list[i].id);
+        }
     }
 }
 
 int schder_print(schd_t *out){
-    
+    for(int i = 0; i <= user_num; i++){
+        ipc_user_print(i);
+    }
+    for(int i = 0; i < cnt; i++)
+        out[i] = schd_list[i];
+    return cnt;
 }
 
 bool schder_schd(schd_t s){
     bool ok = schder_insert_query(s);
     if(ok){
-        user_delete(s.caller, s);
-        for(int i = 0; i < s.callee_num; i++)
-            user_delete(s.callee[i], s);
-
         schder_insert(s);
         return true;
     }

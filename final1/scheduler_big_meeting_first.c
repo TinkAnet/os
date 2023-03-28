@@ -3,7 +3,7 @@
 const double alpha = 0.25; // One more people will increase 0.25 priority for an appointment
 
 void BMF_schder_start(){
-
+    
 }
 
 bool BMF_schder_schd(schd_t s){
