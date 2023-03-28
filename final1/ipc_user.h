@@ -4,36 +4,43 @@
 #include "common.h"
 #include "appointment.h"
 
-extern schd_t schd_list[MAX_APPOINTMENT_NUM];
+extern schd_t schd_buffer[MAX_APPOINTMENT_NUM];
 extern int user_pipe_list[MAX_USER_NUM][2];
+
 
 /**
  * @brief start a user process
  * 
- * @param user_id
+ * @param user_id 
+ * @param start_day 
+ * @param end_day 
+ * @param people_num 
  */
-void start_user_process(int user_id);
+void ipc_start_user_process(int user_id, long long start_day, long long end_day, int people_num);
 
 /**
  * @brief stop a user process
  * 
  * @param user_id 
  */
-void stop_user_process(int user_id);
+void ipc_stop_user_process(int user_id);
 
 
 /**
  * @brief launch all user process
  * 
  * @param tot_user_number the total user number
+ * @param start_day 
+ * @param end_day 
+ * @param people_num 
  */
-void launch_user(int tot_user_number);
+void ipc_launch_user(int tot_user_number, long long start_day, long long end_day, int people_num);
 
 /**
  * @brief Shutdown all users processes
  * 
  */
-void shutdown_user();
+void ipc_shutdown_user();
 
 
 /**
@@ -42,7 +49,7 @@ void shutdown_user();
  * @param user_id the user id
  * @param s the schedule
 */
-bool user_insert_query(int user_id, schd_t *s);
+bool ipc_user_insert_query(int user_id, schd_t *s);
 
 /**
  * Insert this schedule into user. (No additional check, please
@@ -51,7 +58,7 @@ bool user_insert_query(int user_id, schd_t *s);
  * @param user_id the user_id
  * @param s the schedule
 */
-void user_insert(int user_id, schd_t *s);
+void ipc_user_insert(int user_id, schd_t *s);
 
 /**
  * Query what needs to be deleted when inserting this schedule
@@ -59,18 +66,18 @@ void user_insert(int user_id, schd_t *s);
  * @param user_id the user_id
  * @param s the schedule
  * @return the number of event that will be deleted. 
- *      (The result is stored at `user_appointment_list`)
+ *      (The result is stored at `schd_buffer`)
 */
-int user_delete_query(int user_id, schd_t *s);
+int ipc_user_delete_query(int user_id, schd_t *s);
 
 /**
  * Delete the schedule which is indicated by its id
  * 
  * @param user_id the user_id
- * @param schd_id the scheduer id
+ * @param schd_id the schedue id
  * 
 */
-void user_delete(int user_id, int schd_id);
+void ipc_user_delete(int user_id, int schd_id);
 
 /**
  * @brief Dump the current user's schedules to `schd_list`
@@ -78,6 +85,6 @@ void user_delete(int user_id, int schd_id);
  * @param user_id 
  * @return int the number of appointments
  */
-int user_print(int user_id);
+int ipc_user_print(int user_id);
 
 #endif

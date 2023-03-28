@@ -16,25 +16,25 @@ extern int schd_pipe_list[SCHD_NUM][2];
  * 
  * @param schder_id the scheduler id
  */
-void start_schd_process(int schder_id);
+void ipc_start_schd_process(int schder_id);
 
 /**
  * @brief Stop a scheduer process
  * 
  * @param schder_id 
  */
-void stop_schd_proces(int schder_id);
+void ipc_stop_schd_proces(int schder_id);
 
 /**
  * @brief launch all scheduler processes
  */
-void launch_schd();
+void ipc_launch_schd();
 
 /**
  * @brief shutdown all scheduler processes
  * 
  */
-void shutdown_schd();
+void ipc_shutdown_schd();
 
 
 /**
@@ -43,7 +43,7 @@ void shutdown_schd();
  * @param schder_id the scheduler id
  * @param s the schedule
 */
-bool schd_insert_query(int schder_id, schd_t *s);
+bool ipc_schd_insert_query(int schder_id, schd_t *s);
 
 
 /**
@@ -52,7 +52,7 @@ bool schd_insert_query(int schder_id, schd_t *s);
  * @param schder_id the scheduer id
  * @param s the scheduer
 */
-bool schd_insert(int schder_id, schd_t *s);
+bool ipc_schd_insert(int schder_id, schd_t *s);
 
 /**
  * @brief Dump the user scheduler
@@ -61,7 +61,7 @@ bool schd_insert(int schder_id, schd_t *s);
  * @param user_id the user id
  * @return int the number of appointments
  */
-int schd_print(int schder_id, int user_id);
+int ipc_schd_print(int schder_id, int user_id);
 
 
 #endif
