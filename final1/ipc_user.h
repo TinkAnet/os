@@ -38,9 +38,10 @@ void ipc_launch_user(int tot_user_number, long long start_day, long long end_day
 
 /**
  * @brief Shutdown all users processes
- * 
+ *
+ * @param tot_user_number the total user number
  */
-void ipc_shutdown_user();
+void ipc_shutdown_user(int tot_user_number);
 
 
 /**
