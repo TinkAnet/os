@@ -4,6 +4,8 @@
         "g_ap.h": "c",
         "rinput.h": "c",
         "stdio.h": "c",
-        "istream": "c"
+        "istream": "c",
+        "vector": "c",
+        "stdbool.h": "c"
     }
 }

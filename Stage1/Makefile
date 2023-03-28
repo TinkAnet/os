@@ -16,8 +16,7 @@ SERVICE = ./*.c
 INTER_PROCESS = ./ipc.c
 
 # main
-MAIN_HARDWARE = ./CLI.c
-
+MAIN_HARDWARE = ./main.c
 
 SRC = $(wildcard *.c)
 
@@ -25,7 +24,7 @@ SRC = $(wildcard *.c)
 
 cli:
 	$(CC) -o $(EXECUTABLE) $(CFLAGS) $(SERVICE) -lm
-# cli: 
+# cli:
 #	$(CC) $(CFLAGS) $(INTER_PROCESS) $(SERVICE) $(INPUT_HANDLER) $(MAIN_HARDWARE) -lm -o $(EXECUTABLE)
 # -I means set path of #include to the path of specified (SRC) working directory so that we could use relative path when writing #include
 # -o means generate an executable named EXE. 
