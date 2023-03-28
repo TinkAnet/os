@@ -1,4 +1,5 @@
 #include "appointment.h"
+#include "ipc_user.h"
 
 int days_of_holidays = 6;
 date_t holidays[] = {{20230305, 2023, 3, 5}, {20230312, 2023, 3, 12}, {20230319, 2023, 3, 19}, {20230326, 2023, 3, 26}, {20230329, 2023, 3, 29}, {20230329, 2023, 3, 30}};
@@ -175,7 +176,7 @@ static tm_t slot_to_time(int s){
 }
 
 //
-static bool if_schd_conflict(schd_t *a, schd_t *b){
+static bool if_schd_conflict(const schd_t *a, const schd_t *b){
     return !((a->end_slot < b->start_slot) || (a->start_slot > b->end_slot));
 }
 
@@ -230,19 +231,53 @@ schd_t re_schd(schd_t s){
 }
 
 
-bool schder_schd(schd_t s){
-    bool ok = 1;
+bool schder_insert_query(schd_t s){
+    bool ok = true;
     ok &= user_query(s.caller, s);
     for(int i = 0; i < s.callee_num & ok; i++)
         ok &= user_query(s.callee[i], s);
+    return ok;
+}
+
+void schder_insert(schd_t s){
+    user_insert(s.caller, s);
+    for(int i = 0; i < s.callee_num; i++)
+        user_insert(s.callee[i], s);
+}
+
+bool schder_delete_query(schd_t s){
+    cnt = 0;
+    int m = user_delete_query(s, schd_buffer);
+    for(int i = 0; i < m; i++){
+        schd_list[i] = schd_buffer[i];
+    }
+    cnt = m;
+    for(int i = 0; i < s.callee_num; i++){
+        m = user_delete_query(s, schd_buffer);
+        for(int j = 0; j < m; j++){
+            schd_list[cnt+j] = schd_buffer[j];
+        }
+        cnt += m;
+    }
+}
+void schder_delete() {
+    for(int i = 0; i < cnt; i++){
+        user_delete(schd_list[i].id);
+    }
+}
+
+void schder_print(int id, schd_t *out){
+    
+}
+
+bool schder_schd(schd_t s){
+    bool ok = schder_insert_query(s);
     if(ok){
         user_delete(s.caller, s);
         for(int i = 0; i < s.callee_num; i++)
             user_delete(s.callee[i], s);
 
-        user_insert(s.caller, s);
-        for(int i = 0; i < s.callee_num; i++)
-            user_insert(s.callee[i], s);
+        schder_insert(s);
         return true;
     }
     else{
