@@ -17,7 +17,7 @@ typedef struct DATE{
 static int days(date_t a);
 static date_t str_to_date(long long str);
 static long long date_to_str(date_t d);
-static date_t date_add_day(date_t a, int h);
+static date_t date_add_day(date_t a);
 
 typedef struct TIME{
     long long str;

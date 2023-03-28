@@ -58,7 +58,7 @@ void user_print_schd(schd_t *out){
 }
 
 static long long date_to_str(date_t d){
-    return a.year * 10000ll + a.month * 100 + a.day;
+    return d.year * 10000ll + d.month * 100 + d.day;
 }
 
 static date_t str_to_date(long long s){
@@ -72,7 +72,7 @@ static date_t str_to_date(long long s){
 
 static int days(date_t a){
     int cnt = 0;
-    for(date_t i = start_day; !eq(i, a); i = add_day(i)){
+    for(date_t i = st_day; !eq(i, a); i = date_add_day(i)){
         cnt++;
         for(int j = 0; j < days_of_holidays; j++){
             if(eq(i, holidays[j])){
@@ -84,7 +84,7 @@ static int days(date_t a){
     return cnt;
 }
 
-static date_t date_add_day(date_t a, int h){
+static date_t date_add_day(date_t a){
     if(a.month == 2 && a.day == 28){
         // leap year judgement
         if((a.year % 4 == 0 && a.year % 100 != 0) || a.year % 400 == 0) a.day = 29;
@@ -116,7 +116,7 @@ static tm_t time_add_hm(tm_t a, int h, int m){
     while(a.hour >= 24){
         //if hour greater than 24, add a day
         a.hour -= 24;
-        a.date = date_add_day(a.d);
+        a.date = date_add_day(a.date);
     }
     a.str = time_to_str(a);
     return a;
@@ -132,7 +132,7 @@ static tm_t str_to_time(long long s){
 }
 
 static long long time_to_str(tm_t a){
-    return date_to_str(a.d) * 10000 + a.hour * 100 + a.minute;
+    return date_to_str(a.date) * 10000 + a.hour * 100 + a.minute;
 }
 
 static int time_to_slot(tm_t a){
@@ -157,10 +157,10 @@ static tm_t slot_to_time(int s){
     int r = s % (SLOT_PER_HOUR * (END_HOUR - START_HOUR));
     int cnt = d;
 
-    for(ret.date = start_day; cnt > 0; i = add_day(i)){
+    for(ret.date = st_day; cnt > 0; ret.date = date_add_day(ret.date)){
         cnt--;
         for(int j = 0; j < days_of_holidays; j++){
-            if(eq(i, holidays[j])){
+            if(eq(ret.date, holidays[j])){
                 cnt++;// exclude holiday
                 break;
             }
@@ -201,7 +201,7 @@ schd_t re_schd(schd_t s){
     schd_t t;
     t.type = 0;
     t.priv = 0;
-    int slot_len = ceil(s.len * SLOT_PER_HOUR)
+    int slot_len = ceil(s.len * SLOT_PER_HOUR);
     for(int i = 0; i < day_num; i++){
 
         int base = i * SLOT_PER_DAY;
