@@ -1,10 +1,44 @@
 #ifndef IPC_SCHD_H
 #define IPC_SCHD_H
 
+#include "common.h"
 #include "appointment.h"
 
+extern int schd_pipe_list[SCHD_NUM][2];
+
 /**
- * Query if this schedule could be inserted
+ * @brief start a scheduler process with a scheduer function id
+ * @details 
+    0 -> FCFS
+    1 -> Priority
+    2 -> Round Robine
+    3 -> "Big Meeting" First
+ * 
+ * @param schder_id the scheduler id
+ */
+void start_schd_process(int schder_id);
+
+/**
+ * @brief Stop a scheduer process
+ * 
+ * @param schder_id 
+ */
+void stop_schd_proces(int schder_id);
+
+/**
+ * @brief launch all scheduler processes
+ */
+void launch_schd();
+
+/**
+ * @brief shutdown all scheduler processes
+ * 
+ */
+void shutdown_schd();
+
+
+/**
+ * @brief Query if this schedule could be inserted
  * 
  * @param schder_id the scheduler id
  * @param s the schedule
@@ -13,13 +47,21 @@ bool schd_insert_query(int schder_id, schd_t *s);
 
 
 /**
- * Insert this schedule to the scheduer
+ * @brief Insert this schedule to the scheduer
  * 
  * @param schder_id the scheduer id
  * @param s the scheduer
 */
 bool schd_insert(int schder_id, schd_t *s);
 
+/**
+ * @brief Dump the user scheduler
+ * 
+ * @param schder_id the scheduler id
+ * @param user_id the user id
+ * @return int the number of appointments
+ */
+int schd_print(int schder_id, int user_id);
 
 
 #endif

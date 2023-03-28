@@ -1,2 +1,3 @@
-extern schd_t user_appointment_list[MAX_APPOINTMENT_NUM];
+#include "ipc_user.h"
 
+int user_pipe_list[MAX_USER_NUM][2];

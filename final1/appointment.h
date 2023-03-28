@@ -65,13 +65,13 @@ void user_print_schd(schd_t *out);
 
 // For scheduler to call user to operate
 
-bool user_query(int id, const schd_t *s);
+// bool user_query(int id, const schd_t *s);
 
-bool user_delete(int id, const schd_t *s);
+// bool user_delete(int id, const schd_t *s);
 
-bool user_insert(int id, const schd_t *s);
+// bool user_insert(int id, const schd_t *s);
 
-void user_print(int id, int type, const schd_t *out);
+// void user_print(int id, int type, const schd_t *out);
 
 // For scheduler to operating
 

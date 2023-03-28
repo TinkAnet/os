@@ -1,7 +1,40 @@
 #ifndef IPC_USER_H
 #define IPC_USER_H
 
+#include "common.h"
 #include "appointment.h"
+
+extern schd_t schd_list[MAX_APPOINTMENT_NUM];
+extern int user_pipe_list[MAX_USER_NUM][2];
+
+/**
+ * @brief start a user process
+ * 
+ * @param user_id
+ */
+void start_user_process(int user_id);
+
+/**
+ * @brief stop a user process
+ * 
+ * @param user_id 
+ */
+void stop_user_process(int user_id);
+
+
+/**
+ * @brief launch all user process
+ * 
+ * @param tot_user_number the total user number
+ */
+void launch_user(int tot_user_number);
+
+/**
+ * @brief Shutdown all users processes
+ * 
+ */
+void shutdown_user();
+
 
 /**
  * Query if this schedule could be inserted
@@ -38,5 +71,13 @@ int user_delete_query(int user_id, schd_t *s);
  * 
 */
 void user_delete(int user_id, int schd_id);
+
+/**
+ * @brief Dump the current user's schedules to `schd_list`
+ * 
+ * @param user_id 
+ * @return int the number of appointments
+ */
+int user_print(int user_id);
 
 #endif

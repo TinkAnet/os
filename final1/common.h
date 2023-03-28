@@ -3,7 +3,7 @@
 
 #define MIN_CALLEE_NUM 3
 #define MAX_CALLEE_NUM 10
-#define MAX_USER_NUM 2000
+#define MAX_USER_NUM 20
 #define MAX_USER_NAME_LEN 20
 
 #define MAX_APPOINTMENT_NUM 20000
@@ -18,5 +18,8 @@
 #define PROJECT_MEETING_TYPE 3
 #define GROUP_STUDY_TYPE 2
 #define GATHERING_TYPE 1
+
+#define SCHD_NUM 4
+
 
 #endif
