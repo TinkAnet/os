@@ -65,7 +65,7 @@ void user_delete_schd(schd_t a);
 
 void user_print_schd(schd_t *out);
 
-void user_start();
+// void user_start();
 
 // For scheduler to call user to operate
 
@@ -79,7 +79,7 @@ void user_start();
 
 // For scheduler to operating
 
-bool schder_schd(schd_t s);
+// bool schder_schd(schd_t s);
 
 // For Main Process
 
