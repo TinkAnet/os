@@ -52,8 +52,7 @@ static bool if_schd_conflict(const schd_t *a, const schd_t *b);
 void init_appointment(long long start_day, long long end_day, int people_num);
 
 schd_t load_schd(int id, int caller, int num_of_callee, int *callee, int type, long long start_time, double len);
-
-void 
+ 
 
 // For user to operator
 

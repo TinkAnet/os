@@ -245,7 +245,7 @@ void schder_insert(schd_t s){
         user_insert(s.callee[i], s);
 }
 
-bool schder_delete_query(schd_t s){
+int schder_delete_query(schd_t s){
     cnt = 0;
     int m = user_delete_query(s, schd_buffer);
     for(int i = 0; i < m; i++){
@@ -266,7 +266,7 @@ void schder_delete() {
     }
 }
 
-void schder_print(int id, schd_t *out){
+int schder_print(schd_t *out){
     
 }
 
