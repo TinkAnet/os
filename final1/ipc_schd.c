@@ -180,7 +180,7 @@ static void schd_main() {
     }
 }
 
-void ipc_start_schd_process(int schder_id) {
+void ipc_start_schd_process(int schder_id, long long start_day, long long end_day, int people_num) {
         // prepare pipe
     pipe(schd_pipe_list[schder_id*2]);
     pipe(schd_pipe_list[schder_id*2 + 1]);
@@ -206,7 +206,9 @@ void ipc_start_schd_process(int schder_id) {
         close(schd_pipe_list[schder_id*2 + 1][0]);
         
         cur_schd_id = schder_id;
+        ipc_launch_user(people_num, start_day, end_day, people_num);
         schd_main();
+        ipc_shutdown_user(people_num);
         
         // collect resources
         close(schd_pipe_list[schder_id*2][0]);
@@ -227,9 +229,9 @@ void ipc_stop_schd_proces(int schder_id) {
     close(schd_pipe_list[schder_id*2 + 1][0]);
 }
 
-void ipc_launch_schd() {
+void ipc_launch_schd(long long start_day, long long end_day, int people_num) {
     for (int i = 0; i < SCHD_NUM; ++i) {
-        ipc_start_schd_process(i);
+        ipc_start_schd_process(i, start_day, end_day, people_num);
     }
 }
 

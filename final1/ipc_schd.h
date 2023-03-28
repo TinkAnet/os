@@ -16,7 +16,7 @@ extern int schd_pipe_list[SCHD_NUM][2];
  * 
  * @param schder_id the scheduler id
  */
-void ipc_start_schd_process(int schder_id);
+void ipc_start_schd_process(int schder_id, long long start_day, long long end_day, int people_num);
 
 /**
  * @brief Stop a scheduer process
@@ -28,7 +28,7 @@ void ipc_stop_schd_proces(int schder_id);
 /**
  * @brief launch all scheduler processes
  */
-void ipc_launch_schd();
+void ipc_launch_schd(long long start_day, long long end_day, int people_num);
 
 /**
  * @brief shutdown all scheduler processes
