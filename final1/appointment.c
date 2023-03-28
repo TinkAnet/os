@@ -27,13 +27,22 @@ bool user_query_schd(schd_t a){
 
 
 
-bool user_insert_schd(schd_t a){
+void user_insert_schd(schd_t a){
     schd_list[cnt++] = a;
+}
+
+void user_delete_query(schd_t a, schd_t *out){
+    int cnt = 0;
+    for(int i = 0; i < cnt; i++){
+        if(if_schd_conflict(&schd_list[i], &a)){
+            out[cnt++] = schd_list[i];
+        }
+    }
 }
 
 void user_delete_schd(schd_t a){
     for(int i = cnt-1; i >= 0; i--){
-        if(if_schd_conflict(schd_list[i], a)){
+        if(schd_list[i].id == a.id){
             cnt--;
             for(int j = i; j < cnt; j++){
                 schd_list[j] = schd_list[j+1];

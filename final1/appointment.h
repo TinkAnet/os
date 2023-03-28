@@ -57,11 +57,15 @@ schd_t load_schd(int caller, int num_of_callee, int *callee, int type, long long
 
 bool user_query_schd(schd_t a);
 
-bool user_insert_schd(schd_t a);
+void user_insert_schd(schd_t a);
+
+void user_delete_query(schd_t a, schd_t *out);
 
 void user_delete_schd(schd_t a);
 
 void user_print_schd(schd_t *out);
+
+void user_start();
 
 // For scheduler to call user to operate
 
