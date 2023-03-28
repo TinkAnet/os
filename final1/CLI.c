@@ -15,13 +15,19 @@
 
 pt_t priv_t_entry;
 int run(cmd_t* in) {
+    
     init_child_process(in->start_date, in->end_date, in->num_user, in->users);
     char buffer[BUFFER_SIZE];
     while (true) {
         printf("Please enter appointment:\n");
         int apm_len = read(STDIN_FILENO, buffer, BUFFER_SIZE);
-        if (apm_len <= 1) {/** TODO: EOF or error or invalid input*/}
+        if (apm_len <= 1) {
+            
+            /** TODO: EOF or error or invalid input*/
+            
+        }
         buffer[--apm_len] = 0; // remove newline character
+        
 #ifdef DEBUG
         printf("buffer : %s", buffer);
 #endif

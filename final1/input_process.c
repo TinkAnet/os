@@ -1,13 +1,14 @@
 // #include<rinput.h>
-#include"rinput.h"
+#include"common.h"
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
 #include<ctype.h>
-#include "G_AP.h"
 #include"input_process.h"
 
-int parse_cmd(int argc, char*argv[], cmd_t * inst) {
+#define FI_USR_OFFSET 3 // ./apo YYYYMMDD YYYYMMDD u1 (pos of u1 = 0 + 3)
+
+int parse_cmd(int argc, char* argv[], cmd_t * inst) {
     int start_date, end_date;
     int valid = 1;
     int s_valid = sscanf(argv[1], "%d", &start_date);
@@ -15,34 +16,32 @@ int parse_cmd(int argc, char*argv[], cmd_t * inst) {
     
     valid = valid && s_valid == 1;
     valid = valid && e_valid == 1;
+    /** check for invalid start date and end date. */
     if (!valid) {
         printf("Invalid format for start date and end date\n");
         return -1;
     }
     inst->start_date = start_date;
     inst->end_date = end_date;
-    int num_of_users = argc - 3;
-    if (num_of_users < 3 || num_of_users > 10) {
-        /** TODO: error message. */
+    int num_of_users = argc - FI_USR_OFFSET;
+    if (num_of_users < MIN_CALLEE_NUM || num_of_users > MAX_CALLEE_NUM) {
+        printf("Invalid number of users!\n");
+        exit(-1);
     }
     inst->num_user = num_of_users;
     for (int i = 0; i < num_of_users; i++) {
-        // printf("len = %d\n", (int) strlen(argv[i+3]));
-        int l = strlen(argv[i+3]);
+        int l = strlen(argv[i+FI_USR_OFFSET]);
         for (int j = 0; j < l; j++) {
-            if (!isalpha(argv[i+3][j])) {
+            if (!isalpha(argv[i+FI_USR_OFFSET][j])) {
                 printf("Invalid format for user name inputs\n");
             }
         }
-        inst->users[i] = argv[i+3]; /** TODO: magic number 3 */
+        inst->users[i] = argv[i+FI_USR_OFFSET];
     }
     return 0;
 }
 
-// #define DEBUG
-/**
- * Use to parse private time string. 
-*/
+
 void private_time_handler (const char *input, pt_t *res) {
     int n = strlen(input);
     char c;
