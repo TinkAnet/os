@@ -30,7 +30,7 @@ static tm_t time_add_hm(tm_t a, int h, int m);
 static tm_t str_to_time(long long s);
 static long long time_to_str(tm_t a);
 static int time_to_slot(tm_t a);
-static tm_t slot_to_time(tm_t a);
+static tm_t slot_to_time(int s);
 
 typedef struct APPOINTMENT{
 	int id;
@@ -52,6 +52,7 @@ static bool if_schd_conflict(const schd_t *a, const schd_t *b);
 void init_appointment(long long start_day, long long end_day, int people_num);
 
 schd_t load_schd(int id, int caller, int num_of_callee, int *callee, int type, long long start_time, double len);
+ 
 
 // For user to operator
 
@@ -79,7 +80,17 @@ int user_print_schd(schd_t *out);
 
 // For scheduler to operating
 
-// bool schder_schd(schd_t s);
+bool schder_insert_query(schd_t s);
+
+void schder_insert(schd_t s);
+
+int schder_delete_query(schd_t s);
+
+void schder_delete();
+
+int schder_print();
+
+bool schder_schd(schd_t s);
 
 // For Main Process
 
