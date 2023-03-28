@@ -1,4 +1,5 @@
 #include<stdint.h>
 #include<stdlib.h>
+#include"input_process.h"
 
-int run(int argc, char* argv[]);
+int run(cmd_t* cmd_in);

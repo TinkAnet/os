@@ -3,8 +3,41 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
+#include<ctype.h>
 #include "G_AP.h"
+#include"input_process.h"
 
+int parse_cmd(int argc, char*argv[], cmd_t * inst) {
+    int start_date, end_date;
+    int valid = 1;
+    int s_valid = sscanf(argv[1], "%d", &start_date);
+    int e_valid = sscanf(argv[2], "%d", &end_date);
+    
+    valid = valid && s_valid == 1;
+    valid = valid && e_valid == 1;
+    if (!valid) {
+        printf("Invalid format for start date and end date\n");
+        return -1;
+    }
+    inst->start_date = start_date;
+    inst->end_date = end_date;
+    int num_of_users = argc - 3;
+    if (num_of_users < 3 || num_of_users > 10) {
+        /** TODO: error message. */
+    }
+    inst->num_user = num_of_users;
+    for (int i = 0; i < num_of_users; i++) {
+        // printf("len = %d\n", (int) strlen(argv[i+3]));
+        int l = strlen(argv[i+3]);
+        for (int j = 0; j < l; j++) {
+            if (!isalpha(argv[i+3][j])) {
+                printf("Invalid format for user name inputs\n");
+            }
+        }
+        inst->users[i] = argv[i+3]; /** TODO: magic number 3 */
+    }
+    return 0;
+}
 
 // #define DEBUG
 /**

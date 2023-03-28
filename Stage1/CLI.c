@@ -9,31 +9,19 @@
 #include<string.h>
 #include <unistd.h>
 #include <string.h>
+#include"input_process.h"
+
 // #define DEBUG
 
 pt_t priv_t_entry;
-
-int run(int argc, char *argv[]) {
-    // end of argv is argc-1
-    int start_date = atoi(argv[1]);
-    int end_date = atoi(argv[2]);
-    int num_of_users = argc - 3;
-    if (num_of_users < 3 || num_of_users > 10) {
-        /** TODO: error message. */
-    }
-    int dif = 3;
-    char* name_list[num_of_users];
-    for (int i = 0; i < num_of_users; i++) {
-        name_list[i] = argv[i+3];
-    }
-    init_child_process(start_date, end_date, num_of_users, name_list);
+int run(cmd_t* in) {
+    init_child_process(in->start_date, in->end_date, in->num_user, in->users);
     char buffer[BUFFER_SIZE];
     while (true) {
         printf("Please enter appointment:\n");
         int apm_len = read(STDIN_FILENO, buffer, BUFFER_SIZE);
-        
-        // fgets(buffer, BUFFER_SIZE, stdin); // read from stdin
-        // int n = strlen(buffer); 
+        if (apm_len <= 1) {/** TODO: EOF or error or invalid input*/}
+        buffer[--apm_len] = 0; // remove newline character
 #ifdef DEBUG
         printf("buffer : %s", buffer);
 #endif
@@ -86,11 +74,11 @@ int run(int argc, char *argv[]) {
                 printf("Period: 2023-04-01 to 2023-04-30\n");
                 printf("Algorithm used: FCFS\n");
                 printf("***Appointment Schedule***\n\n");
-                for (int j = 0; j < num_of_users; j++) {
+                for (int j = 0; j < in->num_user; j++) {
                     user_meta_data meta;
                     user_appointment_data *list;
-                    retrieve_user_appointment(name_list[j], &meta, &list);
-                    printf("  %s, you have %d appointments.\n", name_list[j], meta.num);
+                    retrieve_user_appointment(in->users[j], &meta, &list);
+                    printf("  %s, you have %d appointments.\n", in->users[j], meta.num);
                     printf("Date           Start   End      Type               People\n");
                     
                     printf("============================================================================\n");
@@ -101,12 +89,12 @@ int run(int argc, char *argv[]) {
                         else {
                             printf("%lld       %d    %d     %s      ", list[i].date, list[i].start_time, list[i].end_time, list[i].type);
                             for (int k = 0; k < list[i].people_len; k++) {   
-                                printf("%s ", name_list[list[i].people[k]]);
+                                printf("%s ", in->users[list[i].people[k]]);
                             }
                             printf("\n");
                         }
                     }
-                    printf("                              - End of %s's Schedual -                      \n", name_list[j]);
+                    printf("                              - End of %s's Schedual -                      \n", in->users[j]);
                     printf("============================================================================\n");
                     free (list);
                 }

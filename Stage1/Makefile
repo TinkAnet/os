@@ -34,4 +34,4 @@ clean:
 # rm -f means delete a directory recursively. 
 # *~ means all files ending in ~. Many Unix/Linux systems programs create backup files that end in ~.
 run:
-	./$(EXECUTABLE) 20230401 20230430 john mary lucy paul
+	./$(EXECUTABLE) 20230401 20230430 john mary lucy paul 
