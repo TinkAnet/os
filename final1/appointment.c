@@ -4,7 +4,7 @@ int days_of_holidays = 6;
 date_t holidays[] = {{20230305, 2023, 3, 5}, {20230312, 2023, 3, 12}, {20230319, 2023, 3, 19}, {20230326, 2023, 3, 26}, {20230329, 2023, 3, 29}, {20230329, 2023, 3, 30}};
 
 int cnt = 0;
-schd_t list[MAX_APPOINTMENT_NUM];
+schd_t schd_list[MAX_APPOINTMENT_NUM];
 int day_num;
 int user_num;
 date_t st_day, ed_day;
@@ -18,8 +18,8 @@ void init_appointment(long long start_day, long long end_day, int people_num){
 
 bool user_query_schd(schd_t a){
     for(int i = 0; i < cnt; i++){
-        if(if_schd_conflict(a, list[i])){
-            if(a.priv <= list[i].priv) return false; // Cannot insert
+        if(if_schd_conflict(a, schd_list[i])){
+            if(a.priv <= schd_list[i].priv) return false; // Cannot insert
         }
     }
     return true; // Able to insert
@@ -27,16 +27,16 @@ bool user_query_schd(schd_t a){
 
 bool user_insert_schd(schd_t a){
     if(cnt == MAX_APPOINTMENT_NUM) return false;
-    list[cnt++] = a;
+    schd_list[cnt++] = a;
     return true;
 }
 
 void user_delete_schd(schd_t a){
     for(int i = cnt-1; i >= 0; i--){
-        if(if_schd_conflict(list[i], a)){
+        if(if_schd_conflict(schd_list[i], a)){
             cnt--;
             for(int j = i; j < cnt; j++){
-                list[j] = list[j+1];
+                schd_list[j] = schd_list[j+1];
             }
         }
     }
@@ -44,7 +44,7 @@ void user_delete_schd(schd_t a){
 
 void user_print_schd(schd_t *out){
     for(int i = 0; i < cnt; i++){
-        out[i] = list[i];
+        out[i] = schd_list[i];
     }
 }
 
