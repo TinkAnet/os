@@ -3,8 +3,8 @@
 
 #include "appointment.h"
 
-void RR_schder_start();
+void RR_schder_insert(schd_t s);
 
-void RR_schder_schd(schd_t s);
+bool RR_schder_insert_query(schd_t s);
 
 #endif // ROUND_ROBIN

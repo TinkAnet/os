@@ -3,9 +3,10 @@
 
 #include "appointment.h"
 
-void FCFS_schder_start();
+void FCFS_schder_insert(schd_t s);
 
-bool FCFS_schder_schd(schd_t s);
+bool FCFS_schder_insert_query(schd_t s);
+
 
 
 #endif // FIRST_COME_FIRST_SERVE

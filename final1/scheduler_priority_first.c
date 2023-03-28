@@ -1,10 +1,6 @@
 #include "scheduler_priority_first.h"
+#include "ipc_schd.h"
 
-void PRF_schder_start(){
+void PRF_schder_insert(schd_t s);
 
-}
-
-bool PRF_schder_schd(schd_t s){
-    s.priv = s.type;
-    schder_schd(s);
-}
+bool PRF_schder_insert_query(schd_t s);
