@@ -18,17 +18,17 @@ void init_appointment(long long start_day, long long end_day, int people_num){
 
 bool user_query_schd(schd_t a){
     for(int i = 0; i < cnt; i++){
-        if(if_schd_conflict(a, schd_list[i])){
+        if(if_schd_conflict(&a, &schd_list[i])){
             if(a.priv <= schd_list[i].priv) return false; // Cannot insert
         }
     }
     return true; // Able to insert
 }
 
+
+
 bool user_insert_schd(schd_t a){
-    if(cnt == MAX_APPOINTMENT_NUM) return false;
     schd_list[cnt++] = a;
-    return true;
 }
 
 void user_delete_schd(schd_t a){
