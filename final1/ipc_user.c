@@ -127,6 +127,8 @@ static bool server_write_instruction() {
     return true;
 }
 
+// =================== Start Implementation ==========================
+
 static void user_print_callback() {
     int n = user_print_schd(schd_buffer);
     instruction.op = 10;
@@ -313,7 +315,7 @@ void ipc_user_delete(int user_id, int schd_id) {
 }
 
 int ipc_user_print(int user_id) {
-        // prepare
+    // prepare
     cur_user_id = user_id;
     instruction.op = 9;
     // send

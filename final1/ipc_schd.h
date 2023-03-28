@@ -52,7 +52,7 @@ bool ipc_schd_insert_query(int schder_id, schd_t *s);
  * @param schder_id the scheduer id
  * @param s the scheduer
 */
-bool ipc_schd_insert(int schder_id, schd_t *s);
+void ipc_schd_insert(int schder_id, schd_t *s);
 
 /**
  * @brief Dump the user scheduler
