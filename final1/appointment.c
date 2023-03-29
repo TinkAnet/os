@@ -331,7 +331,7 @@ static tm_t slot_to_time(int s){
     }
     ret.hour = r / SLOT_PER_HOUR - 1 + START_HOUR;
     ret.minute = (r % SLOT_PER_HOUR) * (60 / SLOT_PER_HOUR);
-
+    ret.str = time_to_str(ret);
     return ret;
 }
 
