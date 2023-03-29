@@ -9,7 +9,9 @@
 #include "common.h"
 #include "math.h"
 
+extern int schd_cnt;
 extern bool if_rejected[MAX_APPOINTMENT_NUM];
+extern schd_t schd_list[MAX_APPOINTMENT_NUM];
 
 typedef struct DATE{
     long long str;
