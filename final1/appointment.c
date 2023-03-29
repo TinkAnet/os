@@ -375,6 +375,7 @@ schd_t load_schd(int id, int caller, int num_of_callee, int *callee, int type, l
     ret.end_time = time_add_hm(ret.start_time, hh, mm);
     ret.start_slot = time_to_slot(ret.start_time);
     ret.end_slot = time_minus_minute_to_slot(ret.end_time);
+    ret.priv = 0;
     return ret;
 }
 /**
