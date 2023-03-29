@@ -9,15 +9,27 @@
 #include"ipc_user.h"
 #include"ipc_schd.h"
 #include"command_op.h"
+#include"appointment.h"
 
-#define DEBUG
+// #define DEBUG
+#define IPC
+
+static void insert_four_schd(schd_t* sch) {
+    ipc_schd_insert(0, sch);
+    ipc_schd_insert(1, sch);
+    ipc_schd_insert(2, sch);
+    ipc_schd_insert(3, sch);
+}
 
 int run(cmd_t* in) {
     // init child process
     for (int i = 0; i < in->num_user; i++) {
-        // ipc_start_schd_process(in->user_container[i].id, in->start_date, in->end_date, in->num_user);
+#ifdef IPC
+        ipc_start_schd_process(in->user_container[i].id, in->start_date, in->end_date, in->num_user);
+#endif
     }
     char buffer[BUFFER_SIZE];
+    int op_id = 0; // appointment id, each appointment has a unique id.
     while (true) {
         printf("Please enter appointment:\n");
         int apm_len = read(STDIN_FILENO, buffer, BUFFER_SIZE);
@@ -46,9 +58,51 @@ int run(cmd_t* in) {
 #ifdef DEBUG
             printf("after private time handler\n");
 #endif
-            // private_time(tmp->caller_name, tmp->date, tmp->starting_time, tmp->duration);
+#ifdef IPC
+            op_id++;
+            schd_t tmp_schedule = load_schd(op_id, tmp->caller, 0, NULL, 1, tmp->starting_day_time, tmp->duration);
+            bool ok_0 = ipc_schd_insert_query(0, &tmp_schedule);
+            if (ok_0) printf("FCFS scheduling is okey to use!\n");
+            else printf("can not use FCFS scheduling!\n");
+            bool ok_1 = ipc_schd_insert_query(1, &tmp_schedule);
+            if (ok_1) printf("Priority scheduling is okey to use!\n");
+            else printf("can not use Priority scheduling!\n");
+            bool ok_2 = ipc_schd_insert_query(2, &tmp_schedule);
+            if (ok_1) printf("Round Robine scheduling is okey to use!\n");
+            else printf("can not use Round Robine scheduling!\n");
+            bool ok_3 = ipc_schd_insert_query(3, &tmp_schedule);
+            if (ok_1) printf("Big Meeting First scheduling is okey to use!\n");
+            else printf("can not use Big Meeting First scheduling!\n");
+            
+            if (ok_0 && ok_1 && ok_2 && ok_3) insert_four_schd(&tmp_schedule);
+            else {
+                int option;
+                printf("1. reschedule your current schedule.\n");
+                printf("2. continue with current schedule.\n");
+                scanf("%d", &option);
+                if (option == 1) {
+                    schd_t reschedule = re_schd(tmp_schedule);
+                    if (reschedule.type == -1) {
+                        printf("Can not find a suitable time to help you reschedule your schedule!\n");
+                    } else {
+                        printf("The new schedule is from %d.%02d.%02d %02d:%02d to %d.%02d.%02d %02d:%02d\n",
+                            reschedule.start_time.date.year, reschedule.start_time.date.month, reschedule.start_time.date.day, reschedule.start_time.hour, reschedule.start_time.minute,
+                            reschedule.end_time.date.year, reschedule.end_time.date.month, reschedule.end_time.date.day, reschedule.end_time.hour, reschedule.end_time.minute);
+                        printf("Do you want to use this new schedule? 1->yes,0->no!\n");
+                        scanf("%d", &option);
+                        if (option == 1) insert_four_schd(&reschedule);
+                        else 
+                    }
+                }
+                else if (option == 2) {
+                    if (ok_0) ipc_schd_insert(0, &tmp_schedule);
+                    if (ok_1) ipc_schd_insert(1, &tmp_schedule);
+                    if (ok_2) ipc_schd_insert(2, &tmp_schedule);
+                    if (ok_3) ipc_schd_insert(3, &tmp_schedule);
+                }
+            }
+#endif
             printf("-> [Recorded]\n");
-            // return 0;
         }
 #ifdef TEST
         else if (strcmp(op, "projectMeeting") == 0) {

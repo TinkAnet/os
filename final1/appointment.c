@@ -354,7 +354,7 @@ static bool if_schd_conflict(const schd_t *a, const schd_t *b){
  * @param caller : the caller of the appointment.
  * @param num_of_callee : number of callee.
  * @param callee : a list that lists all the callees
- * @param type : the appointment type.(Basically, there are 4 types: priviate_time,gathering,groupStudy,project)
+ * @param type : the appointment type.(Basically, there are 4 types: privateTime,projectMeeting,groupStudy,gathering)
  * @param start_time: stat=rt tiem of the appointment
  * @param len : lasting time of the appointment(timeslot based)
  * @return schd_t : return an appointment
