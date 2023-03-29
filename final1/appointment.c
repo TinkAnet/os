@@ -12,6 +12,7 @@
  */
 #include "appointment.h"
 #include "ipc_user.h"
+#include "ipc_schd.h"
 
 int days_of_holidays = 6;
 date_t holidays[] = {{20230305, 2023, 3, 5}, {20230312, 2023, 3, 12}, {20230319, 2023, 3, 19}, {20230326, 2023, 3, 26}, {20230329, 2023, 3, 29}, {20230329, 2023, 3, 30}};/**< List all the dates of the holidays */
@@ -399,9 +400,9 @@ schd_t re_schd(schd_t s){ // For main process to use to suggest a new time
             t.start_slot = base+j+1;
             t.end_slot = base+j+slot_len;
             bool ok = 1;
-            ok &= insert_query(t.caller, t);
+            ok &= ipc_schd_insert_query(t.caller, &t);
             for(int k = 0; k < s.callee_num && ok; k++){
-                ok &= insert_query(t.callee[k], t);
+                ok &= ipc_schd_insert_query(t.callee[k], &t);
             }
             if(ok){
                 t.start_time = slot_to_time(t.start_slot);
