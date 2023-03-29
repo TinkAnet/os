@@ -1,3 +1,12 @@
+/**
+ * @file appointment.h
+ * @author Group 08
+ * @brief The header file of appointment.c, defines needed structures.
+ * @version Final 1
+ * @date 2023-03-28
+ * 
+ * 
+ */
 #ifndef APPOINTMENT_H
 #define APPOINTMENT_H
 
