@@ -480,7 +480,7 @@ int schder_print(schd_t *out){
     return schd_cnt;
 }
 
-bool schder_schd(schd_t s){
+bool schder_schd(schd_t s){ // not used
     bool ok = schder_insert_query(s);
     if(ok){
         schder_insert(s);
