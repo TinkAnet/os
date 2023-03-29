@@ -466,7 +466,7 @@ static void schder_delete() {
 int schder_print(schd_t *out){
     for(int i = 0; i <= total_user_num; i++){
         ipc_user_print(i);
-    }s
+    }
     for(int i = 0; i < schd_cnt; i++)
         out[i] = schd_list[i];
     return schd_cnt;
