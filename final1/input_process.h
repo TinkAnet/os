@@ -1,18 +1,23 @@
 #ifndef INPUT_GUARD
 #define INPUT_GUARD
 #include"common.h"
+
+typedef struct USERS {
+    char* name;
+    int id;
+} usr_t;
+
 /**
- * TODO: needs 
+ * @brief command line info storage.
 */
 typedef struct COMMAND_LINE {
-    int start_date;
-    int end_date;
+    long long start_date;
+    long long end_date;
     int num_user;
-    char *users[MAX_CALLEE_NUM];
-    /* data */
+    usr_t user_container[MAX_CALLEE_NUM];
 } cmd_t;
 
-cmd_t cmd_in;
+extern cmd_t cmd_in;
 
 int parse_cmd(int argc, char*argv[], cmd_t * inst);
 #endif

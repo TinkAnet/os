@@ -10,12 +10,13 @@
 #include <unistd.h>
 #include <string.h>
 #include"input_process.h"
+#include"ipc_user.h"
 
 // #define DEBUG
-
-pt_t priv_t_entry;
 int run(cmd_t* in) {
-    
+    for (int i = 0; i < in->num_user; i++) {
+        ipc_start_user_process(in->user_container[i].id, in->start_date, in->end_date, in->num_user);
+    }
     init_child_process(in->start_date, in->end_date, in->num_user, in->users);
     char buffer[BUFFER_SIZE];
     while (true) {
@@ -34,15 +35,11 @@ int run(cmd_t* in) {
         char op[MAX_OPEARTOR_CHAR];
         int len_op = 0;
         for (int i = 0; i < apm_len; i++) {
-            if (buffer[i] != ' ') {
-                op[len_op++] = buffer[i];
-            }
-            else if(buffer[i] == ' ') {
-                op[len_op++] = '\0';
-                break;
-            }
+            if (buffer[i] == ' ') break;
+            op[len_op++] = buffer[i];
         }
-        if (op[len_op] != '\0') op[len_op++] = '\0';
+        op[len_op++] = 0;
+        
 #ifdef DEBUG
         printf("reach here!\n");
         printf("op : %s with len %lu\n", op, strlen(op));

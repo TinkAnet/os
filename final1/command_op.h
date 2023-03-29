@@ -21,9 +21,9 @@
 */
 typedef struct PRIVATE_TIME {
     int op_type = 0;
-    char* caller_name;
+    int caller;
     int date; // read by atoi
-    int starting_day; // 20230401 = [April 1, 2023]
+    long long starting_day; // 20230401 = [April 1, 2023]
     double duration; // 
 } pt_t;
 
@@ -32,15 +32,19 @@ typedef struct PRIVATE_TIME {
 */
 typedef struct PROJECT_MEETING {
     int op_type = 1;
-    char* caller;
+    int caller;
     int starting_day;
     int starting_time;
     int num_callee;
-    char* callee[MAX_CALLEE_NUM];
+    int callee[MAX_CALLEE_NUM];
 } pm_t;
 
 
 extern pt_t priv_t_entry;
+/**
+ * @brief construct a private time entry according to input
+ * @param input the input of private time operation
+ * @param res the private time entry to be reflect
+*/
 void private_time_handler(const char *input, pt_t *res);
-
 #endif

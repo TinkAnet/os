@@ -8,6 +8,8 @@
         "vector": "c",
         "stdbool.h": "c",
         "string.h": "c",
-        "input_process.h": "c"
+        "input_process.h": "c",
+        "command_op.h": "c",
+        "common.h": "c"
     }
 }

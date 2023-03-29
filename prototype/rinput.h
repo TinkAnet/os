@@ -2,7 +2,7 @@
 #define READ_GUARD
 
 #define BUFFER_SIZE 255
-#define MAX_OPEARTOR_CHAR 15 // which is the len of projectMeeting
+#define MAX_OPEARTOR_CHAR 15 // which is the len of projectMeeting + 1
 #define DATE_LEN 9
 #define START_TIME_LEN 5
 #define DURATION_LEN 4
