@@ -1,4 +1,5 @@
-#include "appointment.h"
+#include "appointment.c"
+#include "stdio.h"
 
 int main(){
     //str_to_date()
@@ -44,7 +45,7 @@ int main(){
     date.year = 2023;
     date.month = 12;
     date.day = 31;
-    date_t new = date_add_day(date);
+    new = date_add_day(date);
     if(new.year==2024 && new.month == 1 && new.day==1){
         printf("test case2 is correct!\n");
     }else{
@@ -156,7 +157,7 @@ int main(){
     printf("test case2 : current_time = {2023,3,2,20,30}\n");
     str = 202303022030;
     current_time = str_to_time(str);
-    int slot_number = time_to_slot(current_time);
+    slot_number = time_to_slot(current_time);
     if(slot_number == 8){
         printf("test case1 is correct!\n");
     }else{
@@ -271,7 +272,7 @@ int main(){
     temp_schd6.priv = temp_schd6.type;
 
 
-    number_dele = user_delete_query(temp_schd2,&out);
+    number_dele = user_delete_query(temp_schd2,out);
     if(number_dele==1){
         if(out[0].id == temp_schd1.id){
             printf("test case1 is correct.\n");
@@ -281,7 +282,7 @@ int main(){
     }
 
     printf("test case2\n");
-    number_dele = user_delete_query(temp_schd6,&out);
+    number_dele = user_delete_query(temp_schd6,out);
     if(number_dele==0){
         printf("test case2 is correct.\n");
     }else{
