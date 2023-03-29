@@ -28,7 +28,7 @@ typedef struct DATE{
 }date_t;
 
 static int days(date_t a);
-static date_t str_to_date(long long str);
+static date_t str_to_date(long long s);
 static long long date_to_str(date_t d);
 static date_t date_add_day(date_t a);
 

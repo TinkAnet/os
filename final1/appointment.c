@@ -449,13 +449,13 @@ void schder_insert(schd_t s){
 
 static int schder_delete_query(schd_t s){
     schd_cnt = 0;
-    int m = ipc_user_delete_query(&s, schd_buffer);
+    int m = ipc_user_delete_query(s.caller, &s);
     for(int i = 0; i < m; i++){
         schd_list[i] = schd_buffer[i];
     }
     schd_cnt = m;
     for(int i = 0; i < s.callee_num; i++){
-        m = ipc_user_delete_query(&s, schd_buffer);
+        m = ipc_user_delete_query(s.callee[i], &s);
         for(int j = 0; j < m; j++){
             schd_list[schd_cnt+j] = schd_buffer[j];
         }
