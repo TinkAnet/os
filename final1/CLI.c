@@ -1,36 +1,33 @@
 #include<stdint.h>
 #include<stdlib.h>
-#include "rinput.h"
-#include "ipc.h"
 #include<stdio.h>
-// #include<rinput.h>
-// #include<ipc.h>
 #include<stdbool.h>
 #include<string.h>
 #include <unistd.h>
 #include <string.h>
 #include"input_process.h"
 #include"ipc_user.h"
+#include"ipc_schd.h"
+#include"command_op.h"
 
-// #define DEBUG
+#define DEBUG
+
 int run(cmd_t* in) {
+    // init child process
     for (int i = 0; i < in->num_user; i++) {
-        ipc_start_user_process(in->user_container[i].id, in->start_date, in->end_date, in->num_user);
+        // ipc_start_schd_process(in->user_container[i].id, in->start_date, in->end_date, in->num_user);
     }
-    init_child_process(in->start_date, in->end_date, in->num_user, in->users);
     char buffer[BUFFER_SIZE];
     while (true) {
         printf("Please enter appointment:\n");
         int apm_len = read(STDIN_FILENO, buffer, BUFFER_SIZE);
         if (apm_len <= 1) {
-            
-            /** TODO: EOF or error or invalid input*/
-            
+            printf("EOF or invalid input error!\n");
+            return -1;
         }
         buffer[--apm_len] = 0; // remove newline character
-        
 #ifdef DEBUG
-        printf("buffer : %s", buffer);
+        printf("buffer : %s\n", buffer);
 #endif
         char op[MAX_OPEARTOR_CHAR];
         int len_op = 0;
@@ -41,19 +38,19 @@ int run(cmd_t* in) {
         op[len_op++] = 0;
         
 #ifdef DEBUG
-        printf("reach here!\n");
         printf("op : %s with len %lu\n", op, strlen(op));
 #endif
         if (strcmp(op, "privateTime") == 0) {
             pt_t * tmp = (pt_t *)&priv_t_entry;
-            private_time_handler(buffer, tmp);
+            private_time_handler(buffer + len_op, tmp, in);
 #ifdef DEBUG
             printf("after private time handler\n");
 #endif
-            private_time(tmp->caller_name, tmp->date, tmp->starting_time, tmp->duration);
+            // private_time(tmp->caller_name, tmp->date, tmp->starting_time, tmp->duration);
             printf("-> [Recorded]\n");
             // return 0;
         }
+#ifdef TEST
         else if (strcmp(op, "projectMeeting") == 0) {
             printf("-> [Recorded]\n");
         }
@@ -110,20 +107,7 @@ int run(cmd_t* in) {
             printf("-> Bye!\n");
             break;
         }
-        /**
-         * 如何调用int retrieve_user_appointment(char* user_name, user_meta_data *meta, user_appointment_data **list);
-{
-    user_meta_data meta; // 一个人有多少appointment
-    user_appointment_data *list;
-    retrieve_user_appointment(user, &meta, &list);
-
-    meta.num;
-    for (int i = 0; i < meta.num; ++i) {
-        printf("");
-        list[i].date;
-    }
-}
-        */
+#endif
     }
     return 0;
 }

@@ -1,15 +1,5 @@
 {
     "files.associations": {
-        "stdlib.h": "c",
-        "g_ap.h": "c",
-        "rinput.h": "c",
-        "stdio.h": "c",
-        "istream": "c",
-        "vector": "c",
-        "stdbool.h": "c",
-        "string.h": "c",
-        "input_process.h": "c",
-        "command_op.h": "c",
-        "common.h": "c"
+        "input_process.h": "c"
     }
 }

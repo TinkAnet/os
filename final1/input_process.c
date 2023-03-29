@@ -8,6 +8,17 @@
 
 #define FI_USR_OFFSET 3 // ./apo YYYYMMDD YYYYMMDD u1 (pos of u1 = 0 + 3)
 
+int name_to_int(const char *name, cmd_t* inst) {
+    int n = inst->num_user;
+    for (int i = 0; i < n; i++) {
+        if (strcmp(name, inst->user_container[i].name) == 0) {
+            return inst->user_container[i].id;
+        }
+    }
+    return -1;
+}
+
+
 int parse_cmd(int argc, char* argv[], cmd_t * inst) {
     long long start_date, end_date;
     int valid = 1;

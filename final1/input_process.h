@@ -17,7 +17,9 @@ typedef struct COMMAND_LINE {
     usr_t user_container[MAX_CALLEE_NUM];
 } cmd_t;
 
-extern cmd_t cmd_in;
+cmd_t cmd_in;
 
-int parse_cmd(int argc, char*argv[], cmd_t * inst);
+int parse_cmd(int argc, char*argv[], cmd_t* inst);
+int name_to_int(const char *name, cmd_t* inst);
+
 #endif

@@ -3,6 +3,7 @@
 #include<stdlib.h>
 #include"CLI.h"
 #include"input_process.h"
+#include"command_op.h"
 
 int main(int argc, char*argv[]) {
     cmd_t *usr_in = (cmd_t*)&cmd_in;
