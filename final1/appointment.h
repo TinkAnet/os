@@ -31,6 +31,14 @@ static int days(date_t a);
 static date_t str_to_date(long long s);
 static long long date_to_str(date_t d);
 static date_t date_add_day(date_t a);
+static tm_t time_add_hm(tm_t a, int h, int m);
+static tm_t str_to_time(long long s);
+static long long time_to_str(tm_t a);
+static int time_to_slot(tm_t a);
+static tm_t slot_to_time(int s);
+static bool if_schd_conflict(const schd_t *a, const schd_t *b);
+static int schder_delete_query(schd_t s);
+static void schder_delete();
 
 typedef struct TIME{
     long long str;
@@ -38,12 +46,6 @@ typedef struct TIME{
     int hour, minute;
 }tm_t;
 
-
-static tm_t time_add_hm(tm_t a, int h, int m);
-static tm_t str_to_time(long long s);
-static long long time_to_str(tm_t a);
-static int time_to_slot(tm_t a);
-static tm_t slot_to_time(int s);
 
 typedef struct APPOINTMENT{
 	int id;
@@ -61,8 +63,6 @@ extern schd_t schd_list[MAX_APPOINTMENT_NUM];
 
 
 void switch_to_reject_mode(schd_t *a);
-
-static bool if_schd_conflict(const schd_t *a, const schd_t *b);
 
 // abcd
 
@@ -103,9 +103,6 @@ bool schder_insert_query(schd_t s);
 
 void schder_insert(schd_t s);
 
-static int schder_delete_query(schd_t s);
-
-static void schder_delete();
 
 int schder_print();
 

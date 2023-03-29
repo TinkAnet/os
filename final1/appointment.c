@@ -14,14 +14,27 @@
 #include "ipc_user.h"
 #include "ipc_schd.h"
 
+static int days(date_t a);
+static date_t str_to_date(long long s);
+static long long date_to_str(date_t d);
+static date_t date_add_day(date_t a);
+static tm_t time_add_hm(tm_t a, int h, int m);
+static tm_t str_to_time(long long s);
+static long long time_to_str(tm_t a);
+static int time_to_slot(tm_t a);
+static tm_t slot_to_time(int s);
+static bool if_schd_conflict(const schd_t *a, const schd_t *b);
+static int schder_delete_query(schd_t s);
+static void schder_delete();
+
 int days_of_holidays = 6;
 date_t holidays[] = {{20230305, 2023, 3, 5}, {20230312, 2023, 3, 12}, {20230319, 2023, 3, 19}, {20230326, 2023, 3, 26}, {20230329, 2023, 3, 29}, {20230329, 2023, 3, 30}};/**< List all the dates of the holidays */
 
-extern int schd_cnt = 0;
-extern schd_t schd_list[MAX_APPOINTMENT_NUM];
-extern bool if_rejected[MAX_APPOINTMENT_NUM];
+int schd_cnt = 0;
+schd_t schd_list[MAX_APPOINTMENT_NUM];
+bool if_rejected[MAX_APPOINTMENT_NUM];
 int day_num;
-extern int total_user_num;
+int total_user_num;
 date_t st_day, ed_day;
 
 /**
@@ -422,7 +435,7 @@ schd_t re_schd(schd_t s){ // For main process to use to suggest a new time
 bool schder_insert_query(schd_t s){
     bool ok = true;
     ok &= ipc_user_insert_query(s.caller, &s);
-    for(int i = 0; i < s.callee_num & ok; i++)
+    for(int i = 0; i < s.callee_num && ok; i++)
         ok &= ipc_user_insert_query(s.callee[i], &s);
     if_rejected[s.id] = !ok;
     return ok;
@@ -461,6 +474,7 @@ static int schder_delete_query(schd_t s){
         }
         schd_cnt += m;
     }
+    return schd_cnt;
 }
 
 static void schder_delete() {
