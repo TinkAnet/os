@@ -1,5 +1,5 @@
 #include "scheduler_priority_first.h"
-#include "ipc_schd.h"
+#include "ipc_user.h"
 
 void PRF_schder_insert(schd_t s){
     s.priv = s.type;

@@ -1,5 +1,5 @@
 #include "scheduler_big_meeting_first.h"
-#include "ipc_schd.h"
+#include "ipc_user.h"
 
 const double alpha = 0.25; // One more people will increase 0.25 priority for an appointment
 

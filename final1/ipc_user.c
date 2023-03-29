@@ -240,7 +240,7 @@ void ipc_stop_user_process(int user_id) {
 }
 
 void ipc_launch_user(int tot_user_number, long long start_day, long long end_day, int people_num) {
-    for (int i = 0; i < tot_user_number; ++i) {
+    for (int i = 0; i <= tot_user_number; ++i) {
         ipc_start_user_process(i, start_day, 
             end_day, people_num);
     }

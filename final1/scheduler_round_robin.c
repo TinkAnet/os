@@ -1,5 +1,5 @@
 #include "scheduler_round_robin.h"
-#include "ipc_schd.h"
+#include "ipc_user.h"
 
 const double beta = 1; // More appointments a user have, the less priority will be assigned to his new appointment.
 const double alpha = 0.5;
@@ -34,7 +34,8 @@ bool RR_schder_insert_query(schd_t s){
         if(s.priv <= beta) s.priv = 0;
         else s.priv = -(s.priv-beta) * alpha;
     }
-    ipc_schd_insert_query(s.caller, &s);
-    for(int i = 0; i < s.callee_num; i++)
-        ipc_schd_insert_query(s.callee[i], &s);
+    bool ok = ipc_user_insert_query(s.caller, &s);
+    for(int i = 0; i < s.callee_num && ok; i++)
+        ok &= ipc_user_insert_query(s.callee[i], &s);
+    return ok;
 }

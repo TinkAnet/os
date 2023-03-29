@@ -24,8 +24,6 @@ static long long time_to_str(tm_t a);
 static int time_to_slot(tm_t a);
 static tm_t slot_to_time(int s);
 static bool if_schd_conflict(const schd_t *a, const schd_t *b);
-static int schder_delete_query(schd_t s);
-static void schder_delete();
 
 int days_of_holidays = 6;
 date_t holidays[] = {{20230305, 2023, 3, 5}, {20230312, 2023, 3, 12}, {20230319, 2023, 3, 19}, {20230326, 2023, 3, 26}, {20230329, 2023, 3, 29}, {20230329, 2023, 3, 30}};/**< List all the dates of the holidays */
@@ -212,10 +210,10 @@ static int days(date_t a){
     return p;
 }
 /**
- * @brief Add one day to the current date to get a new date
+ * @brief Add one day to the current date to get a n_ew date
  * 
  * @param[in] a: input date 
- * @return date_t : the new date after adding one day to the original date.
+ * @return date_t : the n_ew date after adding one day to the original date.
  */
 static date_t date_add_day(date_t a){
     if(a.month == 2 && a.day == 28){
@@ -241,12 +239,12 @@ static date_t date_add_day(date_t a){
     return a;
 }
 /**
- * @brief Add a period of time to the current time to get a new time
+ * @brief Add a period of time to the current time to get a n_ew time
  * 
  * @param[in] a: input time 
  * @param[in] h: hours to be added 
  * @param[in] m: minutes to br added 
- * @return tm_t : the new time after adding a period to the original time
+ * @return tm_t : the n_ew time after adding a period to the original time
  */
 static tm_t time_add_hm(tm_t a, int h, int m){
     a.minute += m;
@@ -399,7 +397,7 @@ schd_t load_schd(int id, int caller, int num_of_callee, int *callee, int type, l
  * @param s:current appointment 
  * @return schd_t 
  */
-schd_t re_schd(schd_t s){ // For main process to use to suggest a new time
+schd_t re_schd(schd_t s){ // For main process to use to suggest a n_ew time
     schd_t t;
     t.type = 0;
     t.priv = 0;
@@ -426,7 +424,7 @@ schd_t re_schd(schd_t s){ // For main process to use to suggest a new time
             }
         }
     }
-    t.type = -1; // failed to find a new time
+    t.type = -1; // failed to find a n_ew time
     return t;
 }
 
@@ -460,7 +458,7 @@ void schder_insert(schd_t s){
         ipc_user_insert(s.callee[i], &s);
 }
 
-static int schder_delete_query(schd_t s){
+int schder_delete_query(schd_t s){
     schd_cnt = 0;
     int m = ipc_user_delete_query(s.caller, &s);
     for(int i = 0; i < m; i++){
@@ -477,7 +475,7 @@ static int schder_delete_query(schd_t s){
     return schd_cnt;
 }
 
-static void schder_delete() {
+void schder_delete() {
     for(int i = 0; i < schd_cnt; i++){
         ipc_user_delete(schd_list[i].caller, schd_list[i].id);
         for(int i = 0; i < schd_list[i].callee_num; i++){
@@ -510,3 +508,356 @@ bool schder_schd(schd_t s){ // not used
 void switch_to_reject_mode(schd_t *a){
     a->if_user_choose_to_reject=1;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+void print_schd_test(schd_t s){
+	printf("-------------Schd %d---------------\n", s.id);
+	printf("caller: %d\n", s.caller);
+	printf("callee_num: %d\n", s.callee_num);
+	for(int i = 0; i < s.callee_num; i++){
+		printf("%d ", s.callee[i]);
+	}
+	printf("\n");
+	printf("Time: %lld %lld\n", s.start_time.str, s.end_time.str);
+	printf("Slot: %d %d\n", s.start_slot, s.end_slot);
+	printf("Type: %d\n", s.type);
+	printf("Priv: %lf\n", s.priv);
+}
+
+
+
+
+
+
+int run_appointment_test(){
+    //str_to_date()
+    printf("Test: str_to_date()\n");
+    printf("Defined in line 160\n");
+    printf("test case1 : str == 20131224\n");
+    long long str = 20131224;
+    date_t date = str_to_date(str);
+    if(date.str==20131224 && date.year==2013 && date.month==12 && date.day == 24){
+        printf("test case1 is correct!\n");
+    }else{
+        printf("test case1 is wrong! Double check function str_to_date()\n");
+    }
+
+    printf("test case2 : str == 20230305\n");
+    str = 20230309;
+    date = str_to_date(str);
+    if(date.str==20230309 && date.year==2023 && date.month==3 && date.day == 9){
+        printf("test case2 is correct!\n");
+    }else{
+        printf("test case2 is wrong! Double check function str_to_date()\n");
+    }
+    printf("\n");
+
+
+    //date_add_day()
+    printf("Test: date_add_day()\n");
+    printf("Defined in line 206\n");
+    printf("test case1 : date = {20230331,2023,3,31}\n");
+    date.str = 20230331;
+    date.year = 2023;
+    date.month = 3;
+    date.day = 31;
+    date_t n_ew = date_add_day(date);
+    if(n_ew.year==2023 && n_ew.month == 4 && n_ew.day==1){
+        printf("test case1 is correct!\n");
+    }else{
+        printf("test case1 wrong! Double check function date_add_date()\n");
+    }
+
+    printf("test case2 : date = {20231231,2023,12,31}\n");
+    date.str = 20231231;
+    date.year = 2023;
+    date.month = 12;
+    date.day = 31;
+    n_ew = date_add_day(date);
+    if(n_ew.year==2024 && n_ew.month == 1 && n_ew.day==1){
+        printf("test case2 is correct!\n");
+    }else{
+        printf("test case2 wrong! Double check function date_add_date()\n");
+    }
+    printf("\n");
+
+
+    //date_to_str()
+    printf("Test: date_to_str()\n");
+    printf("Defined in line 142\n");
+    printf("test case1 : date = {20230331,2023,3,31}\n");
+    date.str = 20230331;
+    date.year = 2023;
+    date.month = 3;
+    date.day = 31;
+    str = date_to_str(date);
+    if(str == 20230331){
+        printf("test case1 is correct!\n");
+    }else{
+        printf("test case1 is wrong! Double check function date_to_str()\n");
+    }
+    printf("\n");
+
+
+
+    //str_to_time
+    printf("Test: str_to_time()\n");
+    printf("Defined in line 263\n");
+    printf("test case1 : str = 202303311800\n");
+    tm_t current_time;
+    str = 202303311800;
+    current_time = str_to_time(str);
+    if(current_time.hour==18 && current_time.minute==0 && current_time.date.str == 20230331){
+        printf("test case1 is correct!\n");
+    }else{
+        printf("test case1 is wrong!\n");
+    }
+
+    printf("test case2 : str = 202312241931\n");
+    str = 202312241931;
+    current_time = str_to_time(str);
+    if(current_time.hour==19 && current_time.minute==31 && current_time.date.str == 20231224){
+        printf("test case1 is correct!\n");
+    }else{
+        printf("test case1 is wrong!\n");
+    }
+    printf("\n");
+
+    //time_to_str
+    printf("Test: time_to_str()\n");
+    printf("Defined in line 279\n");
+    printf("test case1 : current_time = {2023,12,24,19,31}\n");
+    str = 202312241931;
+    current_time = str_to_time(str);
+    long long temp_str = time_to_str(current_time);
+    if(temp_str==str){
+        printf("test case1 is correct!\n");
+    }else{
+        printf("test case1 is wrong!\n");
+    }
+    printf("\n");
+
+    //time_add_hm()
+    printf("Test: time_add_hm()\n");
+    printf("Defined in line 237\n");
+    printf("test case1 : current_time = {2023,12,24,19,31}\n");
+    tm_t n_ewtime;
+    str = 202312241931;
+    current_time = str_to_time(str);
+    n_ewtime = time_add_hm(current_time,2,29);
+    printf("then: %lld\n", n_ewtime.str);
+    if(n_ewtime.hour == 22 && n_ewtime.minute==0 && n_ewtime.str == 202312242200){
+        printf("test case1 is correct!\n");
+    }else{
+        printf("test case1 is wrong!\n");
+    }
+
+    printf("test case1 : current_time = {2023,3,31,22,36}\n");
+    str = 202303312236;
+    current_time = str_to_time(str);
+    n_ewtime = time_add_hm(current_time,1,30);
+    printf("then: %lld\n", n_ewtime.str);
+    if(n_ewtime.hour == 0 && n_ewtime.minute==6 && n_ewtime.str == 202304010006){
+        printf("test case1 is correct!\n");
+    }else{
+        printf("test case1 is wrong!\n");
+    }
+
+    printf("\n");
+
+    //call init_appointment()
+    long long start_date = 20230301;
+    long long end_date = 20230331;
+    int people_num = 8;
+    init_appointment(start_date,end_date,people_num);
+
+    //time_to_slot()
+    printf("Test: time_to_slot()\n");
+    printf("Defined in line 290\n");
+    printf("test case1 : current_time = {2023,3,1,19,31}\n");
+    str = 202303011931;
+    current_time = str_to_time(str);
+    int slot_number = time_to_slot(current_time);
+    if(slot_number == 2){
+        printf("test case1 is correct!\n");
+    }else{
+        printf("slot number is %d, test case 1 is wrong!\n",slot_number);
+    }
+
+    printf("test case2 : current_time = {2023,3,2,20,30}\n");
+    str = 202303022030;
+    current_time = str_to_time(str);
+    slot_number = time_to_slot(current_time);
+    if(slot_number == 8){
+        printf("test case1 is correct!\n");
+    }else{
+        printf("slot number is %d, test case 1 is wrong!\n",slot_number);
+    }
+    printf("\n");
+
+
+
+
+    //load_schd()
+    printf("Test: load_schd()\n");
+    printf("Defined in line 237\n");
+    int callee[5];
+    for(int i =0;i<5;i++){
+        callee[i] = i+2;
+    }
+    schd_t temp_schd1 = load_schd(1,1,5,callee,1,202303021800,2.0);
+    schd_t temp_schd2 = load_schd(2,1,5,callee,3,202303021900,2.0);
+    schd_t temp_schd3 = load_schd(3,1,5,callee,2,202303031900,2.0);
+    schd_t temp_schd4 = load_schd(4,1,5,callee,1,202303012000,1.5);
+    print_schd_test(temp_schd1);
+    print_schd_test(temp_schd2);
+    print_schd_test(temp_schd3);
+    print_schd_test(temp_schd4);
+    
+    printf("test case1\n");
+    if(temp_schd1.start_time.str == 202303021800 && temp_schd1.type == 1){
+        printf("test case1  is correct.\n");
+    }else{
+        printf("test case1 is wrong.\n");
+    }
+
+    printf("test case2\n");
+    if(temp_schd2.start_time.str == 202303021900 && temp_schd2.type == 3){
+        printf("test case2  is correct.\n");
+    }else{
+        printf("test case2 is wrong.\n");
+    }
+    printf("\n");
+
+
+    // if_schd_conflict()
+    printf("Test: if_schd_conflict()\n");
+    printf("Defined in line 346\n");
+    printf("test case1 : conflict\n");
+    if(if_schd_conflict(&temp_schd1,&temp_schd2)){
+        printf("test case1 is correct.\n");
+    }else{
+        printf("test case1 is wrong.\n");
+    }
+    printf("test case2 : not conflict\n");
+    if(!if_schd_conflict(&temp_schd1,&temp_schd3)){
+        printf("test case1 is correct.\n");
+    }else{
+        printf("test case1 is wrong.\n");
+    }
+    printf("\n");    
+
+
+	printf("Insert 3 schd:\n");
+	print_schd_test(temp_schd1);
+	print_schd_test(temp_schd2);
+	print_schd_test(temp_schd3);
+    // call user_insert_schd()
+    user_insert_schd(temp_schd1);
+    user_insert_schd(temp_schd3);
+    user_insert_schd(temp_schd4);
+
+    // user_query_schd(); with all the priv == 0;
+    printf("Test: user_query_schd()\n");
+    printf("Defined in line 59\n");
+    printf("test case1 : cannot insert; with all the priv == 0\n");
+    if(!user_query_schd(temp_schd2)){
+        printf("test case1 is correct.\n");
+    }else{
+        printf("test case1 is wrong.\n");
+    }
+
+    printf("test case2 : can insert; with all the priv == 0\n");
+    schd_t temp_schd5 = load_schd(5,1,5,callee,1,202303052000,1.5);
+    if(user_query_schd(temp_schd5)){
+        printf("test case2 is correct.\n");
+    }else{
+        printf("test case2 is wrong.\n");
+    }
+
+    printf("test case3 : can insert; with different priv\n");
+    temp_schd2.priv = 3;
+    if(user_query_schd(temp_schd2)){
+        printf("test case3 is correct.\n");
+    }else{
+        printf("test case3 is wrong.\n");
+    }
+
+    printf("test case4 : cannot insert; with different priv\n");
+    schd_t temp_schd6 = load_schd(5,1,5,callee,1,202303031900,1.5);
+    temp_schd3.priv = temp_schd3.type;
+    temp_schd6.priv = -temp_schd6.type;
+    if(!user_query_schd(temp_schd6)){
+        printf("test case4 is correct.\n");
+    }else{
+        printf("test case4 is wrong.\n");
+    }
+    printf("\n");
+
+
+    //user_delete_query()
+    schd_t out[50];
+    int number_dele;
+    printf("Test: user_delete_query()\n");
+    printf("Defined in line 86\n");
+    printf("test case1\n");
+    temp_schd1.priv = temp_schd1.type;
+    temp_schd2.priv = temp_schd2.type;
+    temp_schd3.priv = temp_schd3.type;
+    temp_schd4.priv = temp_schd4.type;
+    temp_schd5.priv = temp_schd5.type;
+    temp_schd6.priv = temp_schd6.type;
+
+
+    number_dele = user_delete_query(temp_schd2,out);
+    if(number_dele==1){
+        if(out[0].id == temp_schd1.id){
+            printf("test case1 is correct.\n");
+        }
+    }else{
+        printf("test case1 is wrong.\n");
+    }
+
+    printf("test case2\n");
+    number_dele = user_delete_query(temp_schd6,out);
+    printf("Del:\n");
+    print_schd_test(temp_schd6);
+    printf("be Del:\n");
+    for(int i = 0; i < number_dele; i++)
+    	print_schd_test(out[i]);
+    if(number_dele==1){
+        printf("test case2 is correct.\n");
+    }else{
+        printf("test case2 is wrong.\n");
+    }
+    user_delete_schd(3);
+    
+    printf("test case3\n");
+    number_dele = user_delete_query(temp_schd6,out);
+    printf("Del:\n");
+    print_schd_test(temp_schd6);
+    printf("be Del:\n");
+    for(int i = 0; i < number_dele; i++)
+    	print_schd_test(out[i]);
+    if(number_dele==0){
+        printf("test case3 is correct.\n");
+    }else{
+        printf("test case3 is wrong.\n");
+    }
+
+    printf("\n"); 
+    printf("\n"); 
+    printf("Tests on structures are finished.");
+    return 0;
+}
+
