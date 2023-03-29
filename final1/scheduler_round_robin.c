@@ -11,7 +11,7 @@ void RR_schder_insert(schd_t s){
     else s.priv = -(s.priv-beta) * alpha;
     
     schder_delete_query(s);
-    for(int i = 0; i < cnt; i++){
+    for(int i = 0; i < schd_cnt; i++){
         if(if_rejected[schd_list[i].id]) continue;;
         if_rejected[schd_list[i].id] = true;
         user_cnt[schd_list[i].caller]--;
