@@ -6,6 +6,8 @@
 #define MAX_USER_NUM 20
 #define MAX_USER_NAME_LEN 20
 
+#define INF 1000000000
+
 #define MAX_APPOINTMENT_NUM 20000
 
 #define START_HOUR 18

@@ -16,11 +16,11 @@
 int days_of_holidays = 6;
 date_t holidays[] = {{20230305, 2023, 3, 5}, {20230312, 2023, 3, 12}, {20230319, 2023, 3, 19}, {20230326, 2023, 3, 26}, {20230329, 2023, 3, 29}, {20230329, 2023, 3, 30}};/**< List all the dates of the holidays */
 
-extern int cnt = 0;
+extern int schd_cnt = 0;
 extern schd_t schd_list[MAX_APPOINTMENT_NUM];
 extern bool if_rejected[MAX_APPOINTMENT_NUM];
 int day_num;
-int user_num;
+extern int total_user_num;
 date_t st_day, ed_day;
 
 /**
@@ -42,7 +42,7 @@ date_t st_day, ed_day;
 void init_appointment(long long start_day, long long end_day, int people_num){
     st_day = str_to_date(start_day);
     ed_day = str_to_date(end_day);
-    user_num = people_num;
+    total_user_num = people_num;
     day_num = days(ed_day)+1;
 }
 
@@ -57,7 +57,7 @@ void init_appointment(long long start_day, long long end_day, int people_num){
  *  The function itself does not do any operation to the current schedule. 
  */
 bool user_query_schd(schd_t a){
-    for(int i = 0; i < cnt; i++){
+    for(int i = 0; i < schd_cnt; i++){
         if(if_schd_conflict(&a, &schd_list[i])){
             if(a.priv <= schd_list[i].priv) return false; // Cannot insert
         }
@@ -72,7 +72,7 @@ bool user_query_schd(schd_t a){
  * @param[in] a : the appointment to be inserted.
  */
 void user_insert_schd(schd_t a){
-    schd_list[cnt++] = a;
+    schd_list[schd_cnt++] = a;
 }
 /**
  * @brief When a scheduling conflict occurs and the user insists on scheduling an event with a higher priority.\n
@@ -85,7 +85,7 @@ void user_insert_schd(schd_t a){
  */
 int user_delete_query(schd_t a, schd_t *out){
     int p = 0;
-    for(int i = 0; i < cnt; i++){
+    for(int i = 0; i < schd_cnt; i++){
         if(if_schd_conflict(&schd_list[i], &a)){
             out[p++] = schd_list[i];
         }
@@ -99,10 +99,10 @@ int user_delete_query(schd_t a, schd_t *out){
  * @param[in] id : the appointment_id of the deleted appointment.
  */
 void user_delete_schd(int id){
-    for(int i = cnt-1; i >= 0; i--){
+    for(int i = schd_cnt-1; i >= 0; i--){
         if(schd_list[i].id == id){
-            cnt--;
-            for(int j = i; j < cnt; j++){
+            schd_cnt--;
+            for(int j = i; j < schd_cnt; j++){
                 schd_list[j] = schd_list[j+1];
             }
         }
@@ -116,10 +116,10 @@ void user_delete_schd(int id){
  * @return int : The total number of the appointments
  */
 int user_print_schd(schd_t *out){
-    for(int i = 0; i < cnt; i++){
+    for(int i = 0; i < schd_cnt; i++){
         out[i] = schd_list[i];
     }
-    return cnt;
+    return schd_cnt;
 }
 
 /**
@@ -387,6 +387,7 @@ schd_t re_schd(schd_t s){ // For main process to use to suggest a new time
     schd_t t;
     t.type = 0;
     t.priv = 0;
+    t.caller = 0;
     int slot_len = ceil(s.len * SLOT_PER_HOUR);
     for(int i = 0; i < day_num; i++){
 
@@ -396,9 +397,9 @@ schd_t re_schd(schd_t s){ // For main process to use to suggest a new time
             t.start_slot = base+j+1;
             t.end_slot = base+j+slot_len;
             bool ok = 1;
-            ok &= ipc_schd_insert_query(t.caller, t);
+            ok &= insert_query(t.caller, t);
             for(int k = 0; k < s.callee_num && ok; k++){
-                ok &= ipc_schd_insert_query(t.callee[k], t);
+                ok &= insert_query(t.callee[k], t);
             }
             if(ok){
                 t.start_time = slot_to_time(t.start_slot);
@@ -425,7 +426,7 @@ bool schder_insert_query(schd_t s){
 
 void schder_insert(schd_t s){
     schder_delete_query(s);
-    for(int i = 0; i < cnt; i++){
+    for(int i = 0; i < schd_cnt; i++){
         if(if_rejected[schd_list[i].id]) continue;;
         if_rejected[schd_list[i].id] = 1;
         ipc_user_insert(0, &schd_list[i]);
@@ -437,23 +438,23 @@ void schder_insert(schd_t s){
 }
 
 static int schder_delete_query(schd_t s){
-    cnt = 0;
+    schd_cnt = 0;
     int m = ipc_user_delete_query(&s, schd_buffer);
     for(int i = 0; i < m; i++){
         schd_list[i] = schd_buffer[i];
     }
-    cnt = m;
+    schd_cnt = m;
     for(int i = 0; i < s.callee_num; i++){
         m = ipc_user_delete_query(&s, schd_buffer);
         for(int j = 0; j < m; j++){
-            schd_list[cnt+j] = schd_buffer[j];
+            schd_list[schd_cnt+j] = schd_buffer[j];
         }
-        cnt += m;
+        schd_cnt += m;
     }
 }
 
 static void schder_delete() {
-    for(int i = 0; i < cnt; i++){
+    for(int i = 0; i < schd_cnt; i++){
         ipc_user_delete(schd_list[i].caller, schd_list[i].id);
         for(int i = 0; i < schd_list[i].callee_num; i++){
             ipc_user_delete(schd_list[i].callee[i], schd_list[i].id);
@@ -462,12 +463,12 @@ static void schder_delete() {
 }
 
 int schder_print(schd_t *out){
-    for(int i = 0; i <= user_num; i++){
+    for(int i = 0; i <= total_user_num; i++){
         ipc_user_print(i);
-    }
-    for(int i = 0; i < cnt; i++)
+    }s
+    for(int i = 0; i < schd_cnt; i++)
         out[i] = schd_list[i];
-    return cnt;
+    return schd_cnt;
 }
 
 bool schder_schd(schd_t s){
