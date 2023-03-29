@@ -3,7 +3,7 @@
 
 const double beta = 1; // More appointments a user have, the less priority will be assigned to his new appointment.
 const double alpha = 0.5
-bint user_cnt[MAX_USER_NUM], success_cnt;
+int user_cnt[MAX_USER_NUM], success_cnt;
 
 void RR_schder_insert(schd_t s){
     s.priv = user_cnt[s.caller] - (success_cnt+0.0) / total_user_num;
