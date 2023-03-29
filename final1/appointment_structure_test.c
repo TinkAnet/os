@@ -213,6 +213,52 @@ int main(){
     printf("\n");    
 
 
+
+    // call user_insert_schd()
+    user_insert_schd(temp_schd1);
+    user_insert_schd(temp_schd3);
+    user_insert_schd(temp_schd4);
+
+    // user_query_schd(); with all the priv == 0;
+    printf("Test: user_query_schd()\n");
+    printf("Defined in line 59\n");
+    printf("test case1 : cannot insert; with all the priv == 0\n");
+    if(!user_query_schd(temp_schd2)){
+        printf("test case1 is correct.\n");
+    }else{
+        printf("test case1 is wrong.\n");
+    }
+
+    printf("test case2 : can insert; with all the priv == 0\n");
+    schd_t temp_schd5 = load_schd(5,1,5,callee,1,202303052000,1.5);
+    if(user_query_schd(temp_schd5)){
+        printf("test case2 is correct.\n");
+    }else{
+        printf("test case2 is wrong.\n");
+    }
+
+    printf("test case3 : can insert; with different priv\n");
+    temp_schd2.priv = 3;
+    if(user_query_schd(temp_schd2)){
+        printf("test case3 is correct.\n");
+    }else{
+        printf("test case3 is wrong.\n");
+    }
+
+    printf("test case4 : cannot insert; with different priv\n");
+    schd_t temp_schd6 = load_schd(5,1,5,callee,1,202303031900,1.5);
+    temp_schd3.priv = temp_schd3.type;
+    temp_schd6.priv = temp_schd6.type;
+    if(!user_query_schd(temp_schd6)){
+        printf("test case4 is correct.\n");
+    }else{
+        printf("test case4 is wrong.\n");
+    }
+    printf("\n");
+
+
+
+
     printf("\n"); 
     printf("\n"); 
     printf("Tests on structures are finished.");
