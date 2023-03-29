@@ -1,4 +1,4 @@
-#include "appointment.c"
+#include "appointment.h"
 #include "stdio.h"
 
 int main(){

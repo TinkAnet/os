@@ -21,7 +21,6 @@
 extern int schd_cnt;
 extern int total_user_num;
 extern bool if_rejected[MAX_APPOINTMENT_NUM];
-extern schd_t schd_list[MAX_APPOINTMENT_NUM];
 
 typedef struct DATE{
     long long str;
@@ -57,6 +56,9 @@ typedef struct APPOINTMENT{
     bool if_user_choose_to_reject;
     double len, priv;
 }schd_t;
+
+extern schd_t schd_list[MAX_APPOINTMENT_NUM];
+
 
 void switch_to_reject_mode(schd_t *a);
 
