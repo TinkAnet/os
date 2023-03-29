@@ -10,6 +10,7 @@
 #include "math.h"
 
 extern int schd_cnt;
+extern int total_user_num;
 extern bool if_rejected[MAX_APPOINTMENT_NUM];
 extern schd_t schd_list[MAX_APPOINTMENT_NUM];
 
@@ -44,6 +45,7 @@ typedef struct APPOINTMENT{
     int callee[MAX_CALLEE_NUM];
     tm_t start_time, end_time;
     int start_slot, end_slot;
+    bool if_user_choose_to_reject;
     double len, priv;
 }schd_t;
 
