@@ -257,6 +257,36 @@ int main(){
     printf("\n");
 
 
+    //user_delete_query()
+    schd_t *out;
+    int number_dele;
+    printf("Test: user_delete_query()\n");
+    printf("Defined in line 86\n");
+    printf("test case1\n");
+    temp_schd1.priv = temp_schd1.type;
+    temp_schd2.priv = temp_schd2.type;
+    temp_schd3.priv = temp_schd3.type;
+    temp_schd4.priv = temp_schd4.type;
+    temp_schd5.priv = temp_schd5.type;
+    temp_schd6.priv = temp_schd6.type;
+
+
+    number_dele = user_delete_query(temp_schd2,&out);
+    if(number_dele==1){
+        if(out[0].id == temp_schd1.id){
+            printf("test case1 is correct.\n");
+        }
+    }else{
+        printf("test case1 is wrong.\n");
+    }
+
+    printf("test case2\n");
+    number_dele = user_delete_query(temp_schd6,&out);
+    if(number_dele==0){
+        printf("test case2 is correct.\n");
+    }else{
+        printf("test case2 is wrong.\n");
+    }
 
 
     printf("\n"); 
