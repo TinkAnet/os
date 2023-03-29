@@ -2,7 +2,7 @@
 #include "ipc_schd.h"
 
 const double beta = 1; // More appointments a user have, the less priority will be assigned to his new appointment.
-const double alpha = 0.5
+const double alpha = 0.5;
 int user_cnt[MAX_USER_NUM], success_cnt;
 
 void RR_schder_insert(schd_t s){
