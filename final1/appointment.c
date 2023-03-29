@@ -383,7 +383,7 @@ schd_t load_schd(int id, int caller, int num_of_callee, int *callee, int type, l
  * @param s:current appointment 
  * @return schd_t 
  */
-schd_t re_schd(schd_t s){
+schd_t re_schd(schd_t s){ // For main process to use to suggest a new time
     schd_t t;
     t.type = 0;
     t.priv = 0;
@@ -396,20 +396,20 @@ schd_t re_schd(schd_t s){
             t.start_slot = base+j+1;
             t.end_slot = base+j+slot_len;
             bool ok = 1;
-            ok &= user_query(t.caller, t);
+            ok &= ipc_schd_insert_query(t.caller, t);
             for(int k = 0; k < s.callee_num && ok; k++){
-                ok &= user_query(t.callee[k], t);
+                ok &= ipc_schd_insert_query(t.callee[k], t);
             }
             if(ok){
                 t.start_time = slot_to_time(t.start_slot);
                 t.end_time = slot_to_time(t.end_slot);
                 int mm = 60 / SLOT_PER_HOUR;
                 t.end_time = time_add_hm(t.end_time, mm / 60, mm % 60);
-                return t;
+                return t; // return the time
             }
         }
     }
-    t.type = -1;
+    t.type = -1; // failed to find a new time
     return t;
 }
 
