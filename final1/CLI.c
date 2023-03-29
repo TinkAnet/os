@@ -11,7 +11,7 @@
 #include"command_op.h"
 #include"appointment.h"
 
-// #define DEBUG
+#define DEBUG
 #define IPC
 
 static void insert_four_schd(schd_t* sch) {
@@ -19,6 +19,93 @@ static void insert_four_schd(schd_t* sch) {
     ipc_schd_insert(1, sch);
     ipc_schd_insert(2, sch);
     ipc_schd_insert(3, sch);
+}
+
+/**
+ * @brief return how many scheduling algorithms this schedule could use. 
+ * @param sch schedule to be tested
+ * @return bitmap 0000: no scheduling algorithm available, xxx1: FCFS is available, xx1x: Priority is available, x1xx: Round Robine is available, 1xxx: Big Meeting First is available.
+*/
+static int num_scheduling_available(schd_t* sch) {
+    int res = 0;
+    bool ok_0 = ipc_schd_insert_query(0, sch);
+    if (ok_0) {
+        printf("FCFS scheduling is okey to use!\n"); 
+        res += 1;
+    }
+    else printf("can not use FCFS scheduling!\n");
+    bool ok_1 = ipc_schd_insert_query(1, sch);
+    if (ok_1) {
+        printf("Priority scheduling is okey to use!\n");
+        res += 2;
+    }
+    else printf("can not use Priority scheduling!\n");
+    bool ok_2 = ipc_schd_insert_query(2, sch);
+    if (ok_1) {
+        printf("Round Robine scheduling is okey to use!\n");
+        res += 4;
+    }
+    else printf("can not use Round Robine scheduling!\n");
+    bool ok_3 = ipc_schd_insert_query(3, sch);
+    if (ok_1) {
+        printf("Big Meeting First scheduling is okey to use!\n");
+        res += 8;
+    }
+    else printf("can not use Big Meeting First scheduling!\n");
+    return res;
+}
+/**
+ * @brief when user choose to continue with current schedule, program will use available schedule for users. 
+*/
+static void use_available_scheduling(schd_t* sch, int available_bitmap) {
+    if ((available_bitmap & 1) == 1) ipc_schd_insert(0, sch);
+    if ((available_bitmap & 2) == 2) ipc_schd_insert(1, sch);
+    if ((available_bitmap & 4) == 4) ipc_schd_insert(2, sch);
+    if ((available_bitmap & 8) == 8) ipc_schd_insert(3, sch);
+}
+/**
+ * @brief reschedule operation
+*/
+static void reschedule_op(schd_t* sch_to_resch) {
+    schd_t reschedule = re_schd(*sch_to_resch);
+    if (reschedule.type == -1) {
+        printf("Can not find a suitable time to help you reschedule your schedule!\n");
+    } else {
+        printf("The new schedule is from %d.%02d.%02d %02d:%02d to %d.%02d.%02d %02d:%02d\n",
+            reschedule.start_time.date.year, reschedule.start_time.date.month, reschedule.start_time.date.day, reschedule.start_time.hour, reschedule.start_time.minute,
+            reschedule.end_time.date.year, reschedule.end_time.date.month, reschedule.end_time.date.day, reschedule.end_time.hour, reschedule.end_time.minute);
+        printf("Do you want to use this new schedule? 1->yes,0->no!\n");
+        int option;
+        scanf("%d", &option);
+        if (option == 1) {
+            insert_four_schd(&reschedule);
+        }
+        else {
+            switch_to_reject_mode(&reschedule);
+        }
+    }
+}
+/**
+ * 
+ * @param ap_id appointment id
+ * @param tmp_pgg project meeting, group study, gathering entry
+ * @param type 1 -> privateTime 2 -> projectMeeting 3 -> groupStudy 4 -> gathering
+*/
+static void arrange_schd(schd_t* sch) {
+    int available_bitmap = num_scheduling_available(sch);
+    if (available_bitmap == 15) insert_four_schd(sch);
+    else {
+        int option;
+        printf("1. reschedule your current schedule.\n");
+        printf("2. continue with current schedule.\n");
+        scanf("%d", &option);
+        if (option == 1) {
+            reschedule_op(sch);
+        }
+        else if (option == 2) {
+            use_available_scheduling(sch, available_bitmap);
+        }
+    }
 }
 
 int run(cmd_t* in) {
@@ -48,7 +135,7 @@ int run(cmd_t* in) {
             op[len_op++] = buffer[i];
         }
         op[len_op++] = 0;
-        
+        op_id++;
 #ifdef DEBUG
         printf("op : %s with len %lu\n", op, strlen(op));
 #endif
@@ -58,56 +145,18 @@ int run(cmd_t* in) {
 #ifdef DEBUG
             printf("after private time handler\n");
 #endif
-#ifdef IPC
-            op_id++;
+
             schd_t tmp_schedule = load_schd(op_id, tmp->caller, 0, NULL, 1, tmp->starting_day_time, tmp->duration);
-            bool ok_0 = ipc_schd_insert_query(0, &tmp_schedule);
-            if (ok_0) printf("FCFS scheduling is okey to use!\n");
-            else printf("can not use FCFS scheduling!\n");
-            bool ok_1 = ipc_schd_insert_query(1, &tmp_schedule);
-            if (ok_1) printf("Priority scheduling is okey to use!\n");
-            else printf("can not use Priority scheduling!\n");
-            bool ok_2 = ipc_schd_insert_query(2, &tmp_schedule);
-            if (ok_1) printf("Round Robine scheduling is okey to use!\n");
-            else printf("can not use Round Robine scheduling!\n");
-            bool ok_3 = ipc_schd_insert_query(3, &tmp_schedule);
-            if (ok_1) printf("Big Meeting First scheduling is okey to use!\n");
-            else printf("can not use Big Meeting First scheduling!\n");
-            
-            if (ok_0 && ok_1 && ok_2 && ok_3) insert_four_schd(&tmp_schedule);
-            else {
-                int option;
-                printf("1. reschedule your current schedule.\n");
-                printf("2. continue with current schedule.\n");
-                scanf("%d", &option);
-                if (option == 1) {
-                    schd_t reschedule = re_schd(tmp_schedule);
-                    if (reschedule.type == -1) {
-                        printf("Can not find a suitable time to help you reschedule your schedule!\n");
-                    } else {
-                        printf("The new schedule is from %d.%02d.%02d %02d:%02d to %d.%02d.%02d %02d:%02d\n",
-                            reschedule.start_time.date.year, reschedule.start_time.date.month, reschedule.start_time.date.day, reschedule.start_time.hour, reschedule.start_time.minute,
-                            reschedule.end_time.date.year, reschedule.end_time.date.month, reschedule.end_time.date.day, reschedule.end_time.hour, reschedule.end_time.minute);
-                        printf("Do you want to use this new schedule? 1->yes,0->no!\n");
-                        scanf("%d", &option);
-                        if (option == 1) insert_four_schd(&reschedule);
-                        else printf("");
-                    }
-                }
-                else if (option == 2) {
-                    if (ok_0) ipc_schd_insert(0, &tmp_schedule);
-                    if (ok_1) ipc_schd_insert(1, &tmp_schedule);
-                    if (ok_2) ipc_schd_insert(2, &tmp_schedule);
-                    if (ok_3) ipc_schd_insert(3, &tmp_schedule);
-                }
-            }
-#endif
+            arrange_schd(&tmp_schedule);
+            printf("-> [Recorded]\n");
+        }
+        else if (strcmp(op, "projectMeeting") == 0) {
+            pm_t * tmp = (pm_t*)&project_m_entry;
+            project_group_gather_handler(buffer + len_op, tmp, in);
+            printf("out of project meeting!\n");
             printf("-> [Recorded]\n");
         }
 #ifdef TEST
-        else if (strcmp(op, "projectMeeting") == 0) {
-            printf("-> [Recorded]\n");
-        }
         else if (strcmp(op, "groupStudy") == 0) {
             printf("-> [Recorded]\n");
         }

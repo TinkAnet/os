@@ -25,17 +25,17 @@ typedef struct PRIVATE_TIME {
 /**
  * @brief struct to store the info of project meeting command.
 */
-typedef struct PROJECT_MEETING {
-    // int op_type = 1;
+typedef struct PROJECT_GROUP_GATHER {
     int caller;
-    int starting_day;
-    int starting_time;
+    long long starting_day_time; // 202304011800 = [April 1, 2023 18:00]
+    double duration;
     int num_callee;
     int callee[MAX_CALLEE_NUM];
 } pm_t;
 
-
 pt_t priv_t_entry;
+pm_t pgg_entry; // project meeting, group study, gathering entry
+
 /**
  * @brief construct a private time entry according to input
  * @param input the input of private time operation
@@ -44,4 +44,10 @@ pt_t priv_t_entry;
  * @return 0 success, -1 error
 */
 int private_time_handler(const char *input, pt_t *res, cmd_t *inst);
+
+/**
+ * @brief construct a project meeting / group study / gathering entry entry according to input
+ * @return 0 success, -1 error
+*/
+int project_group_gather_handler(const char *input, pm_t *res, cmd_t *inst);
 #endif
