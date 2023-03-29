@@ -91,7 +91,7 @@ int run(cmd_t* in) {
                         printf("Do you want to use this new schedule? 1->yes,0->no!\n");
                         scanf("%d", &option);
                         if (option == 1) insert_four_schd(&reschedule);
-                        else 
+                        else printf("");
                     }
                 }
                 else if (option == 2) {
