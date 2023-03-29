@@ -427,6 +427,8 @@ bool schder_insert_query(schd_t s){
     return ok;
 }
 
+
+
 void schder_insert(schd_t s){
     if(if_rejected[s.id] || s.if_user_choose_to_reject){
         ipc_user_insert(0, &s);
@@ -488,4 +490,8 @@ bool schder_schd(schd_t s){
         //--------- re schd Part -----------
         return false;
     }
+}
+
+void switch_to_reject_mode(schd_t *a){
+    a->if_user_choose_to_reject=1;
 }

@@ -49,9 +49,7 @@ typedef struct APPOINTMENT{
     double len, priv;
 }schd_t;
 
-void switch_to_reject_mode(schd_t *a){
-    a->if_user_choose_to_reject=1;
-}
+void switch_to_reject_mode(schd_t *a);
 
 static bool if_schd_conflict(const schd_t *a, const schd_t *b);
 
