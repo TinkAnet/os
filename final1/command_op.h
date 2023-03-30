@@ -31,8 +31,8 @@ typedef struct PROJECT_GROUP_GATHER {
     int callee[MAX_CALLEE_NUM];
 } pm_t;
 
-pt_t priv_t_entry; // private time entry
-pm_t pgg_entry; // project meeting, group study, gathering entry
+extern pt_t priv_t_entry; // private time entry
+extern pm_t pgg_entry; // project meeting, group study, gathering entry
 
 /**
  * @brief construct a private time entry according to input

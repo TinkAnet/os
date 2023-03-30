@@ -6,6 +6,10 @@
 #include<ctype.h>
 #include<string.h>
 
+pt_t priv_t_entry;
+pm_t pgg_entry;
+
+
 // #define DEBUG
 int private_time_handler (const char *input, pt_t *res, cmd_t *inst) {
     int n = strlen(input);
@@ -63,14 +67,14 @@ int private_time_handler (const char *input, pt_t *res, cmd_t *inst) {
         }
         else if (state == 2) {
             date_str[date_len++] = c;
-            if (!isnumber(c)) {
+            if (!isalnum(c)) {
                 printf("invalid starting date input\n");
                 return -1;
             }
         }
         else if (state == 4) {
             time_str[time_len++] = c;
-            if (!isnumber(c)) {
+            if (!isalnum(c)) {
                 printf("invalid starting time input\n");
                 return -1;
             }
@@ -178,14 +182,14 @@ int project_group_gather_handler(const char *input, pm_t *res, cmd_t *inst) {
         }
         else if (state == 2) {
             date_str[date_len++] = c;
-            if (!isnumber(c)) {
+            if (!isalnum(c)) {
                 printf("invalid starting date input\n");
                 return -1;
             }
         }
         else if (state == 4) {
             time_str[time_len++] = c;
-            if (!isnumber(c)) {
+            if (!isalnum(c)) {
                 printf("invalid starting time input\n");
                 return -1;
             }

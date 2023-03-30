@@ -17,7 +17,8 @@ typedef struct COMMAND_LINE {
     usr_t user_container[MAX_CALLEE_NUM];
 } cmd_t;
 
-cmd_t cmd_in;
+extern cmd_t cmd_in;
+
 /**
  * @brief parse init command line arguments. 
  * @return -1 invalid init command line arguments, 0 valid

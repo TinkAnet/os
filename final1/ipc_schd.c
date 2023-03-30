@@ -13,7 +13,7 @@
 #include <sys/wait.h>
 
 
-int schd_pipe_list[SCHD_NUM][2];
+int schd_pipe_list[SCHD_NUM*2][2];
 
 typedef struct {
     /**
@@ -149,11 +149,13 @@ typedef int (*schd_print_fn_t)();
 
 static schd_insert_query_fn_t schd_impl_insert_query_list[SCHD_NUM] = {
     // TODO: replace with the actual one
-    FCFS_schder_insert_query, PRF_schder_insert_query, RR_schder_insert_query, BMF_schder_insert_query
+    FCFS_schder_insert_query, FCFS_schder_insert_query, FCFS_schder_insert_query, FCFS_schder_insert_query
+    // FCFS_schder_insert_query, PRF_schder_insert_query, RR_schder_insert_query, BMF_schder_insert_query
 };
 static schd_insert_fn_t schd_impl_insert_list[SCHD_NUM] = {
     // TODO: replace with the actual one
-    FCFS_schder_insert, PRF_schder_insert, RR_schder_insert, BMF_schder_insert
+    FCFS_schder_insert, FCFS_schder_insert, FCFS_schder_insert, FCFS_schder_insert
+    // FCFS_schder_insert, PRF_schder_insert, RR_schder_insert, BMF_schder_insert
 };
 
 static void schd_insert_query_callback() {
@@ -198,9 +200,17 @@ static void schd_main() {
 }
 
 void ipc_start_schd_process(int schder_id, long long start_day, long long end_day, int people_num) {
-        // prepare pipe
-    pipe(schd_pipe_list[schder_id*2]);
-    pipe(schd_pipe_list[schder_id*2 + 1]);
+    bool flag = true;
+    
+    // prepare pipe
+    flag &= (pipe(schd_pipe_list[schder_id*2])==0);
+    flag &= (pipe(schd_pipe_list[schder_id*2 + 1])==0);
+
+    if (!flag) {
+        printf("Fatal Error: Schd pipe() failed (pid=%d)\n", getpid());
+        exit(EXIT_FAILURE);
+    }
+
     // start
     int c_pid = fork();
     // failed

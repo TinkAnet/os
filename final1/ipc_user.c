@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <sys/wait.h>
 
-int user_pipe_list[MAX_USER_NUM][2];
+int user_pipe_list[MAX_USER_NUM*2][2];
 schd_t schd_buffer[MAX_APPOINTMENT_NUM];
 
 typedef struct {
@@ -39,9 +39,16 @@ static int cur_user_id;
  * 
  */
 static bool client_read_instruction() {
-    int n = read(user_pipe_list[cur_user_id * 2][0], 
+    int n;
+
+CLIENT_READ: 
+    n = read(user_pipe_list[cur_user_id * 2][0], 
                 &instruction, 
                 sizeof(user_instruction_t));
+    
+    if (n == 0) {
+        goto CLIENT_READ;
+    }
 
 #ifdef DEBUG
     printf("[Debug - User] Client %d received %d bytes with op=%d from pid=%d (pid=%d)\n",
@@ -201,9 +208,16 @@ static void user_main() {
 }
 
 void ipc_start_user_process(int user_id, long long start_day, long long end_day, int people_num) {
+    bool flag = true;
     // prepare pipe
-    pipe(user_pipe_list[user_id*2]);
-    pipe(user_pipe_list[user_id*2 + 1]);
+    flag &= (pipe(user_pipe_list[user_id*2]) == 0);
+    flag &= (pipe(user_pipe_list[user_id*2 + 1]) == 0);
+
+    if (!flag) {
+        printf("Fatal Error: User pipe() failed (pid=%d)\n", getpid());
+        exit(EXIT_FAILURE);
+    }
+
     // start
     int c_pid = fork();
     // failed
