@@ -45,6 +45,7 @@ typedef struct APPOINTMENT{
     int start_slot, end_slot;
     bool if_user_choose_to_reject;
     double len, priv;
+    int sender_pid;
 }schd_t;
 
 extern schd_t schd_list[MAX_APPOINTMENT_NUM];

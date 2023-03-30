@@ -18,8 +18,22 @@ typedef struct COMMAND_LINE {
 } cmd_t;
 
 cmd_t cmd_in;
-
+/**
+ * @brief parse init command line arguments. 
+ * @return -1 invalid init command line arguments, 0 valid
+*/
 int parse_cmd(int argc, char*argv[], cmd_t* inst);
+
+/**
+ * @brief map from name to int. The first user has id of 1
+ * @return -1 not found mapping, otherwise valid mapping
+*/
 int name_to_int(const char *name, cmd_t* inst);
 
+/**
+ * @brief check whether the id is the id of existing user
+ * @param id id to be checked
+ * @return 1 yes 0 no
+*/
+int is_existing_user(int id, cmd_t* inst);
 #endif

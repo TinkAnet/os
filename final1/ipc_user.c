@@ -44,13 +44,13 @@ static bool client_read_instruction() {
                 sizeof(user_instruction_t));
 
 #ifdef DEBUG
-    printf("[Debug] Client %d received %d bytes with op=%d\n",
-        cur_user_id, n, instruction.op
+    printf("[Debug - User] Client %d received %d bytes with op=%d from pid=%d (pid=%d)\n",
+        cur_user_id, n, instruction.op, instruction.s.sender_pid, getpid()
         );
 #endif
 
     if (n == -1) {
-        puts("\nFatal Error: pipe is not avaiable\n");
+        printf("\nFatal Error: user pipe is not avaiable (pid=%d)\n", getpid());
         exit(EXIT_FAILURE);
     }
 
@@ -67,13 +67,14 @@ static bool server_read_instruction() {
                 sizeof(user_instruction_t));
 
 #ifdef DEBUG
-    printf("[Debug] Server %d received %d bytes with op=%d\n",
-        getpid(), n, instruction.op
+    printf("[Debug - User] Server %d received %d bytes with op=%d from pid=%d (pid=%d)\n",
+        getpid(), n, instruction.op, instruction.s.sender_pid, getpid()
         );
 #endif
 
     if (n == -1) {
-        puts("\nFatal Error: pipe is not avaiable\n");
+        printf("\nFatal Error: user pipe is not avaiable (pid=%d)\n", getpid());
+
         exit(EXIT_FAILURE);
     }
 
@@ -86,18 +87,20 @@ static bool server_read_instruction() {
  * 
  */
 static bool client_write_instruction() {
+    instruction.s.sender_pid = getpid();
     int n = write(user_pipe_list[cur_user_id * 2+1][1], 
                 &instruction, 
                 sizeof(user_instruction_t));
 
 #ifdef DEBUG
-    printf("[Debug] Client %d sent %d bytes with op=%d\n",
+    printf("[Debug - User] Client %d sent %d bytes with op=%d\n",
         cur_user_id, n, instruction.op
         );
 #endif
 
     if (n == -1) {
-        puts("\nFatal Error: pipe is not avaiable\n");
+        printf("\nFatal Error: user pipe is not avaiable (pid=%d)\n", getpid());
+        
         exit(EXIT_FAILURE);
     }
 
@@ -109,18 +112,20 @@ static bool client_write_instruction() {
  * 
  */
 static bool server_write_instruction() {
+    instruction.s.sender_pid = getpid();
     int n = write(user_pipe_list[cur_user_id * 2][1], 
                 &instruction, 
                 sizeof(user_instruction_t));
 
 #ifdef DEBUG
-    printf("[Debug] Server %d sent %d bytes with op=%d\n",
+    printf("[Debug - User] Server %d sent %d bytes with op=%d\n",
         getpid(), n, instruction.op
         );
 #endif
 
     if (n == -1) {
-        puts("\nFatal Error: pipe is not avaiable\n");
+        printf("\nFatal Error: user pipe is not avaiable (pid=%d)\n", getpid());
+        
         exit(EXIT_FAILURE);
     }
 
@@ -131,6 +136,9 @@ static bool server_write_instruction() {
 
 static void user_print_callback() {
     int n = user_print_schd(schd_buffer);
+    #ifdef DEBUG
+    printf("[Debug - User - Print] retrieve schd_buffer[0]: date=%lld type=%d\n" , schd_buffer[0].start_time.date.str, schd_buffer[0].type);
+    #endif
     instruction.op = 10;
     instruction.s.id = n;
     client_write_instruction();
@@ -139,7 +147,7 @@ static void user_print_callback() {
             &schd_buffer[i], sizeof(schd_t));
     }
 #ifdef DEBUG
-    printf("[Debug] Client %d sent %d schd_t in Print\n", cur_user_id, n);
+    printf("[Debug - User] Client %d sent %d schd_t in Print\n", cur_user_id, n);
 #endif
 }
 
@@ -159,11 +167,14 @@ static void user_delete_query_callback() {
             &schd_buffer[i], sizeof(schd_t));
     }
 #ifdef DEBUG
-    printf("[Debug] Client %d sent %d schd_t in Delete Query\n", cur_user_id, n);
+    printf("[Debug - User] Client %d sent %d schd_t in Delete Query\n", cur_user_id, n);
 #endif
 }
 
 static void user_insert_callback() {
+    #ifdef DEBUG
+    printf("[Debug - User - Insert] perform insert: date=%lld type=%d\n" , instruction.s.start_time.date.str, instruction.s.type);
+    #endif
     user_insert_schd(instruction.s);
     instruction.op = 4;
     client_write_instruction();
@@ -203,7 +214,7 @@ void ipc_start_user_process(int user_id, long long start_day, long long end_day,
     // server
     if (c_pid != 0) {
 #ifdef DEBUG
-        printf("[Debug] Client %d created, running on pid=%d\n", c_pid);
+        printf("[Debug - User] Client %d created, running on pid=%d\n", user_id, c_pid);
 #endif
         close(user_pipe_list[user_id*2][0]);
         close(user_pipe_list[user_id*2 + 1][1]);
@@ -219,7 +230,10 @@ void ipc_start_user_process(int user_id, long long start_day, long long end_day,
         init_appointment(start_day, end_day, people_num);
         // start
         user_main();
-        
+        #ifdef DEBUG
+        printf("[Debug - User] User %d terminated, running on pid=%d\n", user_id, getpid());
+        #endif
+
         // collect resources
         close(user_pipe_list[user_id*2][0]);
         close(user_pipe_list[user_id*2 + 1][1]);
@@ -235,6 +249,9 @@ void ipc_stop_user_process(int user_id) {
     // collect user process
     wait(NULL);
     // close pipe
+    #ifdef DEBUG
+        printf("[DEBUG USER STOP] user_id=%d terminate pid=%d\n", user_id,  getpid());
+    #endif
     close(user_pipe_list[user_id*2][1]);
     close(user_pipe_list[user_id*2 + 1][0]);
 }
@@ -295,7 +312,7 @@ int ipc_user_delete_query(int user_id, schd_t *s) {
             );
     }
 #ifdef DEBUG
-    printf("[Debug] Server %d received %d schd_t in Delete Query\n", 
+    printf("[Debug - User] Server %d received %d schd_t in Delete Query\n", 
             getpid(), instruction.s.id);
 
 #endif
@@ -330,7 +347,7 @@ int ipc_user_print(int user_id) {
             );
     }
 #ifdef DEBUG
-    printf("[Debug] Server %d received %d schd_t in print\n", 
+    printf("[Debug - User] Server %d received %d schd_t in print\n", 
             getpid(), instruction.s.id);
 
 #endif

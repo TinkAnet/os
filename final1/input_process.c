@@ -8,6 +8,17 @@
 
 #define FI_USR_OFFSET 3 // ./apo YYYYMMDD YYYYMMDD u1 (pos of u1 = 0 + 3)
 
+
+int is_existing_user(int id, cmd_t* inst) {
+    int n = inst->num_user;
+    for (int i = 0; i < n; i++) {
+        if (id == inst->user_container[i].id) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
 int name_to_int(const char *name, cmd_t* inst) {
     int n = inst->num_user;
     for (int i = 0; i < n; i++) {
@@ -17,7 +28,6 @@ int name_to_int(const char *name, cmd_t* inst) {
     }
     return -1;
 }
-
 
 int parse_cmd(int argc, char* argv[], cmd_t * inst) {
     long long start_date, end_date;
@@ -37,7 +47,7 @@ int parse_cmd(int argc, char* argv[], cmd_t * inst) {
     int num_of_users = argc - FI_USR_OFFSET;
     if (num_of_users < MIN_CALLEE_NUM || num_of_users > MAX_CALLEE_NUM) {
         printf("Invalid number of users!\n");
-        exit(-1);
+        return -1;
     }
     inst->num_user = num_of_users;
     for (int i = 0; i < num_of_users; i++) {
@@ -45,6 +55,7 @@ int parse_cmd(int argc, char* argv[], cmd_t * inst) {
         for (int j = 0; j < l; j++) {
             if (!isalpha(argv[i+FI_USR_OFFSET][j])) {
                 printf("Invalid format for user name inputs\n");
+                return -1;
             }
         }
         inst->user_container[i].id = i + 1;

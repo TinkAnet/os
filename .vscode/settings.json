@@ -1,5 +1,8 @@
 {
     "files.associations": {
-        "stdbool.h": "c"
+        "stdbool.h": "c",
+        "locale": "c",
+        "string": "c",
+        "input_process.h": "c"
     }
 }

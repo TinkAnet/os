@@ -4,8 +4,6 @@
 #include "common.h"
 #include "appointment.h"
 
-extern int schd_pipe_list[SCHD_NUM][2];
-
 /**
  * @brief start a scheduler process with a scheduer function id
  * @details 

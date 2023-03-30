@@ -1,9 +1,9 @@
 #include "scheduler_round_robin.h"
 #include "ipc_user.h"
 
-const double beta = 1; // More appointments a user have, the less priority will be assigned to his new appointment.
-const double alpha = 0.5;
-int user_cnt[MAX_USER_NUM], success_cnt;
+static const double beta = 1; // More appointments a user have, the less priority will be assigned to his new appointment.
+static const double alpha = 0.5;
+static int user_cnt[MAX_USER_NUM], success_cnt;
 
 void RR_schder_insert(schd_t s){
     s.priv = user_cnt[s.caller] - (success_cnt+0.0) / total_user_num;

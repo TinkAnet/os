@@ -45,13 +45,14 @@ static bool client_read_instruction() {
                 sizeof(schd_instruction_t));
 
 #ifdef DEBUG
-    printf("[Debug] Schd %d received %d bytes with op=%d\n",
-        cur_user_id, n, instruction.op
+    printf("[Debug - Schd] Schd %d received %d bytes with op=%d from pid=%d (pid=%d)\n",
+        cur_schd_id, n, instruction.op, instruction.s.sender_pid, getpid()
         );
 #endif
 
     if (n == -1) {
-        puts("\nFatal Error: pipe is not avaiable\n");
+        printf("\nFatal Error: schd pipe is not avaiable (pid=%d)\n", getpid());
+
         exit(EXIT_FAILURE);
     }
 
@@ -68,13 +69,14 @@ static bool server_read_instruction() {
                 sizeof(schd_instruction_t));
 
 #ifdef DEBUG
-    printf("[Debug] App %d received %d bytes with op=%d\n",
-        getpid(), n, instruction.op
+    printf("[Debug - Schd] App %d received %d bytes with op=%d from pid=%d (pid=%d)\n",
+        getpid(), n, instruction.op, instruction.s.sender_pid, getpid()
         );
 #endif
 
     if (n == -1) {
-        puts("\nFatal Error: pipe is not avaiable\n");
+        printf("\nFatal Error: schd pipe is not avaiable (pid=%d)\n", getpid());
+
         exit(EXIT_FAILURE);
     }
 
@@ -87,18 +89,20 @@ static bool server_read_instruction() {
  * 
  */
 static bool client_write_instruction() {
+    instruction.s.sender_pid = getpid();
     int n = write(schd_pipe_list[cur_schd_id * 2+1][1], 
                 &instruction, 
                 sizeof(schd_instruction_t));
 
 #ifdef DEBUG
-    printf("[Debug] Schd %d sent %d bytes with op=%d\n",
-        cur_user_id, n, instruction.op
+    printf("[Debug - Schd] Schd %d sent %d bytes with op=%d (pid=%d)\n",
+        cur_schd_id, n, instruction.op, getpid()
         );
 #endif
 
     if (n == -1) {
-        puts("\nFatal Error: pipe is not avaiable\n");
+        printf("\nFatal Error: schd pipe is not avaiable (pid=%d)\n", getpid());
+
         exit(EXIT_FAILURE);
     }
 
@@ -110,18 +114,28 @@ static bool client_write_instruction() {
  * 
  */
 static bool server_write_instruction() {
+    instruction.s.sender_pid = getpid();
+
+
+#ifdef DEBUG
+    printf("[Debug - Schd] App %d PRE-sent with op=%d (pid=%d)\n",
+        getpid(), instruction.op, getpid()
+        );
+#endif
+
     int n = write(schd_pipe_list[cur_schd_id * 2][1], 
                 &instruction, 
                 sizeof(schd_instruction_t));
 
 #ifdef DEBUG
-    printf("[Debug] App %d sent %d bytes with op=%d\n",
-        getpid(), n, instruction.op
+    printf("[Debug - Schd] App %d sent %d bytes with op=%d (pid=%d)\n",
+        getpid(), n, instruction.op, getpid()
         );
 #endif
 
     if (n == -1) {
-        puts("\nFatal Error: pipe is not avaiable\n");
+        printf("\nFatal Error: schd pipe is not avaiable (pid=%d)\n", getpid());
+
         exit(EXIT_FAILURE);
     }
 
@@ -135,11 +149,11 @@ typedef int (*schd_print_fn_t)();
 
 static schd_insert_query_fn_t schd_impl_insert_query_list[SCHD_NUM] = {
     // TODO: replace with the actual one
-    FCFS_schder_insert_query, PRF_schder_insert_query, BMF_schder_insert_query, RR_schder_insert_query
+    FCFS_schder_insert_query, PRF_schder_insert_query, RR_schder_insert_query, BMF_schder_insert_query
 };
 static schd_insert_fn_t schd_impl_insert_list[SCHD_NUM] = {
     // TODO: replace with the actual one
-    FCFS_schder_insert, PRF_schder_insert, BMF_schder_insert, RR_schder_insert
+    FCFS_schder_insert, PRF_schder_insert, RR_schder_insert, BMF_schder_insert
 };
 
 static void schd_insert_query_callback() {
@@ -157,15 +171,18 @@ static void schd_insert_callback() {
 
 static void schd_print_callback() {
     int n = ipc_user_print(instruction.s.id);
+    #ifdef DEBUG
+    printf("[Debug - schd - Print] retrieve schd_buffer[0]: date=%lld type=%d\n" , schd_buffer[0].start_time.date.str, schd_buffer[0].type);
+    #endif
     instruction.op = 6;
     instruction.s.id = n;
     client_write_instruction();
     for (int i = 0; i < n; ++i) {
-        write(user_pipe_list[cur_schd_id * 2+1][1], 
+        write(schd_pipe_list[cur_schd_id * 2+1][1], 
             &schd_buffer[i], sizeof(schd_t));
     }
 #ifdef DEBUG
-    printf("[Debug] Schd %d sent %d schd_t in Print\n", cur_user_id, n);
+    printf("[Debug - Schd] Schd %d sent %d schd_t in Print\n", cur_schd_id, n);
 #endif
 }
 
@@ -193,15 +210,16 @@ void ipc_start_schd_process(int schder_id, long long start_day, long long end_da
     }
     // server
     if (c_pid != 0) {
-#ifdef DEBUG
-        printf("[Debug] Schd %d created, running on pid=%d\n", c_pid);
-#endif
         close(schd_pipe_list[schder_id*2][0]);
         close(schd_pipe_list[schder_id*2 + 1][1]);
         return ;
     }
     // child
     if (c_pid == 0) {
+        #ifdef DEBUG
+        printf("[Debug - Schd] Schd %d created, running on pid=%d\n", schder_id, getpid());
+        #endif
+
         close(schd_pipe_list[schder_id*2][1]);
         close(schd_pipe_list[schder_id*2 + 1][0]);
         
@@ -209,7 +227,10 @@ void ipc_start_schd_process(int schder_id, long long start_day, long long end_da
         ipc_launch_user(people_num, start_day, end_day, people_num);
         schd_main();
         ipc_shutdown_user(people_num);
-        
+        #ifdef DEBUG
+        printf("[Debug - Schd] Schd %d terminated, running on pid=%d\n", schder_id, getpid());
+        #endif
+
         // collect resources
         close(schd_pipe_list[schder_id*2][0]);
         close(schd_pipe_list[schder_id*2 + 1][1]);
@@ -225,6 +246,9 @@ void ipc_stop_schd_proces(int schder_id) {
     // collect
     wait(NULL);
     // close pipe
+    #ifdef DEBUG
+    printf("[DEBUG SCHD STOP] schder_id=%d terminate pid=%d\n", schder_id, getpid());
+    #endif
     close(schd_pipe_list[schder_id*2][1]);
     close(schd_pipe_list[schder_id*2 + 1][0]);
 }
@@ -248,6 +272,9 @@ bool ipc_schd_insert_query(int schder_id, schd_t *s) {
     instruction.s = *s;
     // send
     server_write_instruction();
+    #ifdef DEBUG
+    printf("[INSERT QUERY] SENT to %d\n", cur_schd_id);
+    #endif
 
     // receive
     server_read_instruction();
@@ -278,15 +305,16 @@ int ipc_schd_print(int schder_id, int user_id) {
     // receive
     server_read_instruction();
     for (int i = 0; i < instruction.s.id; ++i) {
-        read(user_pipe_list[user_id*2 + 1][0],
+        read(schd_pipe_list[schder_id*2 + 1][0],
             &schd_buffer[i],
             sizeof(schd_t)
             );
     }
 #ifdef DEBUG
-    printf("[Debug] Main %d received %d schd_t in print\n", 
+    printf("[Debug - Schd] Main %d received %d schd_t in print\n", 
             getpid(), instruction.s.id);
-
+    printf("[Debug - schd] Main retrieve schd_buffer[0]: date=%lld type=%d\n" , schd_buffer[0].start_time.date.str, schd_buffer[0].type);
+    fflush(stdout);
 #endif
     return instruction.s.id;
 

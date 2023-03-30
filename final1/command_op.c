@@ -7,8 +7,6 @@
 #include<string.h>
 
 // #define DEBUG
-
-
 int private_time_handler (const char *input, pt_t *res, cmd_t *inst) {
     int n = strlen(input);
     char name_str[MAX_USER_NAME_LEN];
@@ -81,12 +79,18 @@ int private_time_handler (const char *input, pt_t *res, cmd_t *inst) {
             duration_str[duration_len++] = c;
         }
     }
-    res->caller = name_to_int(name_str, inst);
+    int caller_id = name_to_int(name_str, inst);
+    if (!is_existing_user(caller_id, inst)) {
+        printf("caller name does not exist in system!\n");
+        return -1;
+    }
+    res->caller = caller_id;
     strcat(date_str, time_str);
 #ifdef DEBUG
     printf("starting date and time = %s\n", date_str);
 #endif
     res->starting_day_time = atoll(date_str);
+    /** TODO: time interval checking. */
 #ifdef DEBUG
     printf("res->starting_day_time %lld\n", res->starting_day_time);
 #endif
@@ -124,7 +128,9 @@ int project_group_gather_handler(const char *input, pm_t *res, cmd_t *inst) {
     int state = 0; // read projectMeeting caller
     for (int i = 0; i < n; i++) {
         c = input[i];
+#ifdef DEBUG
         printf("c = %c\n", c);
+#endif
         if (state == 0 && c == ' ') {
             state = 1; // space transition state
             continue;
@@ -190,17 +196,23 @@ int project_group_gather_handler(const char *input, pm_t *res, cmd_t *inst) {
         else if (state == 8) {
             callee_str[callee_ptr][callee_len++] = c;
             if (!isalpha(c)) {
-                printf("invalid caller name input\n");
+                printf("invalid callee name input\n");
                 return -1;
             }
         }
     }
-    res->caller = name_to_int(name_str, inst);
+    int caller_id = name_to_int(name_str, inst);
+    if (!is_existing_user(caller_id, inst)) {
+        printf("caller name does not exist in system!\n");
+        return -1;
+    }
+    res->caller = caller_id;
     strcat(date_str, time_str);
 #ifdef DEBUG
     printf("starting date and time = %s\n", date_str);
 #endif
     res->starting_day_time = atoll(date_str);
+    /** TODO: time interval checking. */
 #ifdef DEBUG
     printf("res->starting_day_time %lld\n", res->starting_day_time);
 #endif
@@ -213,7 +225,12 @@ int project_group_gather_handler(const char *input, pm_t *res, cmd_t *inst) {
     printf("res->num_callee = %d\n", res->num_callee);
 #endif
     for (int i = 0; i <= callee_ptr; i++) {
-        res->callee[i] = name_to_int(callee_str[i], inst);
+        int callee_id = name_to_int(callee_str[i], inst);
+        if (!is_existing_user(callee_id, inst)) {
+            printf("callee name does not exist in system!\n");
+            return -1;
+        }
+        res->callee[i] = callee_id;
     }
 #ifdef DEBUG
     printf("callee_ptr = %d\n", callee_ptr);

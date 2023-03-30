@@ -5,8 +5,6 @@
 #include "appointment.h"
 
 extern schd_t schd_buffer[MAX_APPOINTMENT_NUM];
-extern int user_pipe_list[MAX_USER_NUM][2];
-
 
 /**
  * @brief start a user process
