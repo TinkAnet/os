@@ -6,7 +6,7 @@
 #include<ctype.h>
 #include<string.h>
 
-#define DEBUG
+// #define DEBUG
 
 
 int private_time_handler (const char *input, pt_t *res, cmd_t *inst) {
@@ -31,7 +31,9 @@ int private_time_handler (const char *input, pt_t *res, cmd_t *inst) {
     int state = 0; // read privateTime caller
     for (int i = 0; i < n; i++) {
         c = input[i];
+#ifdef DEBUG
         printf("c = %c\n", c);
+#endif
         if (state == 0 && c == ' ') {
             state = 1; // space transition state
             continue;
@@ -161,8 +163,6 @@ int project_group_gather_handler(const char *input, pm_t *res, cmd_t *inst) {
             state = 8; // read callee name
         }
         
-
-
         if (state == 0) {
             name_str[name_len++] = c;
             if (!isalpha(c)) {

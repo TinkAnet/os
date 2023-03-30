@@ -12,7 +12,7 @@
 #include"appointment.h"
 
 #define DEBUG
-#define IPC
+// #define IPC
 
 static void insert_four_schd(schd_t* sch) {
     ipc_schd_insert(0, sch);
@@ -85,11 +85,10 @@ static void reschedule_op(schd_t* sch_to_resch) {
         }
     }
 }
+
 /**
- * 
- * @param ap_id appointment id
- * @param tmp_pgg project meeting, group study, gathering entry
- * @param type 1 -> privateTime 2 -> projectMeeting 3 -> groupStudy 4 -> gathering
+ * @brief arrange schedule
+ * @param sch schedule just loaded. 
 */
 static void arrange_schd(schd_t* sch) {
     int available_bitmap = num_scheduling_available(sch);
@@ -145,38 +144,50 @@ int run(cmd_t* in) {
 #ifdef DEBUG
             printf("after private time handler\n");
 #endif
-
+#ifdef IPC
             schd_t tmp_schedule = load_schd(op_id, tmp->caller, 0, NULL, 1, tmp->starting_day_time, tmp->duration);
             arrange_schd(&tmp_schedule);
+#endif
+            /** TODO: free(tmp) ??? */
             printf("-> [Recorded]\n");
         }
         else if (strcmp(op, "projectMeeting") == 0) {
-            pm_t * tmp = (pm_t*)&project_m_entry;
+            pm_t * tmp = (pm_t*)&pgg_entry;
             project_group_gather_handler(buffer + len_op, tmp, in);
-            printf("out of project meeting!\n");
+#ifdef IPC
+            schd_t tmp_schedule = load_schd(op_id, tmp->caller, tmp->num_callee, tmp->callee, 2, tmp->starting_day_time, tmp->duration);
+            arrange_schd(&tmp_schedule);
+#endif
             printf("-> [Recorded]\n");
         }
-#ifdef TEST
+
         else if (strcmp(op, "groupStudy") == 0) {
+            pm_t * tmp = (pm_t*)&pgg_entry;
+            project_group_gather_handler(buffer + len_op, tmp, in);
+#ifdef IPC
+            schd_t tmp_schedule = load_schd(op_id, tmp->caller, tmp->num_callee, tmp->callee, 3, tmp->starting_day_time, tmp->duration);
+            arrange_schd(&tmp_schedule);
+#endif
             printf("-> [Recorded]\n");
         }
         else if (strcmp(op, "gathering") == 0) {
+            pm_t * tmp = (pm_t*)&pgg_entry;
+            project_group_gather_handler(buffer + len_op, tmp, in);
+#ifdef IPC      
+            schd_t tmp_schedule = load_schd(op_id, tmp->caller, tmp->num_callee, tmp->callee, 4, tmp->starting_day_time, tmp->duration);
+            arrange_schd(&tmp_schedule);
+#endif
             printf("-> [Recorded]\n");
-        } else if (strcmp(op, "printSchd") == 0) {
-            bool reach = false;
-            bool is_all = false;
-            for (int i = 0; i < apm_len; i++) {
-                if (buffer[i] == ' ') {
-                    reach = true;
-                }
-                else if (buffer[i] != ' ' && reach) {
-                    if (buffer[i] == 'A') is_all = true;
-                }
-            }
-            if (is_all) {
+        }
+        else if (strcmp(op, "printSchd") == 0) {
+            if (buffer[len_op] == 'A') { // printSchd ALL
                 printf("Period: 2023-04-01 to 2023-04-30\n");
                 printf("Algorithm used: FCFS\n");
                 printf("***Appointment Schedule***\n\n");
+                for (int i = 0; i < in->num_user; i++) {
+                    
+                }
+#ifdef TEST
                 for (int j = 0; j < in->num_user; j++) {
                     user_meta_data meta;
                     user_appointment_data *list;
@@ -201,10 +212,23 @@ int run(cmd_t* in) {
                     printf("============================================================================\n");
                     free (list);
                 }
+#endif
+            }
+            else if (buffer[len_op] == 'F') { // printSchd FCFS
+                
+            }
+            else if (buffer[len_op] == 'P') { // printSchd PRIORITY
+                
+            }
+            else if (buffer[len_op] == 'R') { // printSchd ROUND ROBINE
+                
+            }
+            else if (buffer[len_op] == 'B') { // printSchd BIG MEETING FIRST
+
             }
             
-            // printf("-> [Exported file: Ggg_01_FCFS.txt]\n");
         }
+#ifdef TEST
         else { // TODO: (strcmp(op, "endProgram") == 0)
             shutdown_child_process();
             printf("-> Bye!\n");
