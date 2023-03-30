@@ -400,20 +400,25 @@ schd_t load_schd(int id, int caller, int num_of_callee, int *callee, int type, l
 schd_t re_schd(schd_t s){ // For main process to use to suggest a n_ew time
     schd_t t = s;
     t.type = 0;
-    t.priv = 0;
+    t.priv = -INF;
     int slot_len = ceil(s.len * SLOT_PER_HOUR);
+    //printf("R: %d %d %d %d\n", t.id, t.type, t.caller, t.callee_num);
     for(int i = 0; i < day_num; i++){
 
         int base = i * SLOT_PER_DAY;
+        //printf("D: %d\n", i);
         for(int j = 0; j+slot_len <= SLOT_PER_DAY; j++){
 
             t.start_slot = base+j+1;
             t.end_slot = base+j+slot_len;
+            t.start_time = slot_to_time(t.start_slot);
+            t.end_time = slot_to_time(t.end_slot);
+            //printf("< %lld (%d) - %lld (%d) >\n", t.start_time.str, t.start_slot, t.end_time.str, t.end_slot);
             bool ok = 1;
-            ok &= ipc_schd_insert_query(t.caller, &t);
-            for(int k = 0; k < s.callee_num && ok; k++){
-                ok &= ipc_schd_insert_query(t.callee[k], &t);
+            for(int k = 0; k < 4 && ok; k++){
+                ok &= ipc_schd_insert_query(k, &t);
             }
+            //printf(" : %d\n", ok);
             if(ok){
                 t.start_time = slot_to_time(t.start_slot);
                 t.end_time = slot_to_time(t.end_slot);
