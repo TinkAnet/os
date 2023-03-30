@@ -1,7 +1,6 @@
-CC = /usr/bin/llvm-gcc
+CC = cc
 
-CFLAGS = -g -ggdb -std=gnu99 -Wall 
-# -DDEBUG 
+CFLAGS = -g -ggdb -std=c99 -Wall -DDEBUG 
 
 EXECUTABLE = ./bin/test
 
@@ -16,7 +15,7 @@ MAIN_PROG = ./main.c
 
 .PHONY:cli
 cli:
-	$(CC) $(CFLAGS) $(SRC_FILES) -o $(EXECUTABLE)
+	$(CC) $(CFLAGS) $(SRC_FILES) -lm -o $(EXECUTABLE)
 	
 clean:
 	rm -f *.o *~ $(EXECUTABLE)
@@ -26,3 +25,6 @@ run:
 
 lldb:
 	clear && lldb -- ./$(EXECUTABLE) 20230401 20230430 john mary lucy paul
+
+gdb:
+	clear && gdb --args ./$(EXECUTABLE) 20230401 20230430 john mary lucy paul
