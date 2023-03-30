@@ -16,6 +16,7 @@
 
 pt_t priv_t_entry;
 pm_t pgg_entry;
+int sequence_number;
 
 /**
  * @brief user_id = user container position + 1
@@ -166,8 +167,27 @@ static void construct_op_type(char* op_c, schd_t* sch) {
  * @param which_op 0 -> FCFS 1 -> Priority 2 -> Round Robine 3 -> Big Meeting First 4 -> All
 */
 static void help_calender_print(cmd_t *in, int which_op) {
+    sequence_number += 1;
+    char file_name_buffer[30];
+    memset(file_name_buffer, 0, sizeof(file_name_buffer));
+    if (which_op == 0) {
+        sprintf(file_name_buffer, "Ggg_%02d_FCFS.txt", sequence_number);
+    }
+    else if (which_op == 1) {
+        sprintf(file_name_buffer, "Ggg_%02d_Priority.txt", sequence_number);
+    }
+    else if (which_op == 2) {
+        sprintf(file_name_buffer, "Ggg_%02d_Round_Robine.txt", sequence_number);
+    }
+    else if (which_op == 3) {
+        sprintf(file_name_buffer, "Ggg_%02d_Big_Meeting_First.txt", sequence_number);
+    }
+    FILE* infilep;
+    infilep = fopen(file_name_buffer, "a");
     for (int i = 0; i < in->num_user; i++) { // iterate all users and find according appointment related to specific scheduling algorithms.
+    #ifdef DEBUG
         printf("[Help Cal] %s\n", in->user_container[i].name);
+    #endif
         int this_n_app = ipc_schd_print(which_op, in->user_container[i].id); // 0 -> FCFS
         print_appointment_schd_heading(in->user_container[i].name, this_n_app);
         for (int j = 0; j < this_n_app; j++) { 
@@ -177,6 +197,7 @@ static void help_calender_print(cmd_t *in, int which_op) {
             date_t i_start_date = i_start_time.date;
             char op_char[MAX_OPEARTOR_CHAR];
             construct_op_type(op_char, &i_app_tmp);
+            
             printf("%d-%02d-%02d%3s%02d:%02d%3s%02d:%02d%3s%-15s", i_start_date.year, i_start_date.month, i_start_date.day, "", i_start_time.hour, i_start_time.minute, "", i_end_time.hour, i_end_time.minute, "", op_char);
             int n_callee = i_app_tmp.callee_num;
             for (int k = 0; k < n_callee; k++) {
@@ -225,6 +246,8 @@ static void calendar_print(cmd_t* in, int which_op) {
 }
 
 int run(cmd_t* in) {
+    init_appointment(in->start_date,in->end_date,in->num_user);
+    sequence_number = 0; // init the sequence number
     ipc_launch_schd(in->start_date,in->end_date,in->num_user);
     char buffer[BUFFER_SIZE];
     int op_id = 0; // appointment id, each appointment has a unique id.
