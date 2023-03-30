@@ -428,7 +428,15 @@ schd_t re_schd(schd_t s){ // For main process to use to suggest a n_ew time
 }
 
 // For scheduler operating
-
+/**
+ * @brief insert query using Interprocess communication
+ * 
+ * @param s : an appointment
+ * @return true : the appointment canbe inserted.
+ * @return false : the appointment cannot be inserted.
+ * @note Check for conflicts with this schedule by querying all users iteratively.\n
+ * As soon as this schedule conflicts with any user's schedule, the function returns false
+ */
 bool schder_insert_query(schd_t s){
     bool ok = true;
     ok &= ipc_user_insert_query(s.caller, &s);
@@ -439,7 +447,12 @@ bool schder_insert_query(schd_t s){
 }
 
 
-
+/**
+ * @brief insert an appointment, and modify the schedule list for all users.
+ * 
+ * @param s : The appointment to be inserted.
+ * @note This operation will delete some schedules
+ */
 void schder_insert(schd_t s){
     if(if_rejected[s.id] || s.if_user_choose_to_reject){
         ipc_user_insert(0, &s);
@@ -456,7 +469,14 @@ void schder_insert(schd_t s){
     for(int i = 0; i < s.callee_num; i++)
         ipc_user_insert(s.callee[i], &s);
 }
-
+/**
+ * @brief 
+ * 
+ * @param s : The appointment to be inserted.
+ * @return int : The number of schedules taht will be deleted
+ * @note The input here is not the schedule to be deleted, but inquiring about other schedules that conflict with it.\n
+ * In the meanwhile, these shcedules will be saved into a list.
+ */
 int schder_delete_query(schd_t s){
     schd_cnt = 0;
     int m = ipc_user_delete_query(s.caller, &s);
@@ -473,7 +493,10 @@ int schder_delete_query(schd_t s){
     }
     return schd_cnt;
 }
-
+/**
+ * @brief real deleation operation
+ * 
+ */
 void schder_delete() {
     for(int i = 0; i < schd_cnt; i++){
         ipc_user_delete(schd_list[i].caller, schd_list[i].id);
@@ -518,7 +541,11 @@ void switch_to_reject_mode(schd_t *a){
 
 
 
-
+/**
+ * @brief Output schedule details for testing
+ * 
+ * @param s : 
+ */
 void print_schd_test(schd_t s){
 	printf("-------------Schd %d---------------\n", s.id);
 	printf("caller: %d\n", s.caller);
@@ -537,7 +564,11 @@ void print_schd_test(schd_t s){
 
 
 
-
+/**
+ * @brief Test function
+ * @note The function tests other functions in appointment.c
+ * 
+ */
 int run_appointment_test(){
     //str_to_date()
     printf("Test: str_to_date()\n");
