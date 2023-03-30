@@ -405,7 +405,7 @@ schd_t re_schd(schd_t s){ // For main process to use to suggest a n_ew time
     for(int i = 0; i < day_num; i++){
 
         int base = i * SLOT_PER_DAY;
-        for(int j = 0; base+j+slot_len <= SLOT_PER_DAY; j++){
+        for(int j = 0; j+slot_len <= SLOT_PER_DAY; j++){
 
             t.start_slot = base+j+1;
             t.end_slot = base+j+slot_len;
