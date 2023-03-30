@@ -18,6 +18,13 @@ pt_t priv_t_entry;
 pm_t pgg_entry;
 
 /**
+ * @brief user_id = user container position + 1
+*/
+static int id2index(int x) {
+    return x - 1;
+}
+
+/**
  * @brief convert a str to a date
  * 
  * @param s : a integer of type long long
@@ -87,14 +94,14 @@ static int num_scheduling_available(schd_t* sch) {
 /**
  * @brief when user choose to stick to current schedule, program will use available scheduling algorithms for users.
  * @param sch current schedule
- * @param available_bitmap indicates which scheduling algorithm is available. 
 */
-static void use_available_scheduling(schd_t* sch, int available_bitmap) {
-    if ((available_bitmap & 1) == 1) ipc_schd_insert(0, sch);
-    if ((available_bitmap & 2) == 2) ipc_schd_insert(1, sch);
-    if ((available_bitmap & 4) == 4) ipc_schd_insert(2, sch);
-    if ((available_bitmap & 8) == 8) ipc_schd_insert(3, sch);
+static void use_available_scheduling(schd_t* sch) {
+     ipc_schd_insert(0, sch);
+     ipc_schd_insert(1, sch);
+     ipc_schd_insert(2, sch);
+     ipc_schd_insert(3, sch);
 }
+
 /**
  * @brief reschedule operation
  * @param sch_to_resch schedule to be rescheduled.
@@ -107,15 +114,6 @@ static void reschedule_op(schd_t* sch_to_resch) {
         printf("The suggested new schedule is from %d.%02d.%02d %02d:%02d to %d.%02d.%02d %02d:%02d\n",
             reschedule.start_time.date.year, reschedule.start_time.date.month, reschedule.start_time.date.day, reschedule.start_time.hour, reschedule.start_time.minute,
             reschedule.end_time.date.year, reschedule.end_time.date.month, reschedule.end_time.date.day, reschedule.end_time.hour, reschedule.end_time.minute);
-        printf("Do you want to use this new schedule? 1->yes,0->no!\n");
-        int option;
-        scanf("%d", &option);
-        if (option == 1) {
-            insert_four_schd(&reschedule);
-        }
-        else {
-            switch_to_reject_mode(&reschedule);
-        }
     }
 }
 
@@ -131,14 +129,16 @@ static void arrange_schd(schd_t* sch) {
     if (available_bitmap == 15) insert_four_schd(sch);
     else {
         int option;
-        printf("1. reschedule your current schedule.\n");
+        printf("1. reschedule your current schedule, and your current schedule will be added to reject list.\n"); /** TODO: 当前的放入reject list要提示用户*/
         printf("2. continue with current schedule.\n");
         scanf("%d", &option);
         if (option == 1) {
+            switch_to_reject_mode(sch);
             reschedule_op(sch);
+            use_available_scheduling(sch); // automatically add the schedule to the reject list.
         }
         else if (option == 2) {
-            use_available_scheduling(sch, available_bitmap);
+            use_available_scheduling(sch);
         }
     }
 }
@@ -162,11 +162,15 @@ static void construct_op_type(char* op_c, schd_t* sch) {
     else strcpy(op_c, "gathering");
 }
 
+/**
+ * @param which_op 0 -> FCFS 1 -> Priority 2 -> Round Robine 3 -> Big Meeting First 4 -> All
+*/
 static void help_calender_print(cmd_t *in, int which_op) {
-    for (int i = 0; i < in->num_user; i++) {
+    for (int i = 0; i < in->num_user; i++) { // iterate all users and find according appointment related to specific scheduling algorithms.
+        printf("[Help Cal] %s\n", in->user_container[i].name);
         int this_n_app = ipc_schd_print(which_op, in->user_container[i].id); // 0 -> FCFS
         print_appointment_schd_heading(in->user_container[i].name, this_n_app);
-        for (int j = 0; j < this_n_app; j++) {
+        for (int j = 0; j < this_n_app; j++) { 
             schd_t i_app_tmp = schd_buffer[j];
             tm_t i_start_time = i_app_tmp.start_time;
             tm_t i_end_time = i_app_tmp.end_time;
@@ -178,8 +182,30 @@ static void help_calender_print(cmd_t *in, int which_op) {
             for (int k = 0; k < n_callee; k++) {
                 int id_callee = i_app_tmp.callee[k];
                 for (int q = 0; q < in->num_user; q++) {
-                    if (in->user_container[q].id == id_callee) printf("%s ",in->user_container[q].name);
+                    // in->user_container[q].id != in->user_container[j].id is for excluding mary from People list
+                    /**
+                     * e.g., john is the projectMeeting initiator
+                     *    john, you have 1 appintments.
+                     * Date         Start   End     Type           People
+                     * ============================================================
+                     * 2023-04-02   19:00   21:00   projectMeeting paul mary
+                     * 
+                     * mary, you have 1 appintments.
+                     * Date         Start   End     Type           People
+                     * ============================================================
+                     * 2023-04-02   19:00   21:00   projectMeeting paul john (not mary here)
+                    */
+                    if (in->user_container[q].id == id_callee 
+                        && in->user_container[i].id != id_callee) {
+                        printf("%s ",in->user_container[q].name);
+                    }
                 }
+            }
+            // printf("[Help Cal] caller_id : %d\n", i_app_tmp.caller);
+            // printf("[Help Cal] caller : %s\n", in->user_container[i_app_tmp.caller -1].name);
+            // print initiator if the initiator is not i and i_app_tmp.type != 4 (privateTime)
+            if (i_app_tmp.caller != in->user_container[i].id && i_app_tmp.type != 4) {
+                printf("%s ", in->user_container[id2index(i_app_tmp.caller)].name);
             }
             printf("\n");
         }   
