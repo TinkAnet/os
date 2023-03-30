@@ -8,8 +8,6 @@
 
 #define FI_USR_OFFSET 3 // ./apo YYYYMMDD YYYYMMDD u1 (pos of u1 = 0 + 3)
 
-cmd_t cmd_in;
-
 int is_existing_user(int id, cmd_t* inst) {
     int n = inst->num_user;
     for (int i = 0; i < n; i++) {

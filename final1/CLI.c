@@ -14,6 +14,9 @@
 // #define DEBUG
 #define IPC
 
+pt_t priv_t_entry;
+pm_t pgg_entry;
+
 /**
  * @brief convert a str to a date
  * 
@@ -101,7 +104,7 @@ static void reschedule_op(schd_t* sch_to_resch) {
     if (reschedule.type == -1) {
         printf("Can not find a suitable time to help you reschedule your schedule!\n");
     } else {
-        printf("The new schedule is from %d.%02d.%02d %02d:%02d to %d.%02d.%02d %02d:%02d\n",
+        printf("The suggested new schedule is from %d.%02d.%02d %02d:%02d to %d.%02d.%02d %02d:%02d\n",
             reschedule.start_time.date.year, reschedule.start_time.date.month, reschedule.start_time.date.day, reschedule.start_time.hour, reschedule.start_time.minute,
             reschedule.end_time.date.year, reschedule.end_time.date.month, reschedule.end_time.date.day, reschedule.end_time.hour, reschedule.end_time.minute);
         printf("Do you want to use this new schedule? 1->yes,0->no!\n");
@@ -140,6 +143,12 @@ static void arrange_schd(schd_t* sch) {
     }
 }
 
+/**
+ * @details the following is an example
+ * . John, you have 999 appointments.
+ * Date Start End Type People 
+ * =========================================================================
+*/
 static void print_appointment_schd_heading(const char *username, int n_app) {
     printf("%7s, you have %d appintments.\n", username, n_app);
     printf("%-13s%-8s%-8s%-15s%-15s\n", "Date", "Start", "End", "Type", "People");
@@ -153,9 +162,9 @@ static void construct_op_type(char* op_c, schd_t* sch) {
     else strcpy(op_c, "gathering");
 }
 
-static void fcfs_print(cmd_t *in) {
+static void help_calender_print(cmd_t *in, int which_op) {
     for (int i = 0; i < in->num_user; i++) {
-        int this_n_app = ipc_schd_print(0, in->user_container[i].id); // 0 -> FCFS
+        int this_n_app = ipc_schd_print(which_op, in->user_container[i].id); // 0 -> FCFS
         print_appointment_schd_heading(in->user_container[i].name, this_n_app);
         for (int j = 0; j < this_n_app; j++) {
             schd_t i_app_tmp = schd_buffer[j];
@@ -176,16 +185,20 @@ static void fcfs_print(cmd_t *in) {
         }   
     }
 }
-
-
+/**
+ * @param which_op 0 -> FCFS 1 -> Priority 2 -> Round Robine 3 -> Big Meeting First 4 -> All
+*/
+static void calendar_print(cmd_t* in, int which_op) {
+    if (which_op != 4) help_calender_print(in, which_op);
+    else {
+        help_calender_print(in, 0);
+        help_calender_print(in, 1);
+        help_calender_print(in, 2);
+        help_calender_print(in, 3);
+    }
+}
 
 int run(cmd_t* in) {
-    // init child process
-//     for (int i = 0; i < in->num_user; i++) {
-// #ifdef IPC
-//         ipc_start_schd_process(in->user_container[i].id, in->start_date, in->end_date, in->num_user);
-// #endif
-//     }
     ipc_launch_schd(in->start_date,in->end_date,in->num_user);
     char buffer[BUFFER_SIZE];
     int op_id = 0; // appointment id, each appointment has a unique id.
@@ -266,7 +279,7 @@ int run(cmd_t* in) {
                 printf("Period: %d-%02d-%02d to %d-%02d-%02d\n", st_date.year, st_date.month, st_date.day, en_date.year, en_date.month, en_date.day);
                 printf("Algorithm used: FCFS, PRIORITY, ROUND ROBINE, BIG MEETING FIRST\n\n");
                 printf("***Appointment Schedule***\n\n");
-                
+                calendar_print(in, 4);
             }
             else if (buffer[len_op] == 'F') { // printSchd FCFS
                 date_t st_date = str_to_date(in->start_date);
@@ -274,16 +287,31 @@ int run(cmd_t* in) {
                 printf("Period: %d-%02d-%02d to %d-%02d-%02d\n", st_date.year, st_date.month, st_date.day, en_date.year, en_date.month, en_date.day);
                 printf("Algorithm used: FCFS\n\n");
                 printf("***Appointment Schedule***\n\n");
-                fcfs_print(in);
+                calendar_print(in, 0);
             }
             else if (buffer[len_op] == 'P') { // printSchd PRIORITY
-                
+                date_t st_date = str_to_date(in->start_date);
+                date_t en_date = str_to_date(in->end_date);
+                printf("Period: %d-%02d-%02d to %d-%02d-%02d\n", st_date.year, st_date.month, st_date.day, en_date.year, en_date.month, en_date.day);
+                printf("Algorithm used: PRIORITY\n\n");
+                printf("***Appointment Schedule***\n\n");
+                calendar_print(in, 1);
             }
             else if (buffer[len_op] == 'R') { // printSchd ROUND ROBINE
-                
+                date_t st_date = str_to_date(in->start_date);
+                date_t en_date = str_to_date(in->end_date);
+                printf("Period: %d-%02d-%02d to %d-%02d-%02d\n", st_date.year, st_date.month, st_date.day, en_date.year, en_date.month, en_date.day);
+                printf("Algorithm used: ROUND ROBINE\n\n");
+                printf("***Appointment Schedule***\n\n");
+                calendar_print(in, 2);
             }
             else if (buffer[len_op] == 'B') { // printSchd BIG MEETING FIRST
-
+                date_t st_date = str_to_date(in->start_date);
+                date_t en_date = str_to_date(in->end_date);
+                printf("Period: %d-%02d-%02d to %d-%02d-%02d\n", st_date.year, st_date.month, st_date.day, en_date.year, en_date.month, en_date.day);
+                printf("Algorithm used: BIG MEETING FIRST\n\n");
+                printf("***Appointment Schedule***\n\n");
+                calendar_print(in, 3);
             }
         }
         else if (strcmp(op, "endProgram") == 0) {

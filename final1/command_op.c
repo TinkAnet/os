@@ -6,9 +6,6 @@
 #include<ctype.h>
 #include<string.h>
 
-pt_t priv_t_entry;
-pm_t pgg_entry;
-
 
 // #define DEBUG
 int private_time_handler (const char *input, pt_t *res, cmd_t *inst) {
