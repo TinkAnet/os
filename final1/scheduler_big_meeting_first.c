@@ -9,7 +9,7 @@ void BMF_schder_insert(schd_t s){
 }
 
 bool BMF_schder_insert_query(schd_t s){
-    if(s.caller == 0) s.priv = 0;
+    if(s.type == 0) s.priv = 0;
     else s.priv = s.callee_num * alpha + s.type;
     return schder_insert_query(s);
 }

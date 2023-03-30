@@ -27,7 +27,7 @@ void RR_schder_insert(schd_t s){
 }
 
 bool RR_schder_insert_query(schd_t s){
-    if(s.caller == 0)
+    if(s.type == 0)
         s.priv = -INF;
     else{
         s.priv = user_cnt[s.caller] - (success_cnt+0.0) / total_user_num;

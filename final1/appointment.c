@@ -398,10 +398,9 @@ schd_t load_schd(int id, int caller, int num_of_callee, int *callee, int type, l
  * @return schd_t 
  */
 schd_t re_schd(schd_t s){ // For main process to use to suggest a n_ew time
-    schd_t t;
+    schd_t t = s;
     t.type = 0;
     t.priv = 0;
-    t.caller = 0;
     int slot_len = ceil(s.len * SLOT_PER_HOUR);
     for(int i = 0; i < day_num; i++){
 
