@@ -13,7 +13,7 @@
 #include"CLI.h"
 
 // #define DEBUG
-#define TER // print at terminal
+// #define TER // print at terminal
 
 pt_t priv_t_entry;
 pm_t pgg_entry;
@@ -470,6 +470,11 @@ int run(cmd_t* in) {
             printf("after private time handler\n");
 #endif
             schd_t tmp_schedule = load_schd(op_id, tmp->caller, 0, NULL, 4, tmp->starting_day_time, tmp->duration);
+            if (tmp_schedule.type == -1) {
+                op_id--;
+                printf("Invalid appointment argument!\n");
+                continue;
+            }
             arrange_schd(&tmp_schedule);
             printf("-> [Recorded]\n");
         }
@@ -482,6 +487,11 @@ int run(cmd_t* in) {
             }
             op_id++;
             schd_t tmp_schedule = load_schd(op_id, tmp->caller, tmp->num_callee, tmp->callee, 3, tmp->starting_day_time, tmp->duration);
+            if (tmp_schedule.type == -1) {
+                printf("Invalid appointment argument!\n");
+                op_id--;
+                continue;
+            }
             arrange_schd(&tmp_schedule);
             printf("-> [Recorded]\n");
         }
@@ -494,6 +504,11 @@ int run(cmd_t* in) {
             }
             op_id++;
             schd_t tmp_schedule = load_schd(op_id, tmp->caller, tmp->num_callee, tmp->callee, 2, tmp->starting_day_time, tmp->duration);
+            if (tmp_schedule.type == -1) {
+                printf("Invalid appointment argument!\n");
+                op_id--;
+                continue;
+            }
             arrange_schd(&tmp_schedule);
             printf("-> [Recorded]\n");
         }
@@ -506,6 +521,11 @@ int run(cmd_t* in) {
             }
             op_id++;
             schd_t tmp_schedule = load_schd(op_id, tmp->caller, tmp->num_callee, tmp->callee, 1, tmp->starting_day_time, tmp->duration);
+            if (tmp_schedule.type == -1) {
+                printf("Invalid appointment argument!\n");
+                op_id--;
+                continue;
+            }
             arrange_schd(&tmp_schedule);
             printf("-> [Recorded]\n");
         }
@@ -567,6 +587,10 @@ int run(cmd_t* in) {
             ipc_shutdown_schd();
             printf("-> Bye!\n");
             break;
+        }
+        else {
+            printf("Invalid appointment type!\n");
+            continue;
         }
     }
     return 0;

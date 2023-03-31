@@ -149,13 +149,13 @@ typedef int (*schd_print_fn_t)();
 
 static schd_insert_query_fn_t schd_impl_insert_query_list[SCHD_NUM] = {
     // TODO: replace with the actual one
-    FCFS_schder_insert_query, FCFS_schder_insert_query, FCFS_schder_insert_query, FCFS_schder_insert_query
-    // FCFS_schder_insert_query, PRF_schder_insert_query, RR_schder_insert_query, BMF_schder_insert_query
+    // FCFS_schder_insert_query, FCFS_schder_insert_query, FCFS_schder_insert_query, FCFS_schder_insert_query
+    FCFS_schder_insert_query, PRF_schder_insert_query, RR_schder_insert_query, BMF_schder_insert_query
 };
 static schd_insert_fn_t schd_impl_insert_list[SCHD_NUM] = {
     // TODO: replace with the actual one
-    FCFS_schder_insert, FCFS_schder_insert, FCFS_schder_insert, FCFS_schder_insert
-    // FCFS_schder_insert, PRF_schder_insert, RR_schder_insert, BMF_schder_insert
+    // FCFS_schder_insert, FCFS_schder_insert, FCFS_schder_insert, FCFS_schder_insert
+    FCFS_schder_insert, PRF_schder_insert, RR_schder_insert, BMF_schder_insert
 };
 
 static void schd_insert_query_callback() {
