@@ -10,6 +10,7 @@
 #include"ipc_schd.h"
 #include"command_op.h"
 #include"appointment.h"
+#include"CLI.h"
 
 // #define DEBUG
 #define TER // print at terminal
@@ -17,12 +18,23 @@
 pt_t priv_t_entry;
 pm_t pgg_entry;
 int sequence_number;
+int op_id;
+int caller_request_accepted;
+int user_accept_count[MAX_CALLEE_NUM + 1];
+int accepted_act_people;
+int user_time_slots[MAX_CALLEE_NUM + 1];
 
 /**
- * @brief user_id = user container position + 1
+ * @brief user container position = user_id - 1
 */
 static int id2index(int x) {
     return x - 1;
+}
+/**
+ * @brief user_id = user container position + 1
+*/
+static int index2id(int x) {
+    return x + 1;
 }
 
 /**
@@ -237,42 +249,52 @@ static void print_rejected_list(int which_op, FILE* fd, cmd_t *in) {
     }
 }
 
-// static void print_performance(FILE* fd, cmd_t* in) {
-//     int a;
-//     double b;
-//     fprintf(fd, "*** Performance ***\n");
-//     fprintf(fd, "Total Number of Requests Received: %d (%4.1f%%)\n", a, b);
-//     fprintf(fd, "Total Number of Requests Accepted: %d (%4.1f%%)\n", a, b);
-//     fprintf(fd, "Total Number of Requests Rejected: %d (%4.1f%%)\n\n\n", a, b);
-
-//     fprintf(fd, "Number of Requests Accepted by Individual: \n\n");
-//     for (int i = 0; i < in->num_user; i++) {
-//         fprintf(fd, "%15s%20s- %d\n", in->user_container[i].name, "", a);
-//     }
-//     fprintf(fd, "\n\n\n");
+static void print_performance(FILE* fd, cmd_t* in) {
+    int a;
+    double b;
+    fprintf(fd, "*** Performance ***\n");
+    fprintf(fd, "The total number of people participating in activities under the current scheduling algorithm: %d\n", accepted_act_people);
+    fprintf(fd, "Total Number of Requests Received: %d\n", op_id);
+    fprintf(fd, "Total Number of Requests Accepted: %d (%4.1f%%)\n", caller_request_accepted, (double) caller_request_accepted / (double) op_id);
+    fprintf(fd, "Total Number of Requests Rejected: %d (%4.1f%%)\n\n\n", op_id - caller_request_accepted, (double)(op_id - caller_request_accepted) / (double) op_id);
     
-//     fprintf(fd, "Utilization of Time Slot:\n\n");
-//     for (int i = 0; i < in->num_user; i++) {
-//         fprintf(fd, "%15s%20s- %4.1f%%\n", in->user_container[i].name, "", b);
-//     }
-//     fprintf(fd, "\n\n");
-// }
+    fprintf(fd, "Number of Requests Accepted by Individual: \n\n");
+    for (int i = 0; i < in->num_user; i++) {
+        fprintf(fd, "%15s%20s- %d\n", in->user_container[i].name, "", user_accept_count[in->user_container[i].id]);
+    }
+    fprintf(fd, "\n\n\n");
+    fprintf(fd, "Utilization of Time Slot:\n\n");
+    for (int i = 0; i < in->num_user; i++) {
+        fprintf(fd, "%15s%20s- %4.1f%%\n", in->user_container[i].name, "", b);
+    }
+    fprintf(fd, "\n\n");
+}
 
 /**
  * @param which_op 0 -> FCFS 1 -> Priority 2 -> Round Robine 3 -> Big Meeting First
 */
 static void help_calender_print(cmd_t *in, int which_op, FILE* fd) {
-    for (int i = 0; i < in->num_user; i++) { // iterate all users and find according appointment related to specific scheduling algorithms.
+    caller_request_accepted = 0;
+    accepted_act_people = 0;
+    memset(user_accept_count, 0, sizeof(user_accept_count));
+    memset(user_time_slots, 0, sizeof(user_time_slots));
+    for (int i = 0; i < in->num_user; i++) { // iterate all users
     #ifdef DEBUG
         printf("[Help Cal] %s\n", in->user_container[i].name);
     #endif
-        int this_n_app = ipc_schd_print(which_op, in->user_container[i].id); // 0 -> FCFS
+        int this_n_app = ipc_schd_print(which_op, in->user_container[i].id); // find corresponding appointment related to specific scheduling algorithms (which_op).
         print_appointment_schd_heading(in->user_container[i].name, this_n_app, fd);
         for (int j = 0; j < this_n_app; j++) {
             schd_t i_app_tmp = schd_buffer[j];
             tm_t i_start_time = i_app_tmp.start_time;
             tm_t i_end_time = i_app_tmp.end_time;
             date_t i_start_date = i_start_time.date;
+            if (i_app_tmp.caller == in->user_container[i].id) {
+                caller_request_accepted++;
+                user_accept_count[in->user_container[i].id]++;
+                accepted_act_people += (i_app_tmp.callee_num + 1);
+            }
+            user_time_slots[index2id(i)] += i_app_tmp.end_slot - i_app_tmp.start_slot + 1;
             char op_char[MAX_OPEARTOR_CHAR];
             construct_op_type(op_char, &i_app_tmp);
         #ifdef TER
@@ -280,6 +302,8 @@ static void help_calender_print(cmd_t *in, int which_op, FILE* fd) {
         #endif
             fprintf(fd, "%d-%02d-%02d%3s%02d:%02d%3s%02d:%02d%3s%-15s", i_start_date.year, i_start_date.month, i_start_date.day, "", i_start_time.hour, i_start_time.minute, "", i_end_time.hour, i_end_time.minute, "", op_char);
             int n_callee = i_app_tmp.callee_num;
+            
+            /** caller是他自己, 就开一个user_accpt_count数组, 如果是他自己 user_account_cnt[id] ++ = 成功发起, user_time_slots[] += endslot - starslot + 1, total_slot_num  */
             for (int k = 0; k < n_callee; k++) {
                 int id_callee = i_app_tmp.callee[k];
                 for (int q = 0; q < in->num_user; q++) {
@@ -319,8 +343,9 @@ static void help_calender_print(cmd_t *in, int which_op, FILE* fd) {
         }
     }
     fprintf(fd, "\n");
+
     print_rejected_list(which_op, fd, in);
-    // print_performance(fd, in);
+    print_performance(fd, in);
 }
 
 /**
@@ -391,9 +416,9 @@ static void init_header_calender_print(cmd_t* in, FILE* infilep, int which_op) {
 int run(cmd_t* in) {
     sequence_number = 0; // init the sequence number
     init_appointment(in->start_date,in->end_date,in->num_user);
-    ipc_launch_schd(in->start_date,in->end_date,in->num_user);
+    ipc_launch_schd(in->start_date, in->end_date,in->num_user);
     char buffer[BUFFER_SIZE];
-    int op_id = 0; // appointment id, each appointment has a unique id.
+    op_id = 0; // appointment id, each appointment has a unique id, once we receive an appointment, let op_id += 1
     FILE* fd_all_req = NULL;
     fd_all_req = fopen("All_Requests.dat", "a");
     while (true) {

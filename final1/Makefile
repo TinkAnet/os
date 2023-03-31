@@ -1,6 +1,7 @@
 CC = cc
 
-CFLAGS = -g -ggdb -std=c99 -Wall -Werror -DDEBUG 
+CFLAGS = -g -ggdb -std=c99 -Wall -Werror 
+# -DDEBUG 
 
 EXECUTABLE = ./bin/test
 

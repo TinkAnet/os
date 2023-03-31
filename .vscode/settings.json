@@ -3,6 +3,7 @@
         "stdbool.h": "c",
         "locale": "c",
         "string": "c",
-        "input_process.h": "c"
+        "input_process.h": "c",
+        "command_op.h": "c"
     }
 }

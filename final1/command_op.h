@@ -31,10 +31,6 @@ typedef struct PROJECT_GROUP_GATHER {
     int callee[MAX_CALLEE_NUM];
 } pm_t;
 
-extern pt_t priv_t_entry; // private time entry
-extern pm_t pgg_entry; // project meeting, group study, gathering entry
-extern int sequence_number; // sequence number of report printed, starting from 1
-
 /**
  * @brief construct a private time entry according to input
  * @details raise error message when: not alpha char in name, not number char in time, caller name does not exist
