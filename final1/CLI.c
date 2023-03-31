@@ -249,14 +249,18 @@ static void print_rejected_list(int which_op, FILE* fd, cmd_t *in) {
     }
 }
 
+/**
+ * @brief print performance matric under specific scheduling algorithms. 
+*/
 static void print_performance(FILE* fd, cmd_t* in) {
-    int a;
-    double b;
-    fprintf(fd, "*** Performance ***\n");
+    fprintf(fd, "\n\n*** Performance ***\n");
     fprintf(fd, "The total number of people participating in activities under the current scheduling algorithm: %d\n", accepted_act_people);
     fprintf(fd, "Total Number of Requests Received: %d\n", op_id);
-    fprintf(fd, "Total Number of Requests Accepted: %d (%4.1f%%)\n", caller_request_accepted, (double) caller_request_accepted / (double) op_id);
-    fprintf(fd, "Total Number of Requests Rejected: %d (%4.1f%%)\n\n\n", op_id - caller_request_accepted, (double)(op_id - caller_request_accepted) / (double) op_id);
+    #ifdef DEBUG
+    printf("caller_request_accepted = %d op_id = %d\n", caller_request_accepted, op_id);
+    #endif
+    fprintf(fd, "Total Number of Requests Accepted: %d (%.1f%%)\n", caller_request_accepted, ((double) caller_request_accepted / (double) op_id) * 100);
+    fprintf(fd, "Total Number of Requests Rejected: %d (%.1f%%)\n\n\n", op_id - caller_request_accepted, ((double)(op_id - caller_request_accepted) / (double) op_id) * 100);
     
     fprintf(fd, "Number of Requests Accepted by Individual: \n\n");
     for (int i = 0; i < in->num_user; i++) {
@@ -264,8 +268,15 @@ static void print_performance(FILE* fd, cmd_t* in) {
     }
     fprintf(fd, "\n\n\n");
     fprintf(fd, "Utilization of Time Slot:\n\n");
+    #ifdef DEBUG
+    int n = sizeof(user_time_slots) / sizeof(user_time_slots[0]);
+    for (int i = 0; i < n; i++) {
+        printf("%d ", user_time_slots[i]);
+    }
+    printf("\n");
+    #endif
     for (int i = 0; i < in->num_user; i++) {
-        fprintf(fd, "%15s%20s- %4.1f%%\n", in->user_container[i].name, "", b);
+        fprintf(fd, "%15s%20s- %4.1f%%\n", in->user_container[i].name, "", (double) user_time_slots[in->user_container[i].id] / (double) total_slot_num * 100);
     }
     fprintf(fd, "\n\n");
 }
@@ -291,9 +302,9 @@ static void help_calender_print(cmd_t *in, int which_op, FILE* fd) {
             date_t i_start_date = i_start_time.date;
             if (i_app_tmp.caller == in->user_container[i].id) {
                 caller_request_accepted++;
-                user_accept_count[in->user_container[i].id]++;
                 accepted_act_people += (i_app_tmp.callee_num + 1);
             }
+            user_accept_count[in->user_container[i].id]++;
             user_time_slots[index2id(i)] += i_app_tmp.end_slot - i_app_tmp.start_slot + 1;
             char op_char[MAX_OPEARTOR_CHAR];
             construct_op_type(op_char, &i_app_tmp);
@@ -421,6 +432,9 @@ int run(cmd_t* in) {
     op_id = 0; // appointment id, each appointment has a unique id, once we receive an appointment, let op_id += 1
     FILE* fd_all_req = NULL;
     fd_all_req = fopen("All_Requests.dat", "a");
+    if (fd_all_req == NULL) {
+        printf("Can't open All_Requests.dat\n");
+    }
     while (true) {
         printf("Please enter appointment:\n");
         int apm_len = read(STDIN_FILENO, buffer, BUFFER_SIZE);
@@ -440,7 +454,7 @@ int run(cmd_t* in) {
             op[len_op++] = buffer[i];
         }
         op[len_op++] = 0;
-        op_id++;
+        
 #ifdef DEBUG
         printf("op : %s with len %lu\n", op, strlen(op));
 #endif
@@ -451,6 +465,7 @@ int run(cmd_t* in) {
                 printf("Input Error exists in privateTime command.\n");
                 continue;
             }
+            op_id++;
 #ifdef DEBUG
             printf("after private time handler\n");
 #endif
@@ -465,20 +480,31 @@ int run(cmd_t* in) {
                 printf("Input Error exists in projectMeeting command.\n");
                 continue;
             }
+            op_id++;
             schd_t tmp_schedule = load_schd(op_id, tmp->caller, tmp->num_callee, tmp->callee, 3, tmp->starting_day_time, tmp->duration);
             arrange_schd(&tmp_schedule);
             printf("-> [Recorded]\n");
         }
         else if (strcmp(op, "groupStudy") == 0) {
             pm_t * tmp = (pm_t*)&pgg_entry;
-            project_group_gather_handler(buffer + len_op, tmp, in);
+            int valid_pg = project_group_gather_handler(buffer + len_op, tmp, in);
+            if (valid_pg == -1) {
+                printf("Input Error exists in groupStudy command.\n");
+                continue;
+            }
+            op_id++;
             schd_t tmp_schedule = load_schd(op_id, tmp->caller, tmp->num_callee, tmp->callee, 2, tmp->starting_day_time, tmp->duration);
             arrange_schd(&tmp_schedule);
             printf("-> [Recorded]\n");
         }
         else if (strcmp(op, "gathering") == 0) {
             pm_t * tmp = (pm_t*)&pgg_entry;
-            project_group_gather_handler(buffer + len_op, tmp, in);
+            int valid_pg = project_group_gather_handler(buffer + len_op, tmp, in);
+            if (valid_pg == -1) {
+                printf("Input Error exists in gathering command.\n");
+                continue;
+            }
+            op_id++;
             schd_t tmp_schedule = load_schd(op_id, tmp->caller, tmp->num_callee, tmp->callee, 1, tmp->starting_day_time, tmp->duration);
             arrange_schd(&tmp_schedule);
             printf("-> [Recorded]\n");
