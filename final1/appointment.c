@@ -33,6 +33,7 @@ schd_t schd_list[MAX_APPOINTMENT_NUM];
 bool if_rejected[MAX_APPOINTMENT_NUM];
 int day_num;
 int total_user_num;
+int total_slot_num;
 date_t st_day, ed_day;
 
 /**
@@ -56,6 +57,7 @@ void init_appointment(long long start_day, long long end_day, int people_num){
     ed_day = str_to_date(end_day);
     total_user_num = people_num;
     day_num = days(ed_day)+1;
+    total_slot_num = day_num * SLOT_PER_DAY;
 }
 
 /**

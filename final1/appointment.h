@@ -49,6 +49,7 @@ typedef struct APPOINTMENT{
 }schd_t;
 
 extern schd_t schd_list[MAX_APPOINTMENT_NUM];
+extern int total_slot_num;
 
 
 void switch_to_reject_mode(schd_t *a);
