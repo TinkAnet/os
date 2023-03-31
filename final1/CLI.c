@@ -50,6 +50,30 @@ static date_t str_to_date(long long s){
 }
 
 /**
+ * @brief convert a str to time
+ * 
+ * @param[in] s: input str 
+ * @return tm_t : a time
+ * @note The "str" here is not a real "string", but a "longlong" integer.
+ * 
+ * @par Sample
+ * @code
+ *      long long s = 201312241930;
+ *      tm_t a = str_to_date(s);
+ * @endcode
+ */
+static tm_t str_to_time(long long s){
+    tm_t ret;
+    ret.str = s;
+    ret.date = str_to_date(s/10000);//obtain date
+    ret.hour = (s / 100) % 100;//obtain hour
+    ret.minute = s % 100;//obtain minute
+    return ret;
+}
+
+
+
+/**
  * @brief used when four scheduling algorithms are okey to use. 
 */
 static void insert_four_schd(schd_t* sch) {
@@ -130,7 +154,7 @@ static void arrange_schd(schd_t* sch) {
     if (available_bitmap == 15) insert_four_schd(sch);
     else {
         int option;
-        printf("1. reschedule your current schedule, and your current schedule will be added to reject list.\n"); /** TODO: 当前的放入reject list要提示用户*/
+        printf("1. reschedule your current schedule, and your current schedule will be added to reject list.\n");
         printf("2. continue with current schedule.\n");
         scanf("%d", &option);
         if (option == 1) {
@@ -168,6 +192,45 @@ static void construct_op_type(char* op_c, schd_t* sch) {
     else strcpy(op_c, "gathering");
 }
 
+static void print_rejected_list(int which_op, FILE* fd, cmd_t *in) {
+    int n_reject = ipc_schd_print(which_op, 0);
+#ifdef DEBUG
+    printf("n_reject = %d\n", n_reject);
+#endif
+    fprintf(fd, "***Rejected List***\n");
+    fprintf(fd, "Altogether there are %d appointments rejected.\n", n_reject);
+    fprintf(fd, "============================================================\n");
+    char activ_buffer[MAX_OPEARTOR_CHAR];
+    for (int i = 0; i < n_reject; i++) {
+        memset(activ_buffer, 0, sizeof(activ_buffer));
+        schd_t i_app_tmp = schd_buffer[i];
+        int act_type = i_app_tmp.type;
+        tm_t i_start_time = i_app_tmp.start_time;
+        date_t i_start_date = i_start_time.date;
+        if (act_type == 4) {
+            sprintf(activ_buffer, "privateTime");
+            fprintf(fd, "%d. %s %s %lld %lld %4.1f\n", i + 1, activ_buffer, in->user_container[id2index(i_app_tmp.caller)].name, i_start_date.str, i_start_time.str, i_app_tmp.len);
+        } else {
+            if (act_type == 3) {
+                sprintf(activ_buffer, "projectMeeting");
+            } else if (act_type == 2) {
+                sprintf(activ_buffer, "groupStudy");
+            } else if (act_type == 1) {
+                sprintf(activ_buffer, "gathering");
+            }
+            fprintf(fd, "%d. %s %s %lld %02d%02d %4.1f ", i + 1, activ_buffer, in->user_container[id2index(i_app_tmp.caller)].name, i_start_date.str, str_to_time(i_start_time.str).hour, str_to_time(i_start_time.str).minute, i_app_tmp.len);
+            /** TODO: add debug*/
+        #ifdef DEBUG
+            printf("[Print Reject]: %d\n", i_app_tmp.callee_num);
+        #endif
+            for (int j = 0; j < i_app_tmp.callee_num; j++) {
+                fprintf(fd, "%s ", in->user_container[id2index(i_app_tmp.callee[j])].name);
+            }
+            fprintf(fd, "\n");
+        }
+    }
+}
+
 /**
  * @param which_op 0 -> FCFS 1 -> Priority 2 -> Round Robine 3 -> Big Meeting First 4 -> All
 */
@@ -177,6 +240,7 @@ static void help_calender_print(cmd_t *in, int which_op, FILE* fd) {
         printf("[Help Cal] %s\n", in->user_container[i].name);
     #endif
         int this_n_app = ipc_schd_print(which_op, in->user_container[i].id); // 0 -> FCFS
+        /** TODO: int this_n_app =  ipc_schd_print(which_op, 0); // 0 -> FCFS */
         print_appointment_schd_heading(in->user_container[i].name, this_n_app, fd);
         for (int j = 0; j < this_n_app; j++) { 
             schd_t i_app_tmp = schd_buffer[j];
@@ -228,6 +292,8 @@ static void help_calender_print(cmd_t *in, int which_op, FILE* fd) {
             fprintf(fd, "\n");
         }
     }
+    fprintf(fd, "\n");
+    print_rejected_list(which_op, fd, in);
 }
 
 /**
@@ -237,27 +303,60 @@ static void help_calender_print(cmd_t *in, int which_op, FILE* fd) {
 static void calendar_print(cmd_t* in, int which_op, FILE* fd) {
     if (which_op != 4) help_calender_print(in, which_op, fd);
     else {
+        fprintf(fd, "\nFCFS: \n\n");
         help_calender_print(in, 0, fd);
+        fprintf(fd, "\nPriority: \n\n");
         help_calender_print(in, 1, fd);
+        fprintf(fd, "\nRound Robine: \n\n");
         help_calender_print(in, 2, fd);
+        fprintf(fd, "\nBig Meeting First \n\n");
         help_calender_print(in, 3, fd);
     }
 }
 
+/**
+ * @brief for printing the init header
+ * @details init header example:
+ * Period: 2023-04-01 to 2023-04-30
+ * Algorithm used: FCFS (variable part)
+ * ***Appointment Schedule***
+*/
 static void init_header_calender_print(cmd_t* in, FILE* infilep, int which_op) {
         date_t st_date = str_to_date(in->start_date);
         date_t en_date = str_to_date(in->end_date);
     #ifdef TER
         printf("Period: %d-%02d-%02d to %d-%02d-%02d\n", st_date.year, st_date.month, st_date.day, en_date.year, en_date.month, en_date.day);
-    if (which_op == 4) {
-        /** TODO: fix different algorithms used. */
-    }
-        printf("Algorithm used: FCFS, PRIORITY, ROUND ROBINE, BIG MEETING FIRST\n\n");
+        if (which_op == 4) {
+            printf("Algorithm used: FCFS, PRIORITY, ROUND ROBINE, BIG MEETING FIRST\n\n");
+        } else if (which_op == 3) {
+            printf("Algorithm used: BIG MEETING FIRST\n\n");
+        }
+        else if (which_op == 2) {
+            printf("Algorithm used: ROUND ROBINE\n\n");
+        }
+        else if (which_op == 1) {
+            printf("Algorithm used: PRIORITY\n\n");
+        }
+        else if (which_op == 0) {
+            printf("Algorithm used: FCFS\n\n");
+        }
         printf("***Appointment Schedule***\n\n");
     #endif
         fprintf(infilep, "Period: %d-%02d-%02d to %d-%02d-%02d\n", st_date.year, st_date.month, st_date.day, en_date.year, en_date.month, en_date.day);
-        
-        fprintf(infilep, "Algorithm used: FCFS, PRIORITY, ROUND ROBINE, BIG MEETING FIRST\n\n");
+        if (which_op == 4) {
+            fprintf(infilep, "Algorithm used: FCFS, PRIORITY, ROUND ROBINE, BIG MEETING FIRST\n\n");
+        } else if (which_op == 3) {
+            fprintf(infilep, "Algorithm used: BIG MEETING FIRST\n\n");
+        }
+        else if (which_op == 2) {
+            fprintf(infilep, "Algorithm used: ROUND ROBINE\n\n");
+        }
+        else if (which_op == 1) {
+            fprintf(infilep, "Algorithm used: PRIORITY\n\n");
+        }
+        else if (which_op == 0) {
+            fprintf(infilep, "Algorithm used: FCFS\n\n");
+        }
         fprintf(infilep, "***Appointment Schedule***\n\n");
         calendar_print(in, which_op, infilep); // 4 -> ALL
 }
@@ -331,9 +430,6 @@ int run(cmd_t* in) {
             printf("-> [Recorded]\n");
         }
         else if (strcmp(op, "printSchd") == 0) {
-            /**
-             * TODO: print -> [Exported file: Ggg_99_ALL.txt]
-            */
             sequence_number += 1;
             char file_name_buffer[30];
             memset(file_name_buffer, 0, sizeof(file_name_buffer));
@@ -383,6 +479,7 @@ int run(cmd_t* in) {
                 }
                 init_header_calender_print(in, infilep, 3); // 3 -> BIG MEETING FIRST
             }
+            printf("-> [Exported file: %s]\n", file_name_buffer); // print -> [Exported file: Ggg_99_ALL.txt]
             fclose(infilep); // close the file descriptor.
         }
         else if (strcmp(op, "endProgram") == 0) {
