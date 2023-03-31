@@ -3,7 +3,7 @@ CC = cc
 CFLAGS = -g -ggdb -std=c99 -Wall -Werror 
 # -DDEBUG 
 
-EXECUTABLE = ./bin/test
+EXECUTABLE = ./apo
 
 # CLI = ./CLI.c
 # COMMAND = ./command_op.c
@@ -22,10 +22,10 @@ clean:
 	rm -f *.o *~ $(EXECUTABLE)
 
 run:
-	./$(EXECUTABLE) 20230401 20230430 john mary lucy paul
+	$(EXECUTABLE) 20230401 20230430 john mary lucy paul
 
 lldb:
-	clear && lldb -- ./$(EXECUTABLE) 20230401 20230430 john mary lucy paul
+	clear && lldb -- $(EXECUTABLE) 20230401 20230430 john mary lucy paul
 
 gdb:
-	clear && gdb --args ./$(EXECUTABLE) 20230401 20230430 john mary lucy paul
+	clear && gdb --args $(EXECUTABLE) 20230401 20230430 john mary lucy paul
