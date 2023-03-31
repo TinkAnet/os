@@ -1,3 +1,15 @@
+/**
+ * @file ipc_user.c
+ * @author Group 08
+ * @brief Contains the implementation of scommunication pipes with users
+ * @version Final 1
+ * @date 2023-03-28
+ * @attention 
+ *  This file is part of APO.\n
+ *  We call an event that needs to arrange an appointment
+ *  
+ * 
+ */
 #include "ipc_user.h"
 #include "appointment.h"
 
