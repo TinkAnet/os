@@ -252,6 +252,7 @@ void ipc_start_schd_process(int schder_id, long long start_day, long long end_da
 
 void ipc_stop_schd_proces(int schder_id) {
     instruction.op = 0;
+    cur_schd_id = schder_id;
     server_write_instruction();
     // collect
     wait(NULL);
