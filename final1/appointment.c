@@ -504,7 +504,7 @@ int schder_delete_query(schd_t s){
     return schd_cnt;
 }
 /**
- * @brief real deleation operation
+ * @brief delete all the appointments in schd_list
  * 
  */
 void schder_delete() {
@@ -515,7 +515,12 @@ void schder_delete() {
         }
     }
 }
-
+/**
+ * @brief pirnt out successfully registered appointments
+ * 
+ * @param out : a list that contains the output appointments
+ * 
+ */
 int schder_print(schd_t *out){
     for(int i = 0; i <= total_user_num; i++){
         ipc_user_print(i);
@@ -524,7 +529,13 @@ int schder_print(schd_t *out){
         out[i] = schd_list[i];
     return schd_cnt;
 }
-
+/**
+ * @brief know about whether the Insertion is successful
+ * 
+ * @param s 
+ * @return true : insertion is successful
+ * @return false : insertion is not successful
+ */
 bool schder_schd(schd_t s){ // not used
     bool ok = schder_insert_query(s);
     if(ok){
@@ -536,7 +547,11 @@ bool schder_schd(schd_t s){ // not used
         return false;
     }
 }
-
+/**
+ * @brief mark an appointment as rejected if the user wish.
+ * 
+ * @param a 
+ */
 void switch_to_reject_mode(schd_t *a){
     a->if_user_choose_to_reject=1;
 }

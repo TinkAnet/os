@@ -13,19 +13,19 @@ typedef struct {
     /**
      * @brief operation code
      * @details
-        0 -> server use, shutdown
-        1 -> server use, ipc_user_insert_query
-        2 -> client use, ipc_user_insert_query reply
-        3 -> server use, ipc_user_insert
-        4 -> client use, ipc_user_insert reply
-        5 -> server use, ipc_user_delete_query
-        6 -> client use, ipc_user_delete_query reply
-            (the return number is stored at `s`)
-        7 -> server use, ipc_user_delete
-        8 -> client use, ipc_user_delete reply
-        9 -> server use, ipc_user_print
-        10 -> client use, ipc_user_print reply
-            (the return number is stored at `s`)
+     *   0 -> server use, shutdown
+     *   1 -> server use, ipc_user_insert_query
+     *   2 -> client use, ipc_user_insert_query reply
+     *   3 -> server use, ipc_user_insert
+     *   4 -> client use, ipc_user_insert reply
+     *   5 -> server use, ipc_user_delete_query
+     *   6 -> client use, ipc_user_delete_query reply
+     *       (the return number is stored at `s`)
+     *   7 -> server use, ipc_user_delete
+     *   8 -> client use, ipc_user_delete reply
+     *   9 -> server use, ipc_user_print
+     *   10 -> client use, ipc_user_print reply
+     *       (the return number is stored at `s`)
      */
     int op;
     schd_t s;

@@ -1,3 +1,15 @@
+/**
+ * @file ipc_schd.c
+ * @author Group 08
+ * @brief Contains the implementation of scommunication pipes for schedulers
+ * @version Final 1
+ * @date 2023-03-28
+ * @attention 
+ *  This file is part of APO.\n
+ *  We call an event that needs to arrange an appointment
+ *  
+ * 
+ */
 #include "ipc_schd.h"
 #include "common.h"
 #include "ipc_user.h"
@@ -19,16 +31,16 @@ typedef struct {
     /**
      * @brief operation code
      * @details
-        0 -> server use, shutdown
-        1 -> server use, ipc_schd_insert_query
-        2 -> client use, ipc_schd_insert_query reply
-        3 -> server use, ipc_schd_insert
-        4 -> client use, ipc_schd_insert reply
-        5 -> server use, ipc_schd_print
-        6 -> client use, ipc_schd_print reply
-            (the return number is stored at `s`)
+     *   0 -> server use, shutdown
+     *   1 -> server use, ipc_schd_insert_query
+     *   2 -> client use, ipc_schd_insert_query reply
+     *   3 -> server use, ipc_schd_insert
+     *   4 -> client use, ipc_schd_insert reply
+     *   5 -> server use, ipc_schd_print
+     *   6 -> client use, ipc_schd_print reply
+     *       (the return number is stored at `s`)
      */
-    int op;
+    int op;/**< operation code */
     schd_t s;
 }schd_instruction_t;
 
