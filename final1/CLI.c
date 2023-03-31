@@ -211,7 +211,9 @@ static void construct_op_type(char* op_c, schd_t* sch) {
  * @brief print all rejected appointments.
  * @param which_op 0 -> FCFS 1 -> Priority 2 -> Round Robine 3 -> Big Meeting First
 */
-static void print_rejected_list(int which_op, FILE* fd, cmd_t *in) {
+static void print_rejected_list(int which_op, cmd_t *in) {
+    FILE* fd = NULL;
+    fd = fopen("G08_rejected.dat", "a");
     int n_reject = ipc_schd_print(which_op, 0);
 #ifdef DEBUG
     printf("n_reject = %d\n", n_reject);
@@ -247,6 +249,7 @@ static void print_rejected_list(int which_op, FILE* fd, cmd_t *in) {
             fprintf(fd, "\n");
         }
     }
+    fclose(fd);
 }
 
 /**
@@ -354,8 +357,7 @@ static void help_calender_print(cmd_t *in, int which_op, FILE* fd) {
         }
     }
     fprintf(fd, "\n");
-
-    print_rejected_list(which_op, fd, in);
+    print_rejected_list(which_op, in);
     print_performance(fd, in);
 }
 
