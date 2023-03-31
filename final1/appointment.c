@@ -330,8 +330,8 @@ static int time_minus_minute_to_slot(tm_t a){
  */
 static tm_t slot_to_time(int s){
     tm_t ret;
-    int d = s / (SLOT_PER_HOUR * (END_HOUR - START_HOUR));
-    int r = s % (SLOT_PER_HOUR * (END_HOUR - START_HOUR));
+    int d = (s-1) / (SLOT_PER_HOUR * (END_HOUR - START_HOUR));
+    int r = (s-1) % (SLOT_PER_HOUR * (END_HOUR - START_HOUR));
     int p = d;
 
     for(ret.date = st_day; p > 0; ret.date = date_add_day(ret.date)){
@@ -343,7 +343,7 @@ static tm_t slot_to_time(int s){
             }
         }
     }
-    ret.hour = r / SLOT_PER_HOUR - 1 + START_HOUR;
+    ret.hour = r / SLOT_PER_HOUR + START_HOUR;
     ret.minute = (r % SLOT_PER_HOUR) * (60 / SLOT_PER_HOUR);
     ret.str = time_to_str(ret);
     return ret;
