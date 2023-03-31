@@ -535,7 +535,7 @@ int run(cmd_t* in) {
             memset(file_name_buffer, 0, sizeof(file_name_buffer));
             FILE* infilep = NULL;
             if (buffer[len_op] == 'A') { // printSchd ALL
-                sprintf(file_name_buffer, "Ggg_%02d_ALL.txt", sequence_number);
+                sprintf(file_name_buffer, "G08_%02d_ALL.txt", sequence_number);
                 infilep = fopen(file_name_buffer, "a");
                 if (infilep == NULL) {
                     printf("Error in opening file!\n");
@@ -544,7 +544,7 @@ int run(cmd_t* in) {
                 init_header_calender_print(in, infilep, 4); // 4 -> ALL
             }
             else if (buffer[len_op] == 'F') { // printSchd FCFS
-                sprintf(file_name_buffer, "Ggg_%02d_FCFS.txt", sequence_number);
+                sprintf(file_name_buffer, "G08_%02d_FCFS.txt", sequence_number);
                 infilep = fopen(file_name_buffer, "a");
                 if (infilep == NULL) {
                     printf("Error in opening file!\n");
@@ -553,7 +553,7 @@ int run(cmd_t* in) {
                 init_header_calender_print(in, infilep, 0); // 0 -> FCFS
             }
             else if (buffer[len_op] == 'P') { // printSchd PRIORITY
-                sprintf(file_name_buffer, "Ggg_%02d_PRIORITY.txt", sequence_number);
+                sprintf(file_name_buffer, "G08_%02d_PRIORITY.txt", sequence_number);
                 infilep = fopen(file_name_buffer, "a");
                 if (infilep == NULL) {
                     printf("Error in opening file!\n");
@@ -562,7 +562,7 @@ int run(cmd_t* in) {
                 init_header_calender_print(in, infilep, 1); // 1 -> PRIORITY
             }
             else if (buffer[len_op] == 'R') { // printSchd ROUND ROBINE
-                sprintf(file_name_buffer, "Ggg_%02d_ROUND_ROBINE.txt", sequence_number);
+                sprintf(file_name_buffer, "G08_%02d_ROUND_ROBINE.txt", sequence_number);
                 infilep = fopen(file_name_buffer, "a");
                 if (infilep == NULL) {
                     printf("Error in opening file!\n");
@@ -571,7 +571,7 @@ int run(cmd_t* in) {
                 init_header_calender_print(in, infilep, 2); // 2 -> Round Robine
             }
             else if (buffer[len_op] == 'B') { // printSchd BIG MEETING FIRST
-                sprintf(file_name_buffer, "Ggg_%02d_BIG_MEETING_FIRST.txt", sequence_number);
+                sprintf(file_name_buffer, "G08_%02d_BIG_MEETING_FIRST.txt", sequence_number);
                 infilep = fopen(file_name_buffer, "a");
                 if (infilep == NULL) {
                     printf("Error in opening file!\n");
@@ -579,7 +579,7 @@ int run(cmd_t* in) {
                 }
                 init_header_calender_print(in, infilep, 3); // 3 -> BIG MEETING FIRST
             }
-            printf("-> [Exported file: %s]\n", file_name_buffer); // print -> [Exported file: Ggg_99_ALL.txt]
+            printf("-> [Exported file: %s]\n", file_name_buffer); // print -> [Exported file: G08_99_ALL.txt]
             fclose(infilep); // close the file descriptor.
         }
         else if (strcmp(op, "endProgram") == 0) {
