@@ -191,7 +191,7 @@ static void schd_print_callback() {
 static void schd_main() {
     while (client_read_instruction()) {
         switch (instruction.op) {
-        case 0: return; // shutdown
+        case 0: return; break;// shutdown
         case 1: schd_insert_query_callback(); break;
         case 3: schd_insert_callback(); break;
         case 5: schd_print_callback(); break;

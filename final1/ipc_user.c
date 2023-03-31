@@ -197,7 +197,7 @@ static void user_insert_query_callback() {
 static void user_main() {
     while (client_read_instruction()) {
         switch (instruction.op) {
-        case 0: return; // shutdown
+        case 0: return; break; // shutdown
         case 1: user_insert_query_callback(); break;
         case 3: user_insert_callback(); break;
         case 5: user_delete_query_callback(); break;
@@ -259,7 +259,7 @@ void ipc_start_user_process(int user_id, long long start_day, long long end_day,
 void ipc_stop_user_process(int user_id) {
     cur_user_id = user_id;
     instruction.op = 0;
-    client_write_instruction();
+    server_write_instruction();
     // collect user process
     wait(NULL);
     // close pipe
@@ -278,7 +278,7 @@ void ipc_launch_user(int tot_user_number, long long start_day, long long end_day
 }
 
 void ipc_shutdown_user(int tot_user_number) {
-    for (int i = 0; i < tot_user_number; ++i) {
+    for (int i = 0; i <= tot_user_number; ++i) {
         ipc_stop_user_process(i);
     }
 }

@@ -185,6 +185,9 @@ static void print_appointment_schd_heading(const char *username, int n_app, FILE
 #endif
 }
 
+/**
+ * @brief construct appointment operation content for op_c according to sch->type. 4 -> privateTime 3 -> projectMeeting 2 -> groupStudy 1 -> gathering
+*/
 static void construct_op_type(char* op_c, schd_t* sch) {
     if (sch->type == 4) strcpy(op_c, "privateTime");
     else if (sch->type == 3) strcpy(op_c, "projectMeeting");
@@ -192,6 +195,10 @@ static void construct_op_type(char* op_c, schd_t* sch) {
     else strcpy(op_c, "gathering");
 }
 
+/**
+ * @brief print all rejected appointments.
+ * @param which_op 0 -> FCFS 1 -> Priority 2 -> Round Robine 3 -> Big Meeting First
+*/
 static void print_rejected_list(int which_op, FILE* fd, cmd_t *in) {
     int n_reject = ipc_schd_print(which_op, 0);
 #ifdef DEBUG
@@ -209,7 +216,7 @@ static void print_rejected_list(int which_op, FILE* fd, cmd_t *in) {
         date_t i_start_date = i_start_time.date;
         if (act_type == 4) {
             sprintf(activ_buffer, "privateTime");
-            fprintf(fd, "%d. %s %s %lld %lld %4.1f\n", i + 1, activ_buffer, in->user_container[id2index(i_app_tmp.caller)].name, i_start_date.str, i_start_time.str, i_app_tmp.len);
+            fprintf(fd, "%d. %s %s %lld %lld %-4.1f\n", i + 1, activ_buffer, in->user_container[id2index(i_app_tmp.caller)].name, i_start_date.str, i_start_time.str, i_app_tmp.len);
         } else {
             if (act_type == 3) {
                 sprintf(activ_buffer, "projectMeeting");
@@ -218,8 +225,7 @@ static void print_rejected_list(int which_op, FILE* fd, cmd_t *in) {
             } else if (act_type == 1) {
                 sprintf(activ_buffer, "gathering");
             }
-            fprintf(fd, "%d. %s %s %lld %02d%02d %4.1f ", i + 1, activ_buffer, in->user_container[id2index(i_app_tmp.caller)].name, i_start_date.str, str_to_time(i_start_time.str).hour, str_to_time(i_start_time.str).minute, i_app_tmp.len);
-            /** TODO: add debug*/
+            fprintf(fd, "%d. %s %s %lld %02d%02d %-4.1f ", i + 1, activ_buffer, in->user_container[id2index(i_app_tmp.caller)].name, i_start_date.str, str_to_time(i_start_time.str).hour, str_to_time(i_start_time.str).minute, i_app_tmp.len);
         #ifdef DEBUG
             printf("[Print Reject]: %d\n", i_app_tmp.callee_num);
         #endif
@@ -231,8 +237,29 @@ static void print_rejected_list(int which_op, FILE* fd, cmd_t *in) {
     }
 }
 
+// static void print_performance(FILE* fd, cmd_t* in) {
+//     int a;
+//     double b;
+//     fprintf(fd, "*** Performance ***\n");
+//     fprintf(fd, "Total Number of Requests Received: %d (%4.1f%%)\n", a, b);
+//     fprintf(fd, "Total Number of Requests Accepted: %d (%4.1f%%)\n", a, b);
+//     fprintf(fd, "Total Number of Requests Rejected: %d (%4.1f%%)\n\n\n", a, b);
+
+//     fprintf(fd, "Number of Requests Accepted by Individual: \n\n");
+//     for (int i = 0; i < in->num_user; i++) {
+//         fprintf(fd, "%15s%20s- %d\n", in->user_container[i].name, "", a);
+//     }
+//     fprintf(fd, "\n\n\n");
+    
+//     fprintf(fd, "Utilization of Time Slot:\n\n");
+//     for (int i = 0; i < in->num_user; i++) {
+//         fprintf(fd, "%15s%20s- %4.1f%%\n", in->user_container[i].name, "", b);
+//     }
+//     fprintf(fd, "\n\n");
+// }
+
 /**
- * @param which_op 0 -> FCFS 1 -> Priority 2 -> Round Robine 3 -> Big Meeting First 4 -> All
+ * @param which_op 0 -> FCFS 1 -> Priority 2 -> Round Robine 3 -> Big Meeting First
 */
 static void help_calender_print(cmd_t *in, int which_op, FILE* fd) {
     for (int i = 0; i < in->num_user; i++) { // iterate all users and find according appointment related to specific scheduling algorithms.
@@ -240,9 +267,8 @@ static void help_calender_print(cmd_t *in, int which_op, FILE* fd) {
         printf("[Help Cal] %s\n", in->user_container[i].name);
     #endif
         int this_n_app = ipc_schd_print(which_op, in->user_container[i].id); // 0 -> FCFS
-        /** TODO: int this_n_app =  ipc_schd_print(which_op, 0); // 0 -> FCFS */
         print_appointment_schd_heading(in->user_container[i].name, this_n_app, fd);
-        for (int j = 0; j < this_n_app; j++) { 
+        for (int j = 0; j < this_n_app; j++) {
             schd_t i_app_tmp = schd_buffer[j];
             tm_t i_start_time = i_app_tmp.start_time;
             tm_t i_end_time = i_app_tmp.end_time;
@@ -294,6 +320,7 @@ static void help_calender_print(cmd_t *in, int which_op, FILE* fd) {
     }
     fprintf(fd, "\n");
     print_rejected_list(which_op, fd, in);
+    // print_performance(fd, in);
 }
 
 /**
@@ -367,6 +394,8 @@ int run(cmd_t* in) {
     ipc_launch_schd(in->start_date,in->end_date,in->num_user);
     char buffer[BUFFER_SIZE];
     int op_id = 0; // appointment id, each appointment has a unique id.
+    FILE* fd_all_req = NULL;
+    fd_all_req = fopen("All_Requests.dat", "a");
     while (true) {
         printf("Please enter appointment:\n");
         int apm_len = read(STDIN_FILENO, buffer, BUFFER_SIZE);
@@ -375,6 +404,7 @@ int run(cmd_t* in) {
             continue;
         }
         buffer[--apm_len] = 0; // remove newline character
+        fprintf(fd_all_req, "%s\n", buffer);
 #ifdef DEBUG
         printf("buffer : %s\n", buffer);
 #endif
@@ -401,7 +431,6 @@ int run(cmd_t* in) {
 #endif
             schd_t tmp_schedule = load_schd(op_id, tmp->caller, 0, NULL, 4, tmp->starting_day_time, tmp->duration);
             arrange_schd(&tmp_schedule);
-            /** TODO: free(tmp) ??? */
             printf("-> [Recorded]\n");
         }
         else if (strcmp(op, "projectMeeting") == 0) {
@@ -483,6 +512,7 @@ int run(cmd_t* in) {
             fclose(infilep); // close the file descriptor.
         }
         else if (strcmp(op, "endProgram") == 0) {
+            fclose(fd_all_req);
             ipc_shutdown_schd();
             printf("-> Bye!\n");
             break;
