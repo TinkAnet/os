@@ -302,9 +302,9 @@ static void help_calender_print(cmd_t *in, int which_op, FILE* fd) {
             date_t i_start_date = i_start_time.date;
             if (i_app_tmp.caller == in->user_container[i].id) {
                 caller_request_accepted++;
+                user_accept_count[in->user_container[i].id]++;
                 accepted_act_people += (i_app_tmp.callee_num + 1);
             }
-            user_accept_count[in->user_container[i].id]++;
             user_time_slots[index2id(i)] += i_app_tmp.end_slot - i_app_tmp.start_slot + 1;
             char op_char[MAX_OPEARTOR_CHAR];
             construct_op_type(op_char, &i_app_tmp);
