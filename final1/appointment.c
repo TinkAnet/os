@@ -25,8 +25,11 @@ static int time_to_slot(tm_t a);
 static tm_t slot_to_time(int s);
 static bool if_schd_conflict(const schd_t *a, const schd_t *b);
 
-int days_of_holidays = 6;
-date_t holidays[] = {{20230305, 2023, 3, 5}, {20230312, 2023, 3, 12}, {20230319, 2023, 3, 19}, {20230326, 2023, 3, 26}, {20230329, 2023, 3, 29}, {20230329, 2023, 3, 30}};/**< List all the dates of the holidays */
+int days_of_holidays = 12;
+date_t holidays[] = {
+    {20230305, 2023, 3, 5}, {20230312, 2023, 3, 12}, {20230319, 2023, 3, 19}, {20230326, 2023, 3, 26}, {20230329, 2023, 3, 29}, {20230329, 2023, 3, 30},
+    {20230305, 2023, 5, 1}, {20230305, 2023, 5, 7}, {20230305, 2023, 5, 14}, {20230305, 2023, 5, 21}, {20230305, 2023, 5, 26}, {20230305, 2023, 5, 28}, 
+};/**< List all the dates of the holidays */
 
 int schd_cnt = 0;
 schd_t schd_list[MAX_APPOINTMENT_NUM];
