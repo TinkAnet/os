@@ -19,10 +19,10 @@ MAIN_PROG = ./main.c
 
 .PHONY:cli
 cli:
-	$(CC) $(CFLAGS) $(SRC_FILES) -lm -o $(EXECUTABLE)
+	$(CC) $(CFLAGS) $(SRC_FILES) -lm -o $(EXECUTABLE) 
 	
 clean:
-	rm -f *.o *~ $(EXECUTABLE)
+	rm -f *.o *~ $(EXECUTABLE) *.txt *.dat
 
 run:
 	$(EXECUTABLE) 20230501 20230531 billy amada cathy danny emily

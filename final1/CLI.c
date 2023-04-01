@@ -5,6 +5,7 @@
 #include<string.h>
 #include <unistd.h>
 #include <string.h>
+#include <fcntl.h>
 #include"input_process.h"
 #include"ipc_user.h"
 #include"ipc_schd.h"
@@ -126,6 +127,7 @@ static int num_scheduling_available(schd_t* sch) {
         res += 8;
     }
     else printf("can not use Big Meeting First scheduling!\n");
+    putchar('\n');
     return res;
 }
 /**
@@ -179,6 +181,17 @@ static void arrange_schd(schd_t* sch) {
         }
     }
 }
+/**
+ * @brief for improt mode
+*/
+static void import_arrange_schd(schd_t* sch, const char * input_str) {
+    int available_bitmap = num_scheduling_available(sch);
+    if (available_bitmap == 15) insert_four_schd(sch);
+    else {
+        printf("Import notice: can not insert this schedule due to time conflicts.\n");
+    }
+}
+
 
 /**
  * @details the following is an example
@@ -260,7 +273,7 @@ static void print_performance(FILE* fd, cmd_t* in) {
     for (int i = 0; i <= MAX_CALLEE_NUM; i++) if (accepted_act_people[i]) tot_people++;
     fprintf(fd, "\n\n*** Performance ***\n");
     fprintf(fd, "The total number of people participating in activities under the current scheduling algorithm: %d\n", tot_people);
-    fprintf(fd, "Total Number of Requests Received: %d\n", op_id);
+    fprintf(fd, "Total Number of Requests Received: %d (100.0%%)\n", op_id);
     #ifdef DEBUG
     printf("caller_request_accepted = %d op_id = %d\n", caller_request_accepted, op_id);
     #endif
@@ -430,26 +443,32 @@ static void init_header_calender_print(cmd_t* in, FILE* infilep, int which_op) {
         calendar_print(in, which_op, infilep); // 4 -> ALL
 }
 
-int run(cmd_t* in) {
-    sequence_number = 0; // init the sequence number
-    init_appointment(in->start_date,in->end_date,in->num_user);
-    ipc_launch_schd(in->start_date, in->end_date,in->num_user);
-    char buffer[BUFFER_SIZE];
-    op_id = 0; // appointment id, each appointment has a unique id, once we receive an appointment, let op_id += 1
-    FILE* fd_all_req = NULL;
-    fd_all_req = fopen("All_Requests.dat", "a");
-    if (fd_all_req == NULL) {
-        printf("Can't open All_Requests.dat\n");
-    }
+static int import_mode_run(cmd_t* in, FILE* fd_all_req, const char * file_name) {
+    FILE* f_in = fopen(file_name, "r");
+    char* buffer = malloc(BUFFER_SIZE);
     while (true) {
         printf("Please enter appointment:\n");
-        int apm_len = read(STDIN_FILENO, buffer, BUFFER_SIZE);
+        size_t line = BUFFER_SIZE;
+        int apm_len = getline(&buffer, &line, f_in);
+        printf("[Import Input]: %s\n", buffer);
+        if (apm_len == 0) {
+            fclose(f_in);
+            printf("Import finished.\n");
+            free(buffer);
+            return 0;
+        }
+        if (apm_len == -1) {
+            fclose(f_in);
+            free(buffer);
+            printf("Import finished.\n");
+            return 0;
+        }
         if (apm_len <= 1) {
-            printf("EOF or invalid input error!\n");
+            printf("invalid input error!\n");
             continue;
         }
         buffer[--apm_len] = 0; // remove newline character
-        fprintf(fd_all_req, "%s\n", buffer);
+        if (strcmp(buffer, "endProgram") != 0) fprintf(fd_all_req, "%s\n", buffer);
 #ifdef DEBUG
         printf("buffer : %s\n", buffer);
 #endif
@@ -481,8 +500,8 @@ int run(cmd_t* in) {
                 printf("Invalid appointment argument!\n");
                 continue;
             }
-            arrange_schd(&tmp_schedule);
-            printf("-> [Recorded]\n");
+            import_arrange_schd(&tmp_schedule, buffer);
+            printf("-> [Recorded]\n\n");
         }
         else if (strcmp(op, "projectMeeting") == 0) {
             pm_t * tmp = (pm_t*)&pgg_entry;
@@ -499,7 +518,7 @@ int run(cmd_t* in) {
                 continue;
             }
             arrange_schd(&tmp_schedule);
-            printf("-> [Recorded]\n");
+            printf("-> [Recorded]\n\n");
         }
         else if (strcmp(op, "groupStudy") == 0) {
             pm_t * tmp = (pm_t*)&pgg_entry;
@@ -516,7 +535,7 @@ int run(cmd_t* in) {
                 continue;
             }
             arrange_schd(&tmp_schedule);
-            printf("-> [Recorded]\n");
+            printf("-> [Recorded]\n\n");
         }
         else if (strcmp(op, "gathering") == 0) {
             pm_t * tmp = (pm_t*)&pgg_entry;
@@ -533,7 +552,7 @@ int run(cmd_t* in) {
                 continue;
             }
             arrange_schd(&tmp_schedule);
-            printf("-> [Recorded]\n");
+            printf("-> [Recorded]\n\n");
         }
         else if (strcmp(op, "printSchd") == 0) {
             sequence_number += 1;
@@ -587,6 +606,195 @@ int run(cmd_t* in) {
             }
             printf("-> [Exported file: %s]\n", file_name_buffer); // print -> [Exported file: G08_99_ALL.txt]
             fclose(infilep); // close the file descriptor.
+        }
+        else if (strcmp(op, "endProgram") == 0) {
+            fclose(fd_all_req);
+            ipc_shutdown_schd();
+            printf("-> Bye!\n");
+            break;
+        }
+        else {
+            printf("Invalid appointment type!\n");
+            continue;
+        }
+    }
+    fclose(f_in);
+    free(buffer);
+    return 0;
+}
+
+int run(cmd_t* in) {
+    sequence_number = 0; // init the sequence number
+    init_appointment(in->start_date,in->end_date,in->num_user);
+    ipc_launch_schd(in->start_date, in->end_date,in->num_user);
+    char buffer[BUFFER_SIZE];
+    op_id = 0; // appointment id, each appointment has a unique id, once we receive an appointment, let op_id += 1
+    FILE* fd_all_req = NULL;
+    fd_all_req = fopen("All_Requests.dat", "a");
+    if (fd_all_req == NULL) {
+        printf("Can't open All_Requests.dat. Exit Program\n");
+        return 0;
+    }
+    while (true) {
+        memset(buffer, 0, sizeof(buffer));
+        printf("Please enter appointment:\n");
+        int apm_len = read(STDIN_FILENO, buffer, BUFFER_SIZE);
+        if (apm_len == 0) {
+            fclose(fd_all_req);
+            ipc_shutdown_schd();
+            printf("-> Bye!\n");
+            return 0;
+        }
+        if (apm_len <= 1) {
+            printf("invalid input error!\n");
+            continue;
+        }
+        buffer[--apm_len] = 0; // remove newline character
+        if (strcmp(buffer, "endProgram") != 0) fprintf(fd_all_req, "%s\n", buffer);
+#ifdef DEBUG
+        printf("buffer : %s\n", buffer);
+#endif
+        char op[MAX_OPEARTOR_CHAR];
+        int len_op = 0;
+        for (int i = 0; i < apm_len; i++) {
+            if (buffer[i] == ' ') break;
+            op[len_op++] = buffer[i];
+        }
+        op[len_op++] = 0;
+        
+#ifdef DEBUG
+        printf("op : %s with len %lu\n", op, strlen(op));
+#endif
+        if (strcmp(op, "privateTime") == 0) {
+            pt_t * tmp = (pt_t *)&priv_t_entry;
+            int valid_private = private_time_handler(buffer + len_op, tmp, in);
+            if (valid_private == -1) {
+                printf("Input Error exists in privateTime command.\n");
+                continue;
+            }
+            op_id++;
+#ifdef DEBUG
+            printf("after private time handler\n");
+#endif
+            schd_t tmp_schedule = load_schd(op_id, tmp->caller, 0, NULL, 4, tmp->starting_day_time, tmp->duration);
+            if (tmp_schedule.type == -1) {
+                op_id--;
+                printf("Invalid appointment argument!\n");
+                continue;
+            }
+            arrange_schd(&tmp_schedule);
+            printf("-> [Recorded]\n\n");
+        }
+        else if (strcmp(op, "projectMeeting") == 0) {
+            pm_t * tmp = (pm_t*)&pgg_entry;
+            int valid_pg = project_group_gather_handler(buffer + len_op, tmp, in);
+            if (valid_pg == -1) {
+                printf("Input Error exists in projectMeeting command.\n");
+                continue;
+            }
+            op_id++;
+            schd_t tmp_schedule = load_schd(op_id, tmp->caller, tmp->num_callee, tmp->callee, 3, tmp->starting_day_time, tmp->duration);
+            if (tmp_schedule.type == -1) {
+                printf("Invalid appointment argument!\n");
+                op_id--;
+                continue;
+            }
+            arrange_schd(&tmp_schedule);
+            printf("-> [Recorded]\n\n");
+        }
+        else if (strcmp(op, "groupStudy") == 0) {
+            pm_t * tmp = (pm_t*)&pgg_entry;
+            int valid_pg = project_group_gather_handler(buffer + len_op, tmp, in);
+            if (valid_pg == -1) {
+                printf("Input Error exists in groupStudy command.\n");
+                continue;
+            }
+            op_id++;
+            schd_t tmp_schedule = load_schd(op_id, tmp->caller, tmp->num_callee, tmp->callee, 2, tmp->starting_day_time, tmp->duration);
+            if (tmp_schedule.type == -1) {
+                printf("Invalid appointment argument!\n");
+                op_id--;
+                continue;
+            }
+            arrange_schd(&tmp_schedule);
+            printf("-> [Recorded]\n\n");
+        }
+        else if (strcmp(op, "gathering") == 0) {
+            pm_t * tmp = (pm_t*)&pgg_entry;
+            int valid_pg = project_group_gather_handler(buffer + len_op, tmp, in);
+            if (valid_pg == -1) {
+                printf("Input Error exists in gathering command.\n");
+                continue;
+            }
+            op_id++;
+            schd_t tmp_schedule = load_schd(op_id, tmp->caller, tmp->num_callee, tmp->callee, 1, tmp->starting_day_time, tmp->duration);
+            if (tmp_schedule.type == -1) {
+                printf("Invalid appointment argument!\n");
+                op_id--;
+                continue;
+            }
+            arrange_schd(&tmp_schedule);
+            printf("-> [Recorded]\n\n");
+        }
+        else if (strcmp(op, "printSchd") == 0) {
+            sequence_number += 1;
+            char file_name_buffer[30];
+            memset(file_name_buffer, 0, sizeof(file_name_buffer));
+            FILE* infilep = NULL;
+            if (buffer[len_op] == 'A') { // printSchd ALL
+                sprintf(file_name_buffer, "G08_%02d_ALL.txt", sequence_number);
+                infilep = fopen(file_name_buffer, "a");
+                if (infilep == NULL) {
+                    printf("Error in opening file!\n");
+                    continue;
+                }
+                init_header_calender_print(in, infilep, 4); // 4 -> ALL
+            }
+            else if (buffer[len_op] == 'F') { // printSchd FCFS
+                sprintf(file_name_buffer, "G08_%02d_FCFS.txt", sequence_number);
+                infilep = fopen(file_name_buffer, "a");
+                if (infilep == NULL) {
+                    printf("Error in opening file!\n");
+                    continue;
+                }
+                init_header_calender_print(in, infilep, 0); // 0 -> FCFS
+            }
+            else if (buffer[len_op] == 'P') { // printSchd PRIORITY
+                sprintf(file_name_buffer, "G08_%02d_PRIORITY.txt", sequence_number);
+                infilep = fopen(file_name_buffer, "a");
+                if (infilep == NULL) {
+                    printf("Error in opening file!\n");
+                    continue;
+                }
+                init_header_calender_print(in, infilep, 1); // 1 -> PRIORITY
+            }
+            else if (buffer[len_op] == 'R') { // printSchd ROUND ROBINE
+                sprintf(file_name_buffer, "G08_%02d_ROUND_ROBINE.txt", sequence_number);
+                infilep = fopen(file_name_buffer, "a");
+                if (infilep == NULL) {
+                    printf("Error in opening file!\n");
+                    continue;
+                }
+                init_header_calender_print(in, infilep, 2); // 2 -> Round Robine
+            }
+            else if (buffer[len_op] == 'B') { // printSchd BIG MEETING FIRST
+                sprintf(file_name_buffer, "G08_%02d_BIG_MEETING_FIRST.txt", sequence_number);
+                infilep = fopen(file_name_buffer, "a");
+                if (infilep == NULL) {
+                    printf("Error in opening file!\n");
+                    continue;
+                }
+                init_header_calender_print(in, infilep, 3); // 3 -> BIG MEETING FIRST
+            }
+            printf("-> [Exported file: %s]\n", file_name_buffer); // print -> [Exported file: G08_99_ALL.txt]
+            fclose(infilep); // close the file descriptor.
+        }
+        else if (strcmp(op, "import") == 0) {
+            char file_name[20];
+            memset(file_name, 0, sizeof(file_name) / sizeof(file_name[0]));
+            sprintf(file_name, "%s", buffer + len_op);
+            import_mode_run(in, fd_all_req, file_name);
+            continue;
         }
         else if (strcmp(op, "endProgram") == 0) {
             fclose(fd_all_req);
