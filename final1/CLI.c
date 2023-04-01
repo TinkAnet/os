@@ -26,6 +26,7 @@ int accepted_act_people[MAX_CALLEE_NUM + 1];
 int user_time_slots[MAX_CALLEE_NUM + 1];
 
 int my_getline(char **out, size_t *xx, FILE* f_in) {
+    (*out)[0] = '\0';
     int len = 0;
     char c;
     while(true) {
@@ -187,7 +188,8 @@ static void arrange_schd(schd_t* sch) {
         int option;
         printf("1. reschedule your current schedule, and your current schedule will be added to reject list.\n");
         printf("2. continue with current schedule.\n");
-        scanf("%d", &option);
+        scanf("%d", &option); // getline和scanf不能同时一起使用,不然会炸
+        getchar();
         if (option == 1) {
             switch_to_reject_mode(sch);
             reschedule_op(sch);
@@ -472,23 +474,23 @@ static int import_mode_run(cmd_t* in, FILE* fd_all_req, const char * file_name) 
         printf("Please enter appointment:\n");
         size_t line = BUFFER_SIZE;
         int apm_len = my_getline(&buffer, &line, f_in); // getline必须要用malloc
-        printf("[Import Input]: %s\n", buffer);
         if (apm_len == 0) {
             fclose(f_in);
-            printf("Import finished.\n");
+            printf("Import finished.\n\n");
             free(buffer);
             return 0;
         }
         if (apm_len == -1) {
             fclose(f_in);
             free(buffer);
-            printf("Import finished.\n");
+            printf("Import finished.\n\n");
             return 0;
         }
         if (apm_len <= 1) {
             printf("invalid input error!\n");
             continue;
         }
+        printf("[Import Input]: %s\n", buffer);
         buffer[--apm_len] = 0; // remove newline character
         if (strcmp(buffer, "endProgram") != 0) fprintf(fd_all_req, "%s\n", buffer);
 #ifdef DEBUG
