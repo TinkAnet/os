@@ -679,7 +679,7 @@ int run(cmd_t* in) {
             continue;
         }
         buffer[--apm_len] = 0; // remove newline character
-        if (strcmp(buffer, "endProgram") != 0) fprintf(fd_all_req, "%s\n", buffer);
+        
 #ifdef DEBUG
         printf("buffer : %s\n", buffer);
 #endif
@@ -690,7 +690,7 @@ int run(cmd_t* in) {
             op[len_op++] = buffer[i];
         }
         op[len_op++] = 0;
-        
+        if (strcmp(op, "endProgram") != 0 && strcmp(op, "printSchd") != 0) fprintf(fd_all_req, "%s\n", buffer);
 #ifdef DEBUG
         printf("op : %s with len %lu\n", op, strlen(op));
 #endif
