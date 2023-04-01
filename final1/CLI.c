@@ -25,6 +25,23 @@ int user_accept_count[MAX_CALLEE_NUM + 1];
 int accepted_act_people[MAX_CALLEE_NUM + 1];
 int user_time_slots[MAX_CALLEE_NUM + 1];
 
+int my_getline(char **out, size_t *xx, FILE* f_in) {
+    int len = 0;
+    char c;
+    while(true) {
+        c = fgetc(f_in);
+        if (c == EOF) {
+            if (len == 0) return -1;
+            break;
+        };
+        if (c == '\n') break;
+        (*out)[len++] = c;
+    }
+
+    (*out)[len++] = '\0';
+    return len;
+}
+
 /**
  * @brief user container position = user_id - 1
 */
@@ -454,7 +471,7 @@ static int import_mode_run(cmd_t* in, FILE* fd_all_req, const char * file_name) 
     while (true) {
         printf("Please enter appointment:\n");
         size_t line = BUFFER_SIZE;
-        int apm_len = getline(&buffer, &line, f_in); // getline必须要用malloc
+        int apm_len = my_getline(&buffer, &line, f_in); // getline必须要用malloc
         printf("[Import Input]: %s\n", buffer);
         if (apm_len == 0) {
             fclose(f_in);
@@ -647,7 +664,7 @@ int run(cmd_t* in) {
         printf("Please enter appointment:\n");
         // int apm_len = read(STDIN_FILENO, buffer, BUFFER_SIZE);
         size_t line = BUFFER_SIZE;
-        int apm_len = getline(&buffer, &line, stdin); // getline必须要用malloc
+        int apm_len = my_getline(&buffer, &line, stdin); // getline必须要用malloc
         if (apm_len == 0) {
             fclose(fd_all_req);
             ipc_shutdown_schd();
