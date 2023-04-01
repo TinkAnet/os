@@ -21,7 +21,7 @@ int sequence_number;
 int op_id;
 int caller_request_accepted;
 int user_accept_count[MAX_CALLEE_NUM + 1];
-int accepted_act_people;
+int accepted_act_people[MAX_CALLEE_NUM + 1];
 int user_time_slots[MAX_CALLEE_NUM + 1];
 
 /**
@@ -256,8 +256,10 @@ static void print_rejected_list(int which_op, cmd_t *in) {
  * @brief print performance matric under specific scheduling algorithms. 
 */
 static void print_performance(FILE* fd, cmd_t* in) {
+    int tot_people = 0;
+    for (int i = 0; i <= MAX_CALLEE_NUM; i++) if (accepted_act_people[i]) tot_people++;
     fprintf(fd, "\n\n*** Performance ***\n");
-    fprintf(fd, "The total number of people participating in activities under the current scheduling algorithm: %d\n", accepted_act_people);
+    fprintf(fd, "The total number of people participating in activities under the current scheduling algorithm: %d\n", tot_people);
     fprintf(fd, "Total Number of Requests Received: %d\n", op_id);
     #ifdef DEBUG
     printf("caller_request_accepted = %d op_id = %d\n", caller_request_accepted, op_id);
@@ -289,7 +291,7 @@ static void print_performance(FILE* fd, cmd_t* in) {
 */
 static void help_calender_print(cmd_t *in, int which_op, FILE* fd) {
     caller_request_accepted = 0;
-    accepted_act_people = 0;
+    memset(accepted_act_people, 0, sizeof(accepted_act_people));
     memset(user_accept_count, 0, sizeof(user_accept_count));
     memset(user_time_slots, 0, sizeof(user_time_slots));
     for (int i = 0; i < in->num_user; i++) { // iterate all users
@@ -306,7 +308,9 @@ static void help_calender_print(cmd_t *in, int which_op, FILE* fd) {
             if (i_app_tmp.caller == in->user_container[i].id) {
                 caller_request_accepted++;
                 user_accept_count[in->user_container[i].id]++;
-                accepted_act_people += (i_app_tmp.callee_num + 1);
+            }
+            if (accepted_act_people[in->user_container[i].id] == 0) {
+                accepted_act_people[in->user_container[i].id] = 1;
             }
             user_time_slots[index2id(i)] += i_app_tmp.end_slot - i_app_tmp.start_slot + 1;
             char op_char[MAX_OPEARTOR_CHAR];

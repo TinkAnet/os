@@ -1,0 +1,245 @@
+Period: 2023-05-01 to 2023-05-31
+Algorithm used: FCFS, PRIORITY, ROUND ROBINE, BIG MEETING FIRST
+
+***Appointment Schedule***
+
+
+FCFS: 
+
+  billy, you have 3 appintments.
+Date         Start   End     Type           People         
+============================================================
+2023-05-02   19:00   22:00   privateTime    
+2023-05-11   18:00   23:00   gathering      amada cathy emily danny 
+2023-05-16   20:00   23:00   groupStudy     amada emily 
+  amada, you have 3 appintments.
+Date         Start   End     Type           People         
+============================================================
+2023-05-15   20:00   23:00   privateTime    
+2023-05-11   18:00   23:00   gathering      billy cathy emily danny 
+2023-05-16   20:00   23:00   groupStudy     billy emily 
+  cathy, you have 2 appintments.
+Date         Start   End     Type           People         
+============================================================
+2023-05-05   18:00   22:00   groupStudy     danny emily 
+2023-05-11   18:00   23:00   gathering      amada billy emily danny 
+  danny, you have 2 appintments.
+Date         Start   End     Type           People         
+============================================================
+2023-05-05   18:00   22:00   groupStudy     emily cathy 
+2023-05-11   18:00   23:00   gathering      amada billy cathy emily 
+  emily, you have 3 appintments.
+Date         Start   End     Type           People         
+============================================================
+2023-05-05   18:00   22:00   groupStudy     danny cathy 
+2023-05-11   18:00   23:00   gathering      amada billy cathy danny 
+2023-05-16   20:00   23:00   groupStudy     amada billy 
+
+
+
+*** Performance ***
+The total number of people participating in activities under the current scheduling algorithm: 5
+Total Number of Requests Received: 5
+Total Number of Requests Accepted: 5 (100.0%)
+Total Number of Requests Rejected: 0 (0.0%)
+
+
+Number of Requests Accepted by Individual: 
+
+          billy                    - 1
+          amada                    - 1
+          cathy                    - 1
+          danny                    - 1
+          emily                    - 1
+
+
+
+Utilization of Time Slot:
+
+          billy                    -  7.1%
+          amada                    -  7.1%
+          cathy                    -  5.8%
+          danny                    -  5.8%
+          emily                    -  7.7%
+
+
+
+Priority: 
+
+  billy, you have 3 appintments.
+Date         Start   End     Type           People         
+============================================================
+2023-05-02   19:00   22:00   privateTime    
+2023-05-11   18:00   23:00   gathering      amada cathy emily danny 
+2023-05-16   20:00   23:00   groupStudy     amada emily 
+  amada, you have 3 appintments.
+Date         Start   End     Type           People         
+============================================================
+2023-05-15   20:00   23:00   privateTime    
+2023-05-11   18:00   23:00   gathering      billy cathy emily danny 
+2023-05-16   20:00   23:00   groupStudy     billy emily 
+  cathy, you have 2 appintments.
+Date         Start   End     Type           People         
+============================================================
+2023-05-05   18:00   22:00   groupStudy     danny emily 
+2023-05-11   18:00   23:00   gathering      amada billy emily danny 
+  danny, you have 2 appintments.
+Date         Start   End     Type           People         
+============================================================
+2023-05-05   18:00   22:00   groupStudy     emily cathy 
+2023-05-11   18:00   23:00   gathering      amada billy cathy emily 
+  emily, you have 3 appintments.
+Date         Start   End     Type           People         
+============================================================
+2023-05-05   18:00   22:00   groupStudy     danny cathy 
+2023-05-11   18:00   23:00   gathering      amada billy cathy danny 
+2023-05-16   20:00   23:00   groupStudy     amada billy 
+
+
+
+*** Performance ***
+The total number of people participating in activities under the current scheduling algorithm: 5
+Total Number of Requests Received: 5
+Total Number of Requests Accepted: 5 (100.0%)
+Total Number of Requests Rejected: 0 (0.0%)
+
+
+Number of Requests Accepted by Individual: 
+
+          billy                    - 1
+          amada                    - 1
+          cathy                    - 1
+          danny                    - 1
+          emily                    - 1
+
+
+
+Utilization of Time Slot:
+
+          billy                    -  7.1%
+          amada                    -  7.1%
+          cathy                    -  5.8%
+          danny                    -  5.8%
+          emily                    -  7.7%
+
+
+
+Round Robine: 
+
+  billy, you have 3 appintments.
+Date         Start   End     Type           People         
+============================================================
+2023-05-02   19:00   22:00   privateTime    
+2023-05-11   18:00   23:00   gathering      amada cathy emily danny 
+2023-05-16   20:00   23:00   groupStudy     amada emily 
+  amada, you have 3 appintments.
+Date         Start   End     Type           People         
+============================================================
+2023-05-15   20:00   23:00   privateTime    
+2023-05-11   18:00   23:00   gathering      billy cathy emily danny 
+2023-05-16   20:00   23:00   groupStudy     billy emily 
+  cathy, you have 2 appintments.
+Date         Start   End     Type           People         
+============================================================
+2023-05-05   18:00   22:00   groupStudy     danny emily 
+2023-05-11   18:00   23:00   gathering      amada billy emily danny 
+  danny, you have 2 appintments.
+Date         Start   End     Type           People         
+============================================================
+2023-05-05   18:00   22:00   groupStudy     emily cathy 
+2023-05-11   18:00   23:00   gathering      amada billy cathy emily 
+  emily, you have 3 appintments.
+Date         Start   End     Type           People         
+============================================================
+2023-05-05   18:00   22:00   groupStudy     danny cathy 
+2023-05-11   18:00   23:00   gathering      amada billy cathy danny 
+2023-05-16   20:00   23:00   groupStudy     amada billy 
+
+
+
+*** Performance ***
+The total number of people participating in activities under the current scheduling algorithm: 5
+Total Number of Requests Received: 5
+Total Number of Requests Accepted: 5 (100.0%)
+Total Number of Requests Rejected: 0 (0.0%)
+
+
+Number of Requests Accepted by Individual: 
+
+          billy                    - 1
+          amada                    - 1
+          cathy                    - 1
+          danny                    - 1
+          emily                    - 1
+
+
+
+Utilization of Time Slot:
+
+          billy                    -  7.1%
+          amada                    -  7.1%
+          cathy                    -  5.8%
+          danny                    -  5.8%
+          emily                    -  7.7%
+
+
+
+Big Meeting First 
+
+  billy, you have 3 appintments.
+Date         Start   End     Type           People         
+============================================================
+2023-05-02   19:00   22:00   privateTime    
+2023-05-11   18:00   23:00   gathering      amada cathy emily danny 
+2023-05-16   20:00   23:00   groupStudy     amada emily 
+  amada, you have 3 appintments.
+Date         Start   End     Type           People         
+============================================================
+2023-05-15   20:00   23:00   privateTime    
+2023-05-11   18:00   23:00   gathering      billy cathy emily danny 
+2023-05-16   20:00   23:00   groupStudy     billy emily 
+  cathy, you have 2 appintments.
+Date         Start   End     Type           People         
+============================================================
+2023-05-05   18:00   22:00   groupStudy     danny emily 
+2023-05-11   18:00   23:00   gathering      amada billy emily danny 
+  danny, you have 2 appintments.
+Date         Start   End     Type           People         
+============================================================
+2023-05-05   18:00   22:00   groupStudy     emily cathy 
+2023-05-11   18:00   23:00   gathering      amada billy cathy emily 
+  emily, you have 3 appintments.
+Date         Start   End     Type           People         
+============================================================
+2023-05-05   18:00   22:00   groupStudy     danny cathy 
+2023-05-11   18:00   23:00   gathering      amada billy cathy danny 
+2023-05-16   20:00   23:00   groupStudy     amada billy 
+
+
+
+*** Performance ***
+The total number of people participating in activities under the current scheduling algorithm: 5
+Total Number of Requests Received: 5
+Total Number of Requests Accepted: 5 (100.0%)
+Total Number of Requests Rejected: 0 (0.0%)
+
+
+Number of Requests Accepted by Individual: 
+
+          billy                    - 1
+          amada                    - 1
+          cathy                    - 1
+          danny                    - 1
+          emily                    - 1
+
+
+
+Utilization of Time Slot:
+
+          billy                    -  7.1%
+          amada                    -  7.1%
+          cathy                    -  5.8%
+          danny                    -  5.8%
+          emily                    -  7.7%
+
+
