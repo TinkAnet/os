@@ -31,7 +31,7 @@ int private_time_handler (const char *input, pt_t *res, cmd_t *inst) {
     for (int i = 0; i < n; i++) {
         c = input[i];
 #ifdef DEBUG
-        printf("c = %c\n", c);
+        printf("c = %c, state = %d\n", c, state);
 #endif
         if (state == 0 && c == ' ') {
             state = 1; // space transition state
@@ -130,7 +130,7 @@ int project_group_gather_handler(const char *input, pm_t *res, cmd_t *inst) {
     for (int i = 0; i < n; i++) {
         c = input[i];
 #ifdef DEBUG
-        printf("c = %c\n", c);
+        printf("c = %c state = %d\n", c, state);
 #endif
         if (state == 0 && c == ' ') {
             state = 1; // space transition state
@@ -164,12 +164,13 @@ int project_group_gather_handler(const char *input, pm_t *res, cmd_t *inst) {
             state = 9; // space transition state
             callee_len = 0; // reset offset
             callee_ptr++;
+            if (i == n - 1) callee_ptr--;
             continue;
         }
         else if (state == 9 && c != ' ') {
             state = 8; // read callee name
         }
-        
+
         if (state == 0) {
             name_str[name_len++] = c;
             if (!isalpha(c)) {
@@ -228,6 +229,9 @@ int project_group_gather_handler(const char *input, pm_t *res, cmd_t *inst) {
     for (int i = 0; i <= callee_ptr; i++) {
         int callee_id = name_to_int(callee_str[i], inst);
         if (!is_existing_user(callee_id, inst)) {
+            #ifdef DEBUG
+            printf("i %d callee_id = %d\n", i, callee_id);
+            #endif
             printf("callee name does not exist in system!\n");
             return -1;
         }

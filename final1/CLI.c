@@ -181,17 +181,18 @@ static void arrange_schd(schd_t* sch) {
         }
     }
 }
+
 /**
  * @brief for improt mode
 */
-static void import_arrange_schd(schd_t* sch, const char * input_str) {
+static void import_arrange_schd(schd_t* sch) {
     int available_bitmap = num_scheduling_available(sch);
     if (available_bitmap == 15) insert_four_schd(sch);
     else {
-        printf("Import notice: can not insert this schedule due to time conflicts.\n");
+        use_available_scheduling(sch);
+        printf("Import notice: due to time conflicts, this schedule is only used in available scheduling algorithms.\n");
     }
 }
-
 
 /**
  * @details the following is an example
@@ -445,11 +446,15 @@ static void init_header_calender_print(cmd_t* in, FILE* infilep, int which_op) {
 
 static int import_mode_run(cmd_t* in, FILE* fd_all_req, const char * file_name) {
     FILE* f_in = fopen(file_name, "r");
+    if (f_in == NULL) {
+        printf("invalid file name!\n");
+        return 0;
+    }
     char* buffer = malloc(BUFFER_SIZE);
     while (true) {
         printf("Please enter appointment:\n");
         size_t line = BUFFER_SIZE;
-        int apm_len = getline(&buffer, &line, f_in);
+        int apm_len = getline(&buffer, &line, f_in); // getline必须要用malloc
         printf("[Import Input]: %s\n", buffer);
         if (apm_len == 0) {
             fclose(f_in);
@@ -500,7 +505,7 @@ static int import_mode_run(cmd_t* in, FILE* fd_all_req, const char * file_name) 
                 printf("Invalid appointment argument!\n");
                 continue;
             }
-            import_arrange_schd(&tmp_schedule, buffer);
+            import_arrange_schd(&tmp_schedule);
             printf("-> [Recorded]\n\n");
         }
         else if (strcmp(op, "projectMeeting") == 0) {
@@ -517,7 +522,7 @@ static int import_mode_run(cmd_t* in, FILE* fd_all_req, const char * file_name) 
                 op_id--;
                 continue;
             }
-            arrange_schd(&tmp_schedule);
+            import_arrange_schd(&tmp_schedule);
             printf("-> [Recorded]\n\n");
         }
         else if (strcmp(op, "groupStudy") == 0) {
@@ -534,7 +539,7 @@ static int import_mode_run(cmd_t* in, FILE* fd_all_req, const char * file_name) 
                 op_id--;
                 continue;
             }
-            arrange_schd(&tmp_schedule);
+            import_arrange_schd(&tmp_schedule);
             printf("-> [Recorded]\n\n");
         }
         else if (strcmp(op, "gathering") == 0) {
@@ -551,7 +556,7 @@ static int import_mode_run(cmd_t* in, FILE* fd_all_req, const char * file_name) 
                 op_id--;
                 continue;
             }
-            arrange_schd(&tmp_schedule);
+            import_arrange_schd(&tmp_schedule);
             printf("-> [Recorded]\n\n");
         }
         else if (strcmp(op, "printSchd") == 0) {
@@ -627,22 +632,27 @@ int run(cmd_t* in) {
     sequence_number = 0; // init the sequence number
     init_appointment(in->start_date,in->end_date,in->num_user);
     ipc_launch_schd(in->start_date, in->end_date,in->num_user);
-    char buffer[BUFFER_SIZE];
+    // char buffer[BUFFER_SIZE];
+    char * buffer = malloc(BUFFER_SIZE);
     op_id = 0; // appointment id, each appointment has a unique id, once we receive an appointment, let op_id += 1
     FILE* fd_all_req = NULL;
     fd_all_req = fopen("All_Requests.dat", "a");
     if (fd_all_req == NULL) {
         printf("Can't open All_Requests.dat. Exit Program\n");
+        free(buffer);
         return 0;
     }
     while (true) {
-        memset(buffer, 0, sizeof(buffer));
+        // memset(buffer, 0, sizeof(buffer));
         printf("Please enter appointment:\n");
-        int apm_len = read(STDIN_FILENO, buffer, BUFFER_SIZE);
+        // int apm_len = read(STDIN_FILENO, buffer, BUFFER_SIZE);
+        size_t line = BUFFER_SIZE;
+        int apm_len = getline(&buffer, &line, stdin); // getline必须要用malloc
         if (apm_len == 0) {
             fclose(fd_all_req);
             ipc_shutdown_schd();
             printf("-> Bye!\n");
+            free(buffer);
             return 0;
         }
         if (apm_len <= 1) {
@@ -799,6 +809,7 @@ int run(cmd_t* in) {
         else if (strcmp(op, "endProgram") == 0) {
             fclose(fd_all_req);
             ipc_shutdown_schd();
+            free(buffer);
             printf("-> Bye!\n");
             break;
         }
